@@ -1,0 +1,121 @@
+package uk.ac.gla.jagora.test.unit;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import uk.ac.gla.jagora.BuyOrder;
+import uk.ac.gla.jagora.ExecutedTrade;
+import uk.ac.gla.jagora.OrderBook;
+import uk.ac.gla.jagora.SellOrder;
+import uk.ac.gla.jagora.Stock;
+import uk.ac.gla.jagora.Trade;
+import uk.ac.gla.jagora.Trader;
+import uk.ac.gla.jagora.test.stub.StubTraderBuilder;
+import uk.ac.gla.jagora.test.stub.StubWorld;
+
+public class OrderBookTest {
+	
+	private static Stock apples = new Stock("apples");
+	
+	private Trader alice;
+	private Trader bob;
+		
+	private StubWorld stubWorld;
+
+	private OrderBook<SellOrder> sellBook;
+	private OrderBook<BuyOrder> buyBook;
+	
+	
+	@Before
+	public void setUp() throws Exception {
+		
+		apples = new Stock("apples");
+		
+		alice = new StubTraderBuilder("alice", 1000000.00).addStock(apples, 10000).build();
+		bob   = new StubTraderBuilder("bob", 50000.00).addStock(apples, 200).build();
+		
+		stubWorld = new StubWorld();
+				
+		sellBook = new OrderBook<SellOrder>(stubWorld);
+		buyBook = new OrderBook<BuyOrder>(stubWorld);
+	}
+
+	@Test
+	public void testSellOrderBook() throws Exception{
+		
+		List<SellOrder> sellOrders =
+			Arrays.asList(
+				createSellOrder(alice, apples, 500,  50.00, 5l), 
+				createSellOrder(bob,   apples,  15, 110.00, 1l),
+				createSellOrder(alice, apples,  10, 110.00, 2l),
+				createSellOrder(alice, apples,   5, 200.00, 4l),
+				createSellOrder(bob,   apples,  10, 250.00, 0l)
+			);
+		
+		List<SellOrder> randomisedSellOrders =
+			new ArrayList<SellOrder>(sellOrders);
+		
+		Collections.shuffle(randomisedSellOrders);
+		
+		for (SellOrder sellOrder : randomisedSellOrders)
+			sellBook.recordOrder(sellOrder);
+		
+		for (SellOrder expected : sellOrders){
+			SellOrder actual = sellBook.seeBestOrder();
+			assertEquals(expected,actual);
+			
+			Trade satisfyingTrade = new Trade(apples, expected.initialQuantity,  expected.price, actual, null);
+			actual.satisfyTrade(new ExecutedTrade(satisfyingTrade, stubWorld));
+		}		
+	}
+
+	private SellOrder createSellOrder(Trader trader, Stock stock, Integer quantity, Double price, Long tick) {
+		SellOrder sellOrder = new SellOrder(trader, stock, quantity, price);
+		stubWorld.registerOrderForTick(sellOrder, tick);
+		return sellOrder;
+	}
+	
+	@Test
+	public void testBuyOrderBook() throws Exception {
+		
+		List<BuyOrder> buyOrders =
+			Arrays.asList(
+				createBuyOrder(alice, apples, 500, 900.00, 4l),
+				createBuyOrder(alice, apples,  10, 220.00, 2l),
+				createBuyOrder(alice, apples,  15, 220.00, 3l),
+				createBuyOrder(alice, apples,   5, 150.00, 0l),
+				createBuyOrder(bob,   apples,  10, 110.00, 1l)
+			);
+
+		
+		List<BuyOrder> randomisedbuyOrders =
+			new ArrayList<BuyOrder>(buyOrders);
+			
+		Collections.shuffle(randomisedbuyOrders);
+			
+		for (BuyOrder buyOrder : randomisedbuyOrders)
+			buyBook.recordOrder(buyOrder);
+			
+		for (BuyOrder expected : buyOrders){
+			BuyOrder actual = buyBook.seeBestOrder();
+			assertEquals(expected,actual);
+			Trade satisfyingTrade = new Trade(apples, expected.initialQuantity,  expected.price, null, actual);
+			actual.satisfyTrade(new ExecutedTrade(satisfyingTrade, stubWorld));
+
+		}			
+	}
+	
+	private BuyOrder createBuyOrder(Trader trader, Stock stock, Integer quantity, Double price, Long tick) {
+		BuyOrder buyOrder = new BuyOrder(trader, stock, quantity, price);
+		stubWorld.registerOrderForTick(buyOrder, tick);
+		return buyOrder;
+	}
+
+}
