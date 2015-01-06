@@ -2,41 +2,24 @@ package uk.ac.gla.jagora;
 
 import static java.lang.String.format;
 
-
-public class Trade {
+public abstract class Trade {
 
 	public final Stock stock;
 	public final Integer quantity;
 	public final Double price;
-	
-	private final SellOrder sellOrder;
-	private final BuyOrder buyOrder;
-	
-	public Trade(Stock stock, Integer quantity, Double price, SellOrder sellOrder, BuyOrder buyOrder) {
+
+
+	public Trade(Stock stock, Integer quantity, Double price) {
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;
-		this.sellOrder = sellOrder;
-		this.buyOrder = buyOrder;
 	}
-	
-	public ExecutedTrade execute (World world) throws TradeExecutionException {
-		
-		ExecutedTrade executedTrade = new ExecutedTrade(this, world);
-		
-		sellOrder.satisfyTrade(executedTrade);		
-		try {
-			buyOrder.satisfyTrade(executedTrade);
-		} catch (TradeExecutionException e){
-			sellOrder.rollBackTrade(executedTrade);
-			throw e;
-		}
-		
-		return executedTrade;
-	} 
 	
 	@Override
 	public String toString (){
 		return format("%s:%d:$%.2f", stock, quantity, price);
 	}
+
+	public abstract ExecutedTrade execute (World world) throws TradeExecutionException;
+
 }

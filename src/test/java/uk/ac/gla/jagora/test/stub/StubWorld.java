@@ -3,10 +3,10 @@ package uk.ac.gla.jagora.test.stub;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.ac.gla.jagora.Order;
-import uk.ac.gla.jagora.ReceivedOrder;
 import uk.ac.gla.jagora.TickableEvent;
 import uk.ac.gla.jagora.World;
+import uk.ac.gla.jagora.orderdrivenmarket.Order;
+import uk.ac.gla.jagora.orderdrivenmarket.ReceivedOrder;
 
 public class StubWorld implements World {
 	
@@ -31,6 +31,11 @@ public class StubWorld implements World {
 			return ticks.get(receivedOrder.order);
 
 		} else return -1l;
+	}
+
+	@Override
+	public boolean isAlive() {
+		return true;
 	}
 
 }

@@ -2,23 +2,37 @@ package uk.ac.gla.jagora.test.unit;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.gla.jagora.BuyOrder;
-import uk.ac.gla.jagora.OrderDrivenMarket;
-import uk.ac.gla.jagora.SellOrder;
+import uk.ac.gla.jagora.ExecutedTrade;
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.Trader;
+import uk.ac.gla.jagora.AbstractTrader;
+import uk.ac.gla.jagora.Trade;
+import uk.ac.gla.jagora.orderdrivenmarket.BuyOrder;
+import uk.ac.gla.jagora.orderdrivenmarket.OrderDrivenMarket;
+import uk.ac.gla.jagora.orderdrivenmarket.SellOrder;
 import uk.ac.gla.jagora.test.stub.StubTraderBuilder;
-import uk.ac.gla.jagora.worlds.SimpleSerialWorld;
+import uk.ac.gla.jagora.world.SimpleSerialWorld;
 
 public class OrderDrivenMarketTest {
 
 	private Stock apples = new Stock("apples");
+	private Stock oranges = new Stock("oranges");
 	
-	private Trader alice = new StubTraderBuilder("alice", 10000.00).addStock(apples, 100).build();
-	private Trader bob   = new StubTraderBuilder("bob", 500.00).addStock(apples, 200).build();
+	private AbstractTrader alice = 
+			new StubTraderBuilder("alice", 10000.00)
+			.addStock(apples, 100)
+			.addStock(oranges, 2000)
+			.build();
+	
+	private AbstractTrader bob   = 
+		new StubTraderBuilder("bob", 500.00)
+			.addStock(apples, 200)
+			.addStock(oranges,400)
+			.build();
 	
 	private OrderDrivenMarket orderDrivenMarket;
 
@@ -38,7 +52,7 @@ public class OrderDrivenMarketTest {
 
 		orderDrivenMarket.doClearing();
 				
-		assertEquals("", 500.0, bob.getCash().doubleValue(), 0.0);
+		assertEquals("", 500.0, bob.getCash(), 0.0);
 		
 		SellOrder sellOrder2 = new SellOrder(bob, apples, 10, 55.9);
 		orderDrivenMarket.registerSellOrder(sellOrder2);
@@ -48,10 +62,47 @@ public class OrderDrivenMarketTest {
 		
 		orderDrivenMarket.doClearing();
 		
-		Double price = 50 * 55.0 + 10 * 55.9;
+		//sellOrder 1 and 2, and buyOrder 2 should now be fully executed.
 		
-		assertEquals("", 500.0 + price, bob.getCash().doubleValue(), 0.0);
-		assertEquals("", 10000.0 - price, alice.getCash().doubleValue(), 0.0);
+		Double trade1Cost = 50 * 55.0 + 10 * 55.9;
+		
+		assertEquals("", 500.0 + trade1Cost, bob.getCash(), 0.0);
+		assertEquals("", 10000.0 - trade1Cost, alice.getCash(), 0.0);
+		
+		SellOrder sellOrder3 = new SellOrder(alice, oranges, 20, 26.5);
+		orderDrivenMarket.registerSellOrder(sellOrder3);
+		SellOrder sellOrder4 = new SellOrder(alice, oranges, 20, 25.0);
+		orderDrivenMarket.registerSellOrder(sellOrder4);
+		
+		BuyOrder buyOrder3 = new BuyOrder(bob, oranges, 30, 27.0);
+		orderDrivenMarket.registerBuyOrder(buyOrder3);
+		orderDrivenMarket.doClearing();
+		
+		//Sell order 3, buy order 3 and partially sell order 4 should be executed.
+		
+		Double trade2Cost = 20 * 25 + 10 * 26.5;
+
+		assertEquals("", 500.0 + trade1Cost - trade2Cost, bob.getCash(), 0.0);
+		assertEquals("", 10000.0 - trade1Cost + trade2Cost, alice.getCash(), 0.0);
+
+		List<ExecutedTrade> tradeHistory = orderDrivenMarket.getTradeHistory(oranges);
+		assertEquals ("", 2, tradeHistory.size());
+		
+		Trade firstOrangeTrade = tradeHistory.get(0).trade;
+		assertEquals("", 25.0, firstOrangeTrade.price, 0.0);
+		assertEquals("", 20, firstOrangeTrade.quantity+0);
+		
+		Trade secondOrangeTrade = tradeHistory.get(1).trade;
+		assertEquals("", 26.5, secondOrangeTrade.price, 0.0);
+		assertEquals("", 10, secondOrangeTrade.quantity+0);
+
+		List<SellOrder> orangeSellOrders = orderDrivenMarket.getSellOrders(oranges);
+		List<BuyOrder> orangeBuyOrders = orderDrivenMarket.getBuyOrders(oranges);
+		
+		assertEquals("", 1, orangeSellOrders.size());
+		assertEquals("", 0, orangeBuyOrders.size());
+		
+		assertEquals("", 10, orangeSellOrders.get(0).getRemainingQuantity().intValue());
 		
 		//fail("Not yet implemented");
 	}

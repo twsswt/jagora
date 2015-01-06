@@ -1,11 +1,16 @@
-package uk.ac.gla.jagora;
+package uk.ac.gla.jagora.orderdrivenmarket;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.gla.jagora.AbstractTrader;
+import uk.ac.gla.jagora.ExecutedTrade;
+import uk.ac.gla.jagora.Stock;
+import uk.ac.gla.jagora.TradeExecutionException;
+
 public abstract class Order implements Comparable<Order> {
 	
-	public final Trader trader;
+	public final AbstractTrader trader;
 	public final Stock stock;
 		
 	public final Double price;
@@ -14,7 +19,7 @@ public abstract class Order implements Comparable<Order> {
 	
 	protected final List<ExecutedTrade> tradeHistory;
 	
-	public Order(Trader trader, Stock stock, Integer quantity, Double price) {
+	public Order(AbstractTrader trader, Stock stock, Integer quantity, Double price) {
 		this.trader = trader;
 		this.stock = stock;
 		this.initialQuantity = quantity;

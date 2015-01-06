@@ -1,11 +1,16 @@
-package uk.ac.gla.jagora;
+package uk.ac.gla.jagora.orderdrivenmarket;
+
+import uk.ac.gla.jagora.AbstractTrader;
+import uk.ac.gla.jagora.ExecutedTrade;
+import uk.ac.gla.jagora.Stock;
+import uk.ac.gla.jagora.TradeExecutionException;
 
 
 
 public class BuyOrder extends Order {
 
-	public BuyOrder(Trader agent, Stock stock, Integer quantity, Double price) {
-		super(agent, stock, quantity, price);
+	public BuyOrder(AbstractTrader trader, Stock stock, Integer quantity, Double price) {
+		super(trader, stock, quantity, price);
 	}
 
 	public void satisfyTrade(ExecutedTrade executedTrade) throws TradeExecutionException {
