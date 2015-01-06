@@ -9,12 +9,13 @@ import org.junit.Test;
 
 import uk.ac.gla.jagora.ExecutedTrade;
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.AbstractTrader;
 import uk.ac.gla.jagora.Trade;
 import uk.ac.gla.jagora.orderdrivenmarket.BuyOrder;
 import uk.ac.gla.jagora.orderdrivenmarket.OrderDrivenMarket;
+import uk.ac.gla.jagora.orderdrivenmarket.OrderDrivenMarketImpl;
 import uk.ac.gla.jagora.orderdrivenmarket.SellOrder;
 import uk.ac.gla.jagora.test.stub.StubTraderBuilder;
+import uk.ac.gla.jagora.trader.AbstractTrader;
 import uk.ac.gla.jagora.world.SimpleSerialWorld;
 
 public class OrderDrivenMarketTest {
@@ -38,27 +39,29 @@ public class OrderDrivenMarketTest {
 
 	@Before
 	public void setUp() throws Exception {
-		orderDrivenMarket = new OrderDrivenMarket(new SimpleSerialWorld());
+		orderDrivenMarket = new OrderDrivenMarketImpl(new SimpleSerialWorld());
 	}
 
 	@Test
 	public void test() {
 		
+		
+		
 		SellOrder sellOrder1 = new SellOrder(bob, apples, 50, 55.0);
-		orderDrivenMarket.registerSellOrder(sellOrder1);
+		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder1);
 
 		BuyOrder buyOrder1 = new BuyOrder(alice, apples, 25, 45.0);
-		orderDrivenMarket.registerBuyOrder(buyOrder1);
+		orderDrivenMarket.createTraderMarketView().registerBuyOrder(buyOrder1);
 
 		orderDrivenMarket.doClearing();
 				
 		assertEquals("", 500.0, bob.getCash(), 0.0);
 		
 		SellOrder sellOrder2 = new SellOrder(bob, apples, 10, 55.9);
-		orderDrivenMarket.registerSellOrder(sellOrder2);
+		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder2);
 		
 		BuyOrder buyOrder2 = new BuyOrder(alice, apples, 60, 56.0);
-		orderDrivenMarket.registerBuyOrder(buyOrder2);
+		orderDrivenMarket.createTraderMarketView().registerBuyOrder(buyOrder2);
 		
 		orderDrivenMarket.doClearing();
 		
@@ -70,12 +73,12 @@ public class OrderDrivenMarketTest {
 		assertEquals("", 10000.0 - trade1Cost, alice.getCash(), 0.0);
 		
 		SellOrder sellOrder3 = new SellOrder(alice, oranges, 20, 26.5);
-		orderDrivenMarket.registerSellOrder(sellOrder3);
+		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder3);
 		SellOrder sellOrder4 = new SellOrder(alice, oranges, 20, 25.0);
-		orderDrivenMarket.registerSellOrder(sellOrder4);
+		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder4);
 		
 		BuyOrder buyOrder3 = new BuyOrder(bob, oranges, 30, 27.0);
-		orderDrivenMarket.registerBuyOrder(buyOrder3);
+		orderDrivenMarket.createTraderMarketView().registerBuyOrder(buyOrder3);
 		orderDrivenMarket.doClearing();
 		
 		//Sell order 3, buy order 3 and partially sell order 4 should be executed.

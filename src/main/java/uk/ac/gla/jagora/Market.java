@@ -4,5 +4,5 @@ public interface Market {
 
 	public void doClearing ();
 
-	public TraderMarketView createTraderMarket();
+	public TraderMarketView createTraderMarketView();
 }

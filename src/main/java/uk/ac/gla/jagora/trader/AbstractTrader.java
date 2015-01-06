@@ -1,9 +1,15 @@
-package uk.ac.gla.jagora;
+package uk.ac.gla.jagora.trader;
 
 import static java.lang.String.format;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import uk.ac.gla.jagora.Stock;
+import uk.ac.gla.jagora.Trade;
+import uk.ac.gla.jagora.TradeExecutionException;
+import uk.ac.gla.jagora.Trader;
+import uk.ac.gla.jagora.TraderMarketView;
 
 public abstract class AbstractTrader implements Trader {
 	

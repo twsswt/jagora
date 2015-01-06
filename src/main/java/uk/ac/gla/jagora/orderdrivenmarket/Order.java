@@ -3,10 +3,10 @@ package uk.ac.gla.jagora.orderdrivenmarket;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.gla.jagora.AbstractTrader;
 import uk.ac.gla.jagora.ExecutedTrade;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.TradeExecutionException;
+import uk.ac.gla.jagora.trader.AbstractTrader;
 
 public abstract class Order implements Comparable<Order> {
 	

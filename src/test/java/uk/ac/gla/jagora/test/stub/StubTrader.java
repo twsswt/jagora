@@ -3,8 +3,8 @@ package uk.ac.gla.jagora.test.stub;
 import java.util.Map;
 
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.AbstractTrader;
 import uk.ac.gla.jagora.TraderMarketView;
+import uk.ac.gla.jagora.trader.AbstractTrader;
 
 public class StubTrader extends AbstractTrader{
 
