@@ -6,14 +6,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import uk.ac.gla.jagora.ExecutedTrade;
 import uk.ac.gla.jagora.Stock;
+import uk.ac.gla.jagora.StockExchangeTraderView;
 import uk.ac.gla.jagora.Trade;
 import uk.ac.gla.jagora.TradeExecutionException;
 import uk.ac.gla.jagora.Trader;
-import uk.ac.gla.jagora.StockExchangeTraderView;
 
 public abstract class AbstractTrader implements Trader {
 	

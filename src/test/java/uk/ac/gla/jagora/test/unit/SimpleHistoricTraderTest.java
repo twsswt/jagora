@@ -80,8 +80,7 @@ public class SimpleHistoricTraderTest {
 			alice.speak(marketForLemons.createTraderStockExchangeView());
 			marketForLemons.doClearing();
 		}		
-		
-		
+	
 		Double averageLemonPrice = 0.0;
 		Integer totalTradeQuantity = 0;
 
@@ -98,38 +97,4 @@ public class SimpleHistoricTraderTest {
 
 		assertThat("", alicesFinalEquity, greaterThan(traderInitialEquity));
 	}
-	
-	private void checkTotalPrice(
-		List<? extends Order> orders, Double counterPartyPrice, Double marginalPrice) {
-		
-		Double expected =
-			computeExpectedPrice(counterPartyPrice, orders, marginalPrice);
-		
-		Double actual = computeTotalPrice(orders);
-
-		assertEquals("", expected, actual, 0.000001);
-	}
-	
-	private Double computeExpectedPrice(
-			Double counterPartyPrice, List<? extends Order> orders, Double marginalPrice){
-			
-			Double totalMarginalDifference = 
-					computeMarginalDifference(orders);
-			
-			return 
-				counterPartyPrice + (orders.size() - 1) * marginalPrice + totalMarginalDifference;
-		}
-
-
-	private Double computeTotalPrice(List<? extends Order> orders) {
-		return
-			orders.stream()
-				.mapToDouble(order -> order.price)
-				.sum();
-	}
-
-	private Double computeMarginalDifference(List<? extends Order> orders) {
-		return orders.size() * orders.size() * Double.MIN_NORMAL / 2;
-	}
-
 }
