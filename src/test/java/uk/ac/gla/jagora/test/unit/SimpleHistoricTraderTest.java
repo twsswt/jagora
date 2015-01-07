@@ -1,16 +1,12 @@
 package uk.ac.gla.jagora.test.unit;
 
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.gla.jagora.ExecutedTrade;
-import uk.ac.gla.jagora.Order;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trade;
 import uk.ac.gla.jagora.Trader;
