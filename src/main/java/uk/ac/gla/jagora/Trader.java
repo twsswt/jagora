@@ -9,5 +9,6 @@ public interface Trader {
 	public abstract void buyStock(Trade trade) throws TradeExecutionException;
 
 	public abstract void speak(StockExchangeTraderView traderMarket);
-
+	
+	public Integer getInventory(Stock stock);
 }

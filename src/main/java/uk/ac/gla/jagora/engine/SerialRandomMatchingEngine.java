@@ -28,7 +28,7 @@ public class SerialRandomMatchingEngine implements MatchingEngine {
 	public void run() {
 		while (world.isAlive()) {
 			StockExchange market = random.chooseElement(markets);
-			StockExchangeTraderView traderMarket = market.createTraderMarketView();
+			StockExchangeTraderView traderMarket = market.createTraderStockExchangeView();
 			Trader trader = random.chooseElement(traders);
 			trader.speak(traderMarket);
 			market.doClearing();

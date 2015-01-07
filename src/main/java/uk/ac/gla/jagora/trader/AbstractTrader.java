@@ -2,9 +2,13 @@ package uk.ac.gla.jagora.trader;
 
 import static java.lang.String.format;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import uk.ac.gla.jagora.ExecutedTrade;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trade;
 import uk.ac.gla.jagora.TradeExecutionException;
@@ -17,15 +21,20 @@ public abstract class AbstractTrader implements Trader {
 	
 	private Double cash; 
 	protected final Map<Stock,Integer> inventory;
+	
+	private List<Trade> mySellTrades;
+	private List<Trade> myBuyTrades;
 
 	public AbstractTrader(String name, Double cash, Map<Stock,Integer> inventory) {
 		this.name = name;
 		this.cash = cash;
 		this.inventory = new HashMap<Stock,Integer>();
 		this.inventory.putAll(inventory);
+		this.mySellTrades = new ArrayList<Trade>();
+		this.myBuyTrades = new ArrayList<Trade>();
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see uk.ac.gla.jagora.Trader#getCash()
 	 */
 	@Override
@@ -38,7 +47,7 @@ public abstract class AbstractTrader implements Trader {
 		return format("trader[%s:$%.2f:%s]",name, cash, inventory);
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see uk.ac.gla.jagora.Trader#sellStock(uk.ac.gla.jagora.Trade)
 	 */
 	@Override
@@ -51,10 +60,11 @@ public abstract class AbstractTrader implements Trader {
 		} else {
 			inventory.put(trade.stock, currentQuantity - trade.quantity);
 			cash += trade.price * trade.quantity;
+			mySellTrades.add(trade);
 		}
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see uk.ac.gla.jagora.Trader#buyStock(uk.ac.gla.jagora.Trade)
 	 */
 	@Override
@@ -68,12 +78,26 @@ public abstract class AbstractTrader implements Trader {
 			cash -= totalPrice;
 			Integer currentQuantity = inventory.getOrDefault(trade.stock, 0);
 			inventory.put(trade.stock, currentQuantity + trade.quantity);
+			myBuyTrades.add(trade);
 		}
 	}
+
+	public List<Trade> getMySellTrades() {
+		return mySellTrades;
+	}
+
+	public List<Trade> getMyBuyTrades() {
+		return myBuyTrades;
+	}
+
 	
 	/* (non-Javadoc)
 	 * @see uk.ac.gla.jagora.Trader#speak(uk.ac.gla.jagora.TraderMarketView)
 	 */
 	@Override
-	public abstract void speak (StockExchangeTraderView traderMarket);
+	public abstract void speak (StockExchangeTraderView traderMarketView);
+	
+	public Integer getInventory(Stock stock) {
+		return inventory.get(stock);
+	}
 }

@@ -9,10 +9,11 @@ import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.ExecutedTrade;
 import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchange;
+import uk.ac.gla.jagora.StockExchange;
+import uk.ac.gla.jagora.TickerTapeListener;
 import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchangeTraderView;
 
-public class StubOrderDrivenMarket implements OrderDrivenStockExchange {
+public class StubStockExchange implements StockExchange {
 
 	private final Map<Stock,List<BuyOrder>> allBuyOrders;
 	private final Map<Stock,List<SellOrder>> allSellOrders;
@@ -23,13 +24,13 @@ public class StubOrderDrivenMarket implements OrderDrivenStockExchange {
 	@Override
 	public void doClearing() {	}
 	
-	public StubOrderDrivenMarket (){
+	public StubStockExchange (){
 		allBuyOrders = new HashMap<Stock,List<BuyOrder>> ();
 		allSellOrders = new HashMap<Stock,List<SellOrder>>();
 	}
 	
 	@Override
-	public OrderDrivenStockExchangeTraderView createTraderMarketView() {
+	public OrderDrivenStockExchangeTraderView createTraderStockExchangeView() {
 
 		return new OrderDrivenStockExchangeTraderView (){
 
@@ -52,12 +53,12 @@ public class StubOrderDrivenMarket implements OrderDrivenStockExchange {
 			}
 
 			@Override
-			public void registerBuyOrder(BuyOrder buyOrder) {
+			public void placeBuyOrder(BuyOrder buyOrder) {
 				getBuyOrders(buyOrder.stock).add(buyOrder);
 			}
 
 			@Override
-			public void registerSellOrder(SellOrder sellOrder) {
+			public void placeSellOrder(SellOrder sellOrder) {
 				getSellOrders(sellOrder.stock).add(sellOrder);
 			}
 
@@ -80,6 +81,13 @@ public class StubOrderDrivenMarket implements OrderDrivenStockExchange {
 			@Override
 			public List<BuyOrder> getOpenBuyOrders(Stock stock) {
 				return getBuyOrders(stock);
+			}
+
+			@Override
+			public void addTicketTapeListener(
+					TickerTapeListener tickerTapeListener, Stock stock) {
+				// Does nothing - not implemented as no trades are executed.
+				
 			}
 			
 		};

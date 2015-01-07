@@ -28,9 +28,17 @@ public class OrderBook<O extends Order>  {
 	}
 	
 	public void cancelOrder(O order) {
+		
+		ReceivedOrder<O> toRemove = null;
+				
 		for (ReceivedOrder<O> receivedOrder : receivedOrders)
-			if (receivedOrder.order.equals(order))
-				receivedOrders.remove(receivedOrder);
+			if (receivedOrder.order.equals(order)){
+				toRemove = receivedOrder;
+				break;
+			}
+		
+		if (toRemove != null)
+			receivedOrders.remove(toRemove);
 	}
 	
 	private ReceivedOrder<O> createReceivedOrder (O order) {

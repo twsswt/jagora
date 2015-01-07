@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.trader.RandomOrderDrivenTrader.TradeRange;
+import uk.ac.gla.jagora.trader.RandomTrader.TradeRange;
 import uk.ac.gla.jagora.util.Random;
 
-public class RandomOrderTraderBuilder {
+public class RandomTraderBuilder {
 	private String name;
 	private Double cash;
 	
@@ -16,7 +16,7 @@ public class RandomOrderTraderBuilder {
 	private Integer seed;
 	private Map<Stock, TradeRange> tradeRanges;
 	
-	public RandomOrderTraderBuilder(String name, Double cash, Integer seed){
+	public RandomTraderBuilder(String name, Double cash, Integer seed){
 		this.name = name;
 		this.cash = cash;
 		this.inventory = new HashMap<Stock,Integer>();
@@ -24,29 +24,29 @@ public class RandomOrderTraderBuilder {
 		tradeRanges = new HashMap<Stock,TradeRange>();
 	}
 	
-	public RandomOrderTraderBuilder addStock(Stock stock, Integer quantity){
+	public RandomTraderBuilder addStock(Stock stock, Integer quantity){
 		inventory.put(stock, quantity);
 		return this;
 	}
 	
-	public RandomOrderTraderBuilder addTradeRange(
+	public RandomTraderBuilder addTradeRange(
 		Stock stock, Double low, Double high, Integer minQuantity, Integer maxQuantity){
 		
 		tradeRanges.put(stock, new TradeRange(low, high, minQuantity, maxQuantity));
 		return this;
 	}
 	
-	public RandomOrderTraderBuilder setName(String name) {
+	public RandomTraderBuilder setName(String name) {
 		this.name = name;
 		return this;
 	}
 	
-	public RandomOrderTraderBuilder setCash(Double cash){
+	public RandomTraderBuilder setCash(Double cash){
 		this.cash = cash;
 		return this;
 	}
 	
-	public RandomOrderDrivenTrader build(){
-		return new RandomOrderDrivenTrader(name, cash, inventory, new Random(seed), tradeRanges);
+	public RandomTrader build(){
+		return new RandomTrader(name, cash, inventory, new Random(seed), tradeRanges);
 	}
 }

@@ -13,49 +13,49 @@ import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trader;
 import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchangeTraderView;
-import uk.ac.gla.jagora.test.stub.StubOrderDrivenMarket;
+import uk.ac.gla.jagora.test.stub.StubStockExchange;
 import uk.ac.gla.jagora.test.stub.StubTraderBuilder;
-import uk.ac.gla.jagora.trader.MarginalOrderDrivenTraderBuilder;
+import uk.ac.gla.jagora.trader.MarginalTraderBuilder;
 
-public class MarginalOrderDrivenTraderTest {
+public class MarginalTraderTest {
 	
 	private final Integer numberOfTraderActions = 10000;
 	private final Double initialTraderCash = 1000000.00;
 	
-	private Stock apples;
+	private Stock lemons;
 	
 	private Trader alice;
 	private Trader bob;
 	
-	private StubOrderDrivenMarket orderDrivenMarket;
+	private StubStockExchange marketForLemons;
 
 	@Before
 	public void setUp() throws Exception {
 				
-		apples = new Stock("apples");
+		lemons = new Stock("lemons");
 
-		alice = new MarginalOrderDrivenTraderBuilder("alice",initialTraderCash,1)
-			.addStock(apples, 10000)
+		alice = new MarginalTraderBuilder("alice",initialTraderCash,1)
+			.addStock(lemons, 10000)
 			.build();
 		
 		bob = new StubTraderBuilder("bob", initialTraderCash)
-			.addStock(apples, 10000)
+			.addStock(lemons, 10000)
 			.build();
 		
-		orderDrivenMarket = new StubOrderDrivenMarket();
+		marketForLemons = new StubStockExchange();
 	}
 
 	@Test
 	public void test() {
 		
 		OrderDrivenStockExchangeTraderView traderOrderDrivenMarketView = 
-			orderDrivenMarket.createTraderMarketView();
+			marketForLemons.createTraderStockExchangeView();
 		
-		BuyOrder buyOrder = new BuyOrder(bob, apples, 10, 5.1);
-		traderOrderDrivenMarketView.registerBuyOrder(buyOrder);
+		BuyOrder buyOrder = new BuyOrder(bob, lemons, 10, 5.1);
+		traderOrderDrivenMarketView.placeBuyOrder(buyOrder);
 		
-		SellOrder sellOrder = new SellOrder(bob, apples, 10, 4.9);
-		traderOrderDrivenMarketView.registerSellOrder(sellOrder);
+		SellOrder sellOrder = new SellOrder(bob, lemons, 10, 4.9);
+		traderOrderDrivenMarketView.placeSellOrder(sellOrder);
 		
 		for (Integer i = 0; i < numberOfTraderActions; i++) 
 			alice.speak(traderOrderDrivenMarketView);
@@ -63,8 +63,8 @@ public class MarginalOrderDrivenTraderTest {
 		// Given at least one bid and ask in the market, the marginal
 		// trader should continually add slightly better trades.
 		
-		List<SellOrder> sellOrders = orderDrivenMarket.getSellOrders(apples);
-		List<BuyOrder> buyOrders = orderDrivenMarket.getBuyOrders(apples);
+		List<SellOrder> sellOrders = marketForLemons.getSellOrders(lemons);
+		List<BuyOrder> buyOrders = marketForLemons.getBuyOrders(lemons);
 		
 		assertEquals("", numberOfTraderActions + 2, sellOrders.size() + buyOrders.size());
 		

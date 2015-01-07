@@ -7,12 +7,13 @@ public interface StockExchangeTraderView {
 	
 	public Double getBestBidPrice(Stock stock);
 	
-	public void registerBuyOrder (BuyOrder buyOrder);
+	public void placeBuyOrder (BuyOrder buyOrder);
 	
-	public void registerSellOrder (SellOrder sellOrder);
+	public void placeSellOrder (SellOrder sellOrder);
 	
 	public void cancelBuyOrder(BuyOrder buyOrder);
 	
 	public void cancelSellOrder(SellOrder sellOrder);
-
+	
+	public void addTicketTapeListener(TickerTapeListener tickerTapeListener, Stock stock);
 }

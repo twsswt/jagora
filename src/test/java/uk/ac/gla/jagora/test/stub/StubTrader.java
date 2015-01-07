@@ -25,9 +25,9 @@ public class StubTrader extends AbstractTrader{
 		Order nextOrder = orders.poll();
 		if (nextOrder != null)
 			if (nextOrder instanceof SellOrder)
-				market.registerSellOrder((SellOrder)nextOrder);
+				market.placeSellOrder((SellOrder)nextOrder);
 			else if (nextOrder instanceof BuyOrder)
-				market.registerBuyOrder((BuyOrder)nextOrder);
+				market.placeBuyOrder((BuyOrder)nextOrder);
 		
 	}
 	

@@ -4,5 +4,5 @@ public interface StockExchange {
 
 	public void doClearing ();
 
-	public StockExchangeTraderView createTraderMarketView();
+	public StockExchangeTraderView createTraderStockExchangeView();
 }

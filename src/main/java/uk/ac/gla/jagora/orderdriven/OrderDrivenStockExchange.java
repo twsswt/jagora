@@ -9,7 +9,7 @@ import uk.ac.gla.jagora.Stock;
 public interface OrderDrivenStockExchange extends StockExchange {
 
 	@Override
-	public abstract OrderDrivenStockExchangeTraderView createTraderMarketView();
+	public abstract OrderDrivenStockExchangeTraderView createTraderStockExchangeView();
 
 	public abstract List<ExecutedTrade> getTradeHistory(Stock oranges);
 

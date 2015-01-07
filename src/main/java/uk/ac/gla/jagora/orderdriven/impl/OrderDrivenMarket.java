@@ -1,13 +1,18 @@
 package uk.ac.gla.jagora.orderdriven.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.ExecutedTrade;
 import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
+import uk.ac.gla.jagora.TickerTapeListener;
 import uk.ac.gla.jagora.Trade;
+import uk.ac.gla.jagora.TradeExecutionEvent;
 import uk.ac.gla.jagora.TradeExecutionException;
 import uk.ac.gla.jagora.Trader;
 import uk.ac.gla.jagora.World;
@@ -27,9 +32,12 @@ public class OrderDrivenMarket {
 	
 	private final List<ExecutedTrade> tradeHistory;
 	
+	private final Collection<TickerTapeListener> tickerTapeListeners;
+	
 	public OrderDrivenMarket (Stock stock, World world){
 		this.stock = stock;
 		this.world = world;
+		this.tickerTapeListeners = new HashSet<TickerTapeListener>();
 
 		sellBook = new OrderBook<SellOrder>(world);
 		buyBook = new OrderBook<BuyOrder>(world);
@@ -76,6 +84,7 @@ public class OrderDrivenMarket {
 			try {
 				ExecutedTrade executedTrade = trade.execute (world);
 				tradeHistory.add(executedTrade);
+				notifyTickerTapeListeners(executedTrade);
 											
 			} catch (TradeExecutionException e) {
 				Trader culprit = e.getCulprit();
@@ -94,13 +103,50 @@ public class OrderDrivenMarket {
 			
 		}			
 	}
-	
+
 	private boolean aTradeCanBeExecuted(
 		SellOrder lowestSell, BuyOrder highestBuy) {
 		return 
 			lowestSell != null &&
 			highestBuy != null &&
 			highestBuy.price >= lowestSell.price;
+	}
+	
+	/**
+	 * Notifies all registered ticker tape listeners of the occurrence of a new
+	 * trade. Ordering of notification is randomised to prevent early
+	 * registrants from benefiting from earlier notification of trades.
+	 * Notification is also asynchronous to prevent blocking by registrants.
+	 * 
+	 * @param executedTrade
+	 */
+	private void notifyTickerTapeListeners(ExecutedTrade executedTrade) {	
+		
+		TradeExecutionEvent tradeExecutedEvent = 
+			new TradeExecutionEvent(
+				executedTrade.trade.stock,
+				executedTrade.tick,
+				executedTrade.trade.price,
+				executedTrade.trade.quantity);
+		
+		List<TickerTapeListener> randomisedTickerTapeListeners =
+			getRandomisedTicketTapeListeners();
+		
+		randomisedTickerTapeListeners.stream()
+			.forEach(tickerTapeListener -> new Thread (){
+				@Override
+				public void run (){
+					tickerTapeListener.tradeExecuted(tradeExecutedEvent);
+				}
+			}.start());
+	}
+
+	private List<TickerTapeListener> getRandomisedTicketTapeListeners() {
+		List<TickerTapeListener> randomisedTickerTapeListeners = 
+			new ArrayList<TickerTapeListener>(tickerTapeListeners);
+		
+		Collections.shuffle(randomisedTickerTapeListeners);
+		return randomisedTickerTapeListeners;
 	}
 
 	public List<BuyOrder> getBuyOrders() {
@@ -114,6 +160,10 @@ public class OrderDrivenMarket {
 	@Override
 	public String toString() {
 		return String.format("bids%s:asks%s", buyBook, sellBook);
+	}
+
+	public void addTickerTapeListener(TickerTapeListener tickerTapeListener) {
+		tickerTapeListeners.add(tickerTapeListener);
 	}
 	
 }

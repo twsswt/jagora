@@ -7,7 +7,7 @@ import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.util.Random;
 
 
-public class MarginalOrderDrivenTraderBuilder  {
+public class MarginalTraderBuilder  {
 
 	private String name;
 	private Double cash;
@@ -16,30 +16,30 @@ public class MarginalOrderDrivenTraderBuilder  {
 	
 	private Integer seed;
 	
-	public MarginalOrderDrivenTraderBuilder(String name, Double cash, Integer seed){
+	public MarginalTraderBuilder(String name, Double cash, Integer seed){
 		this.name = name;
 		this.cash = cash;
 		this.inventory = new HashMap<Stock,Integer>();
 		this.seed = seed;
 	}
 	
-	public MarginalOrderDrivenTraderBuilder addStock(Stock stock, Integer quantity){
+	public MarginalTraderBuilder addStock(Stock stock, Integer quantity){
 		inventory.put(stock, quantity);
 		return this;
 	}
 	
-	public MarginalOrderDrivenTraderBuilder setName(String name) {
+	public MarginalTraderBuilder setName(String name) {
 		this.name = name;
 		return this;
 	}
 	
-	public MarginalOrderDrivenTraderBuilder setCash(Double cash){
+	public MarginalTraderBuilder setCash(Double cash){
 		this.cash = cash;
 		return this;
 	}
 	
-	public MarginalOrderDrivenTrader build(){
-		return new MarginalOrderDrivenTrader(name, cash, inventory, new Random(seed));
+	public MarginalTrader build(){
+		return new MarginalTrader(name, cash, inventory, new Random(seed));
 	}
 
 }

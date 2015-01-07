@@ -1,7 +1,5 @@
 package uk.ac.gla.jagora.trader;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,10 +7,9 @@ import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.StockExchangeTraderView;
-import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchangeTraderView;
 import uk.ac.gla.jagora.util.Random;
 
-public class RandomOrderDrivenTrader extends AbstractTrader {
+public class RandomTrader extends SafeAbstractTrader {
 	
 	public static class TradeRange {
 		
@@ -31,36 +28,28 @@ public class RandomOrderDrivenTrader extends AbstractTrader {
 	
 	private final Map<Stock,TradeRange> tradeRanges;
 	private final Random random;
-	
-	private final Collection<BuyOrder> buyOrders;
-	private final Collection<SellOrder> sellOrders;
 
-	public RandomOrderDrivenTrader(
+	public RandomTrader(
 		String name, Double cash, Map<Stock, Integer> inventory,
 		Random random, Map<Stock,TradeRange> tradeRanges) {
 		
 		super(name, cash, inventory);
 		this.random = random;
 		this.tradeRanges = new HashMap<Stock,TradeRange>(tradeRanges);
-		this.buyOrders = new ArrayList<BuyOrder>();
-		this.sellOrders = new ArrayList<SellOrder>();
 	}
 
 	@Override
-	public void speak(StockExchangeTraderView traderMarketView){
-		speak((OrderDrivenStockExchangeTraderView)traderMarketView);
-	}
-	
-	public void speak(OrderDrivenStockExchangeTraderView traderOrderDrivenMarketView) {
+	public void speak(StockExchangeTraderView traderMarketView) {
 		Stock randomStock = random.chooseElement(tradeRanges.keySet());
+
 		if (random.nextBoolean())
-			performRandomSellAction(randomStock, traderOrderDrivenMarketView);
+			performRandomSellAction(randomStock, traderMarketView);
 		else 
-			performRandomBuyAction(randomStock, traderOrderDrivenMarketView);
+			performRandomBuyAction(randomStock, traderMarketView);
 	}
 
 	private void performRandomSellAction(
-		Stock randomStock, OrderDrivenStockExchangeTraderView traderMarketView) {
+		Stock randomStock, StockExchangeTraderView traderMarketView) {
 		
 		Integer uncommittedQuantity = 
 			getAvailableQuantity(randomStock);
@@ -73,18 +62,18 @@ public class RandomOrderDrivenTrader extends AbstractTrader {
 			SellOrder sellOrder =
 				new SellOrder(this, randomStock, quantity, price);
 
-			traderMarketView.registerSellOrder(sellOrder);
-			sellOrders.add(sellOrder);
+			placeSafeSellOrder(traderMarketView, sellOrder);
 			
 		} else {
-			SellOrder randomSellOrder = random.chooseElement(sellOrders);
-			traderMarketView.cancelSellOrder(randomSellOrder);
-			sellOrders.remove(randomSellOrder);
+			SellOrder randomSellOrder = random.chooseElement(openSellOrders);
+			if (randomSellOrder != null){
+				cancelSafeSellOrder(traderMarketView, randomSellOrder);
+			}
 		}
 	}
-	
+
 	private void performRandomBuyAction(
-		Stock stock, OrderDrivenStockExchangeTraderView traderOrderDrivenMarketView) {
+		Stock stock, StockExchangeTraderView traderMarketView) {
 		
 		Double price = createRandomPrice(stock);
 		
@@ -97,40 +86,22 @@ public class RandomOrderDrivenTrader extends AbstractTrader {
 			BuyOrder buyOrder =
 				new BuyOrder(this, stock, quantity, price);
 			
-			traderOrderDrivenMarketView.registerBuyOrder(buyOrder);
-			buyOrders.add(buyOrder);
+			placeSafeBuyOrder(traderMarketView, buyOrder);
 			
 		} else {
-			BuyOrder randomBuyOrder = random.chooseElement(buyOrders);
-			traderOrderDrivenMarketView.cancelBuyOrder(randomBuyOrder);
-			buyOrders.remove(randomBuyOrder);
+			BuyOrder randomBuyOrder = random.chooseElement(openBuyOrders);
+			if (randomBuyOrder != null){
+				cancelSafeBuyOrder(traderMarketView, randomBuyOrder);
+			}
 		}
 		
-	}
-
-	private Double getAvailableCash() {
-		Double committedCash =
-			buyOrders.stream()
-			.mapToDouble(buyOrder -> (buyOrder.price * buyOrder.getRemainingQuantity()))
-			.sum();
-		
-		return getCash() - committedCash;
-	}
-
-	private Integer getAvailableQuantity(Stock stock) {
-		
-		Integer committedQuantity = 
-			sellOrders.stream()
-			.mapToInt(sellOrder -> sellOrder.getRemainingQuantity())
-			.sum();
-		
-		return inventory.getOrDefault(stock, 0) - committedQuantity;
 	}
 
 	private Double createRandomPrice(Stock stock) {
 		TradeRange tradeRange = tradeRanges.get(stock);
 		return
-			random.nextDouble() * (tradeRange.high - tradeRange.low) + tradeRange.low;
+			random.nextDouble() * 
+				(tradeRange.high - tradeRange.low) + tradeRange.low;
 	}
 	
 	private Integer createRandomQuantity(Stock stock) {

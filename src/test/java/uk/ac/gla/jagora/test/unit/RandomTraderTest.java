@@ -11,30 +11,30 @@ import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trader;
-import uk.ac.gla.jagora.test.stub.StubOrderDrivenMarket;
-import uk.ac.gla.jagora.trader.RandomOrderTraderBuilder;
+import uk.ac.gla.jagora.test.stub.StubStockExchange;
+import uk.ac.gla.jagora.trader.RandomTraderBuilder;
 
-public class RandomOrderDrivenTraderTest {
+public class RandomTraderTest {
 	
 	private final Integer numberOfTraderActions = 10000;
 	
 	private Trader trader;
-	private Stock apples;
+	private Stock lemons;
 	
-	private StubOrderDrivenMarket orderDrivenMarket;
+	private StubStockExchange marketForLemons;
 
 	@Before
 	public void setUp() throws Exception {
 		
-		orderDrivenMarket = new StubOrderDrivenMarket();
+		marketForLemons = new StubStockExchange();
 		
-		apples  = new Stock("apples");
+		lemons  = new Stock("lemons");
 		
 		// A trader that can create many small buy and sell orders 
 		// without needing to cancel due to lack of liquidity.
-		trader = new RandomOrderTraderBuilder("alice",10000000.0,1)
-			.addStock(apples, 500000)
-			.addTradeRange(apples, 0.0, 10.0, 1, 100)
+		trader = new RandomTraderBuilder("alice",10000000.0,1)
+			.addStock(lemons, 500000)
+			.addTradeRange(lemons, 0.0, 10.0, 1, 100)
 			.build();
 	}
 
@@ -42,13 +42,13 @@ public class RandomOrderDrivenTraderTest {
 	public void test() {
 
 		for (Integer i = 0; i < numberOfTraderActions; i++)
-			trader.speak(orderDrivenMarket.createTraderMarketView());
+			trader.speak(marketForLemons.createTraderStockExchangeView());
 		
 		List<BuyOrder> buyOrders = 
-			orderDrivenMarket.getBuyOrders(apples);		
+			marketForLemons.getBuyOrders(lemons);		
 		
 		List<SellOrder> sellOrders = 
-				orderDrivenMarket.getSellOrders(apples);
+				marketForLemons.getSellOrders(lemons);
 		
 		Double actualAverageBuyPrice = 
 			buyOrders.stream()
