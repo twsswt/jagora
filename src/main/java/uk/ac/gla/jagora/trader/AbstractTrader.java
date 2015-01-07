@@ -9,7 +9,7 @@ import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trade;
 import uk.ac.gla.jagora.TradeExecutionException;
 import uk.ac.gla.jagora.Trader;
-import uk.ac.gla.jagora.TraderMarketView;
+import uk.ac.gla.jagora.StockExchangeTraderView;
 
 public abstract class AbstractTrader implements Trader {
 	
@@ -35,7 +35,7 @@ public abstract class AbstractTrader implements Trader {
 	
 	@Override
 	public String toString (){
-		return format("%s:$%d:%s",name, cash, inventory);
+		return format("trader[%s:$%.2f:%s]",name, cash, inventory);
 	}
 
 	/* (non-Javadoc)
@@ -75,5 +75,5 @@ public abstract class AbstractTrader implements Trader {
 	 * @see uk.ac.gla.jagora.Trader#speak(uk.ac.gla.jagora.TraderMarketView)
 	 */
 	@Override
-	public abstract void speak (TraderMarketView traderMarket);
+	public abstract void speak (StockExchangeTraderView traderMarket);
 }

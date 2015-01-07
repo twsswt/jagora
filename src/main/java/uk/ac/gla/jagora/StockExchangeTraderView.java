@@ -1,8 +1,11 @@
-package uk.ac.gla.jagora.orderdrivenmarket;
+package uk.ac.gla.jagora;
 
-import uk.ac.gla.jagora.TraderMarketView;
 
-public interface TraderOrderDrivenMarketView extends TraderMarketView {
+public interface StockExchangeTraderView {
+	
+	public Double getBestOfferPrice(Stock stock);
+	
+	public Double getBestBidPrice(Stock stock);
 	
 	public void registerBuyOrder (BuyOrder buyOrder);
 	

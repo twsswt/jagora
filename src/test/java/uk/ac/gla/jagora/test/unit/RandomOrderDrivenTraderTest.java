@@ -7,23 +7,21 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.gla.jagora.BuyOrder;
+import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trader;
-import uk.ac.gla.jagora.orderdrivenmarket.BuyOrder;
-import uk.ac.gla.jagora.orderdrivenmarket.OrderDrivenMarket;
-import uk.ac.gla.jagora.orderdrivenmarket.SellOrder;
 import uk.ac.gla.jagora.test.stub.StubOrderDrivenMarket;
 import uk.ac.gla.jagora.trader.RandomOrderTraderBuilder;
 
-public class RandomOrderTraderTest {
+public class RandomOrderDrivenTraderTest {
 	
 	private final Integer numberOfTraderActions = 10000;
-
 	
 	private Trader trader;
 	private Stock apples;
 	
-	private OrderDrivenMarket orderDrivenMarket;
+	private StubOrderDrivenMarket orderDrivenMarket;
 
 	@Before
 	public void setUp() throws Exception {

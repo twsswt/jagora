@@ -1,5 +1,6 @@
-package uk.ac.gla.jagora.orderdrivenmarket;
+package uk.ac.gla.jagora.orderdriven.impl;
 
+import uk.ac.gla.jagora.Order;
 import uk.ac.gla.jagora.TickableEvent;
 import uk.ac.gla.jagora.World;
 
@@ -27,5 +28,10 @@ public class ReceivedOrder<T extends Order> implements Comparable<ReceivedOrder<
 	@Override
 	public String toString (){
 		return String.format("%s:t=%s", order, tick);
+	}
+
+	@Override
+	public Long getTick() {
+		return tick;
 	}
 }

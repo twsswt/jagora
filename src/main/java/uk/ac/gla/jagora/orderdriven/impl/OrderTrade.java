@@ -1,6 +1,8 @@
-package uk.ac.gla.jagora.orderdrivenmarket;
+package uk.ac.gla.jagora.orderdriven.impl;
 
+import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.ExecutedTrade;
+import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trade;
 import uk.ac.gla.jagora.TradeExecutionException;

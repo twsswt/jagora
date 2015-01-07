@@ -11,7 +11,7 @@ public class StubTraderBuilder {
 	private Double cash;
 	
 	private Map<Stock, Integer> inventory;
-	
+		
 	public StubTraderBuilder(String name, Double cash){
 		this.name = name;
 		this.cash = cash;

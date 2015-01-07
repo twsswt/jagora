@@ -8,7 +8,6 @@ public abstract class Trade {
 	public final Integer quantity;
 	public final Double price;
 
-
 	public Trade(Stock stock, Integer quantity, Double price) {
 		this.stock = stock;
 		this.quantity = quantity;

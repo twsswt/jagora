@@ -10,13 +10,13 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.ExecutedTrade;
+import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trade;
-import uk.ac.gla.jagora.orderdrivenmarket.BuyOrder;
-import uk.ac.gla.jagora.orderdrivenmarket.OrderBook;
-import uk.ac.gla.jagora.orderdrivenmarket.OrderTrade;
-import uk.ac.gla.jagora.orderdrivenmarket.SellOrder;
+import uk.ac.gla.jagora.orderdriven.impl.OrderBook;
+import uk.ac.gla.jagora.orderdriven.impl.OrderTrade;
 import uk.ac.gla.jagora.test.stub.StubTraderBuilder;
 import uk.ac.gla.jagora.test.stub.StubWorld;
 import uk.ac.gla.jagora.trader.AbstractTrader;

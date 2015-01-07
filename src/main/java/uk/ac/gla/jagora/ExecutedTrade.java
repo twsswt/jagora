@@ -15,4 +15,9 @@ public class ExecutedTrade implements TickableEvent {
 	public String toString (){
 		return String.format("%s:t=%d", trade, tick);
 	}
+
+	@Override
+	public Long getTick() {
+		return tick;
+	}
 }

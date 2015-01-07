@@ -3,10 +3,10 @@ package uk.ac.gla.jagora.test.stub;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.gla.jagora.Order;
 import uk.ac.gla.jagora.TickableEvent;
 import uk.ac.gla.jagora.World;
-import uk.ac.gla.jagora.orderdrivenmarket.Order;
-import uk.ac.gla.jagora.orderdrivenmarket.ReceivedOrder;
+import uk.ac.gla.jagora.orderdriven.impl.ReceivedOrder;
 
 public class StubWorld implements World {
 	

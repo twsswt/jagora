@@ -1,37 +1,44 @@
-package uk.ac.gla.jagora.orderdrivenmarket;
+package uk.ac.gla.jagora.orderdriven.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import uk.ac.gla.jagora.Order;
 import uk.ac.gla.jagora.World;
 
-public class OrderBook<T extends Order>  {
+/**
+ * Manages buy or sell orders for a single stock type.
+ * @author tws
+ *
+ * @param <O> the order type of this order book (either BuyOrder or SellOrder).
+ */
+public class OrderBook<O extends Order>  {
 	
-	private PriorityQueue<ReceivedOrder<T>> receivedOrders;
+	private PriorityQueue<ReceivedOrder<O>> receivedOrders;
 	private World world;
 	
 	public OrderBook (World world){
 		this.world = world;
-		this.receivedOrders = new PriorityQueue<ReceivedOrder<T>>();
+		this.receivedOrders = new PriorityQueue<ReceivedOrder<O>>();
 	}
 	
-	public void recordOrder (T order){
+	public void recordOrder (O order){
 		receivedOrders.add(createReceivedOrder(order));
 	}
 	
-	public void cancelOrder(T order) {
-		for (ReceivedOrder<T> receivedOrder : receivedOrders)
+	public void cancelOrder(O order) {
+		for (ReceivedOrder<O> receivedOrder : receivedOrders)
 			if (receivedOrder.order.equals(order))
 				receivedOrders.remove(receivedOrder);
 	}
 	
-	private ReceivedOrder<T> createReceivedOrder (T order) {
-		return new ReceivedOrder<T>(order, world);
+	private ReceivedOrder<O> createReceivedOrder (O order) {
+		return new ReceivedOrder<O>(order, world);
 	}
 
-	public T getBestOrder() {
-		ReceivedOrder<T> receivedOrder = receivedOrders.peek();
+	public O getBestOrder() {
+		ReceivedOrder<O> receivedOrder = receivedOrders.peek();
 		
 		while (receivedOrder != null && receivedOrder.order.getRemainingQuantity() <= 0){
 			receivedOrders.poll();
@@ -47,9 +54,9 @@ public class OrderBook<T extends Order>  {
 		return receivedOrders.toString();
 	}
 
-	public List<T> getOpenOrders() {
+	public List<O> getOpenOrders() {
 		
-		List<T> result = new ArrayList<T>();
+		List<O> result = new ArrayList<O>();
 		
 		receivedOrders
 			.stream()

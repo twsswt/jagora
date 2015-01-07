@@ -5,14 +5,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.gla.jagora.BuyOrder;
+import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.TraderMarketView;
-import uk.ac.gla.jagora.orderdrivenmarket.BuyOrder;
-import uk.ac.gla.jagora.orderdrivenmarket.SellOrder;
-import uk.ac.gla.jagora.orderdrivenmarket.TraderOrderDrivenMarketView;
+import uk.ac.gla.jagora.StockExchangeTraderView;
+import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchangeTraderView;
 import uk.ac.gla.jagora.util.Random;
 
-public class RandomOrderTrader extends AbstractTrader {
+public class RandomOrderDrivenTrader extends AbstractTrader {
 	
 	public static class TradeRange {
 		
@@ -35,24 +35,23 @@ public class RandomOrderTrader extends AbstractTrader {
 	private final Collection<BuyOrder> buyOrders;
 	private final Collection<SellOrder> sellOrders;
 
-	public RandomOrderTrader(
+	public RandomOrderDrivenTrader(
 		String name, Double cash, Map<Stock, Integer> inventory,
-		Integer seed, Map<Stock,TradeRange> tradeRanges) {
+		Random random, Map<Stock,TradeRange> tradeRanges) {
 		
 		super(name, cash, inventory);
-		this.random = new Random(seed);
-		this.tradeRanges = new HashMap<Stock,TradeRange>();
-		this.tradeRanges.putAll(tradeRanges);
+		this.random = random;
+		this.tradeRanges = new HashMap<Stock,TradeRange>(tradeRanges);
 		this.buyOrders = new ArrayList<BuyOrder>();
 		this.sellOrders = new ArrayList<SellOrder>();
 	}
 
 	@Override
-	public void speak(TraderMarketView traderMarketView){
-		speak((TraderOrderDrivenMarketView)traderMarketView);
+	public void speak(StockExchangeTraderView traderMarketView){
+		speak((OrderDrivenStockExchangeTraderView)traderMarketView);
 	}
 	
-	public void speak(TraderOrderDrivenMarketView traderOrderDrivenMarketView) {
+	public void speak(OrderDrivenStockExchangeTraderView traderOrderDrivenMarketView) {
 		Stock randomStock = random.chooseElement(tradeRanges.keySet());
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderOrderDrivenMarketView);
@@ -61,7 +60,7 @@ public class RandomOrderTrader extends AbstractTrader {
 	}
 
 	private void performRandomSellAction(
-		Stock randomStock, TraderOrderDrivenMarketView traderMarketView) {
+		Stock randomStock, OrderDrivenStockExchangeTraderView traderMarketView) {
 		
 		Integer uncommittedQuantity = 
 			getAvailableQuantity(randomStock);
@@ -85,7 +84,7 @@ public class RandomOrderTrader extends AbstractTrader {
 	}
 	
 	private void performRandomBuyAction(
-		Stock stock, TraderOrderDrivenMarketView traderOrderDrivenMarketView) {
+		Stock stock, OrderDrivenStockExchangeTraderView traderOrderDrivenMarketView) {
 		
 		Double price = createRandomPrice(stock);
 		

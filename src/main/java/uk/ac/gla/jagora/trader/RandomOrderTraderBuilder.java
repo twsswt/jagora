@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.trader.RandomOrderTrader.TradeRange;
+import uk.ac.gla.jagora.trader.RandomOrderDrivenTrader.TradeRange;
+import uk.ac.gla.jagora.util.Random;
 
 public class RandomOrderTraderBuilder {
 	private String name;
@@ -45,6 +46,7 @@ public class RandomOrderTraderBuilder {
 		return this;
 	}
 	
-	public RandomOrderTrader build(){
-		return new RandomOrderTrader(name, cash, inventory, seed, tradeRanges);
-	}}
+	public RandomOrderDrivenTrader build(){
+		return new RandomOrderDrivenTrader(name, cash, inventory, new Random(seed), tradeRanges);
+	}
+}

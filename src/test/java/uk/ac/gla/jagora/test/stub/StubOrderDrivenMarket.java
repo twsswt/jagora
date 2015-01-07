@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.ExecutedTrade;
+import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.orderdrivenmarket.BuyOrder;
-import uk.ac.gla.jagora.orderdrivenmarket.OrderDrivenMarket;
-import uk.ac.gla.jagora.orderdrivenmarket.SellOrder;
-import uk.ac.gla.jagora.orderdrivenmarket.TraderOrderDrivenMarketView;
+import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchange;
+import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchangeTraderView;
 
-public class StubOrderDrivenMarket implements OrderDrivenMarket {
+public class StubOrderDrivenMarket implements OrderDrivenStockExchange {
 
 	private final Map<Stock,List<BuyOrder>> allBuyOrders;
 	private final Map<Stock,List<SellOrder>> allSellOrders;
@@ -29,12 +29,12 @@ public class StubOrderDrivenMarket implements OrderDrivenMarket {
 	}
 	
 	@Override
-	public TraderOrderDrivenMarketView createTraderMarketView() {
+	public OrderDrivenStockExchangeTraderView createTraderMarketView() {
 
-		return new TraderOrderDrivenMarketView (){
+		return new OrderDrivenStockExchangeTraderView (){
 
 			@Override
-			public Double getCurrentBestSellPrice(Stock stock) {
+			public Double getBestOfferPrice(Stock stock) {
 				return getSellOrders(stock)
 					.stream()
 					.mapToDouble(sellOrder -> sellOrder.price)
@@ -43,7 +43,7 @@ public class StubOrderDrivenMarket implements OrderDrivenMarket {
 			}
 
 			@Override
-			public Double getCurrentBestBuyPrice(Stock stock) {
+			public Double getBestBidPrice(Stock stock) {
 				return getBuyOrders(stock)
 					.stream()
 					.mapToDouble(buyOrder -> buyOrder.price)
@@ -70,6 +70,16 @@ public class StubOrderDrivenMarket implements OrderDrivenMarket {
 			@Override
 			public void cancelSellOrder(SellOrder sellOrder) {
 				getSellOrders(sellOrder.stock).remove(sellOrder);
+			}
+
+			@Override
+			public List<SellOrder> getOpenSellOrders(Stock stock) {
+				return getSellOrders(stock);
+			}
+
+			@Override
+			public List<BuyOrder> getOpenBuyOrders(Stock stock) {
+				return getBuyOrders(stock);
 			}
 			
 		};

@@ -7,15 +7,15 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.gla.jagora.BuyOrder;
 import uk.ac.gla.jagora.ExecutedTrade;
+import uk.ac.gla.jagora.SellOrder;
 import uk.ac.gla.jagora.Stock;
 import uk.ac.gla.jagora.Trade;
-import uk.ac.gla.jagora.orderdrivenmarket.BuyOrder;
-import uk.ac.gla.jagora.orderdrivenmarket.OrderDrivenMarket;
-import uk.ac.gla.jagora.orderdrivenmarket.OrderDrivenMarketImpl;
-import uk.ac.gla.jagora.orderdrivenmarket.SellOrder;
+import uk.ac.gla.jagora.orderdriven.OrderDrivenStockExchange;
+import uk.ac.gla.jagora.orderdriven.impl.OrderDrivenStockExchangeImpl;
+import uk.ac.gla.jagora.test.stub.StubTrader;
 import uk.ac.gla.jagora.test.stub.StubTraderBuilder;
-import uk.ac.gla.jagora.trader.AbstractTrader;
 import uk.ac.gla.jagora.world.SimpleSerialWorld;
 
 public class OrderDrivenMarketTest {
@@ -23,47 +23,49 @@ public class OrderDrivenMarketTest {
 	private Stock apples = new Stock("apples");
 	private Stock oranges = new Stock("oranges");
 	
-	private AbstractTrader alice = 
+	private StubTrader alice = 
 			new StubTraderBuilder("alice", 10000.00)
 			.addStock(apples, 100)
 			.addStock(oranges, 2000)
 			.build();
 	
-	private AbstractTrader bob   = 
+	private StubTrader bob   = 
 		new StubTraderBuilder("bob", 500.00)
 			.addStock(apples, 200)
 			.addStock(oranges,400)
 			.build();
 	
-	private OrderDrivenMarket orderDrivenMarket;
+	private OrderDrivenStockExchange orderDrivenStockExchange;
 
 	@Before
 	public void setUp() throws Exception {
-		orderDrivenMarket = new OrderDrivenMarketImpl(new SimpleSerialWorld());
+		orderDrivenStockExchange = new OrderDrivenStockExchangeImpl(new SimpleSerialWorld());
 	}
 
 	@Test
 	public void test() {
 		
-		
-		
 		SellOrder sellOrder1 = new SellOrder(bob, apples, 50, 55.0);
-		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder1);
+		bob.supplyOrder(sellOrder1);
+		bob.speak(orderDrivenStockExchange.createTraderMarketView());
 
 		BuyOrder buyOrder1 = new BuyOrder(alice, apples, 25, 45.0);
-		orderDrivenMarket.createTraderMarketView().registerBuyOrder(buyOrder1);
+		alice.supplyOrder(buyOrder1);
+		alice.speak(orderDrivenStockExchange.createTraderMarketView());
 
-		orderDrivenMarket.doClearing();
+		orderDrivenStockExchange.doClearing();
 				
 		assertEquals("", 500.0, bob.getCash(), 0.0);
 		
 		SellOrder sellOrder2 = new SellOrder(bob, apples, 10, 55.9);
-		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder2);
+		bob.supplyOrder(sellOrder2);
+		bob.speak(orderDrivenStockExchange.createTraderMarketView());
 		
 		BuyOrder buyOrder2 = new BuyOrder(alice, apples, 60, 56.0);
-		orderDrivenMarket.createTraderMarketView().registerBuyOrder(buyOrder2);
+		alice.supplyOrder(buyOrder2);
+		alice.speak(orderDrivenStockExchange.createTraderMarketView());
 		
-		orderDrivenMarket.doClearing();
+		orderDrivenStockExchange.doClearing();
 		
 		//sellOrder 1 and 2, and buyOrder 2 should now be fully executed.
 		
@@ -73,13 +75,19 @@ public class OrderDrivenMarketTest {
 		assertEquals("", 10000.0 - trade1Cost, alice.getCash(), 0.0);
 		
 		SellOrder sellOrder3 = new SellOrder(alice, oranges, 20, 26.5);
-		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder3);
+		alice.supplyOrder(sellOrder3);
+		alice.speak(orderDrivenStockExchange.createTraderMarketView());
+		
 		SellOrder sellOrder4 = new SellOrder(alice, oranges, 20, 25.0);
-		orderDrivenMarket.createTraderMarketView().registerSellOrder(sellOrder4);
+		alice.supplyOrder(sellOrder4);
+		alice.speak(orderDrivenStockExchange.createTraderMarketView());
+
 		
 		BuyOrder buyOrder3 = new BuyOrder(bob, oranges, 30, 27.0);
-		orderDrivenMarket.createTraderMarketView().registerBuyOrder(buyOrder3);
-		orderDrivenMarket.doClearing();
+		bob.supplyOrder(buyOrder3);
+		bob.speak(orderDrivenStockExchange.createTraderMarketView());
+		
+		orderDrivenStockExchange.doClearing();
 		
 		//Sell order 3, buy order 3 and partially sell order 4 should be executed.
 		
@@ -88,7 +96,7 @@ public class OrderDrivenMarketTest {
 		assertEquals("", 500.0 + trade1Cost - trade2Cost, bob.getCash(), 0.0);
 		assertEquals("", 10000.0 - trade1Cost + trade2Cost, alice.getCash(), 0.0);
 
-		List<ExecutedTrade> tradeHistory = orderDrivenMarket.getTradeHistory(oranges);
+		List<ExecutedTrade> tradeHistory = orderDrivenStockExchange.getTradeHistory(oranges);
 		assertEquals ("", 2, tradeHistory.size());
 		
 		Trade firstOrangeTrade = tradeHistory.get(0).trade;
@@ -99,8 +107,11 @@ public class OrderDrivenMarketTest {
 		assertEquals("", 26.5, secondOrangeTrade.price, 0.0);
 		assertEquals("", 10, secondOrangeTrade.quantity+0);
 
-		List<SellOrder> orangeSellOrders = orderDrivenMarket.getSellOrders(oranges);
-		List<BuyOrder> orangeBuyOrders = orderDrivenMarket.getBuyOrders(oranges);
+		List<SellOrder> orangeSellOrders = 
+			orderDrivenStockExchange.createTraderMarketView().getOpenSellOrders(oranges);
+		
+		List<BuyOrder> orangeBuyOrders = 
+			orderDrivenStockExchange.createTraderMarketView().getOpenBuyOrders(oranges);
 		
 		assertEquals("", 1, orangeSellOrders.size());
 		assertEquals("", 0, orangeBuyOrders.size());

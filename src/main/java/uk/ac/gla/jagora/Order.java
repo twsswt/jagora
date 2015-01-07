@@ -1,16 +1,11 @@
-package uk.ac.gla.jagora.orderdrivenmarket;
+package uk.ac.gla.jagora;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.gla.jagora.ExecutedTrade;
-import uk.ac.gla.jagora.Stock;
-import uk.ac.gla.jagora.TradeExecutionException;
-import uk.ac.gla.jagora.trader.AbstractTrader;
-
 public abstract class Order implements Comparable<Order> {
 	
-	public final AbstractTrader trader;
+	public final Trader trader;
 	public final Stock stock;
 		
 	public final Double price;
@@ -19,7 +14,7 @@ public abstract class Order implements Comparable<Order> {
 	
 	protected final List<ExecutedTrade> tradeHistory;
 	
-	public Order(AbstractTrader trader, Stock stock, Integer quantity, Double price) {
+	public Order(Trader trader, Stock stock, Integer quantity, Double price) {
 		this.trader = trader;
 		this.stock = stock;
 		this.initialQuantity = quantity;
@@ -36,7 +31,7 @@ public abstract class Order implements Comparable<Order> {
 	
 	@Override
 	public String toString (){
-		return String.format("%s:%s:%d:$%.2f", trader.name, stock.name, getRemainingQuantity(), price);
+		return String.format("%s:%s:%d:$%.2f", trader, stock.name, getRemainingQuantity(), price);
 	}
 	
 	public abstract void satisfyTrade (ExecutedTrade trade) throws TradeExecutionException;
