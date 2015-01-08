@@ -16,9 +16,9 @@ public class StubWorld implements World {
 		ticks = new HashMap<Order,Long>();
 	}
 	
-	public void registerOrderForTick(Order order, Long tick){
+	public void registerTickableEventForTick(Order event, Long tick){
 		
-		ticks.put(order, tick);
+		ticks.put(event, tick);
 	}
 
 	@Override

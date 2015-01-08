@@ -17,7 +17,7 @@ public class RandomTrader extends SafeAbstractTrader {
 		public final Double high;
 		public final Integer minQuantity;
 		public final Integer maxQuantity;
-		
+				
 		public TradeRange(Double lowPrice, Double highPrice, Integer minQuantity, Integer maxQuantity){
 			this.low = lowPrice;
 			this.high = highPrice;
@@ -29,6 +29,9 @@ public class RandomTrader extends SafeAbstractTrader {
 	private final Map<Stock,TradeRange> tradeRanges;
 	private final Random random;
 
+	private Map<Stock,Double> lastKnownPrices;
+
+	
 	public RandomTrader(
 		String name, Double cash, Map<Stock, Integer> inventory,
 		Random random, Map<Stock,TradeRange> tradeRanges) {
@@ -36,16 +39,29 @@ public class RandomTrader extends SafeAbstractTrader {
 		super(name, cash, inventory);
 		this.random = random;
 		this.tradeRanges = new HashMap<Stock,TradeRange>(tradeRanges);
+		this.lastKnownPrices = new HashMap<Stock,Double>();
 	}
 
 	@Override
 	public void speak(StockExchangeTraderView traderMarketView) {
 		Stock randomStock = random.chooseElement(tradeRanges.keySet());
+		
+		updateLastKnownPrice(traderMarketView, randomStock);
 
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
 		else 
 			performRandomBuyAction(randomStock, traderMarketView);
+	}
+
+	private void updateLastKnownPrice(
+			StockExchangeTraderView traderMarketView, Stock stock) {
+
+		Double bestBidPrice = traderMarketView.getBestBidPrice(stock);
+		Double bestOfferPrice = traderMarketView.getBestOfferPrice(stock);
+		
+		if (bestBidPrice != null && bestOfferPrice != null)
+			lastKnownPrices.put(stock, (bestBidPrice + bestOfferPrice) / 2 );
 	}
 
 	private void performRandomSellAction(
@@ -98,10 +114,13 @@ public class RandomTrader extends SafeAbstractTrader {
 	}
 
 	private Double createRandomPrice(Stock stock) {
+		
+		Double lastKnownPrice = lastKnownPrices.get(stock);
+		
 		TradeRange tradeRange = tradeRanges.get(stock);
-		return
-			random.nextDouble() * 
-				(tradeRange.high - tradeRange.low) + tradeRange.low;
+			return
+				random.nextDouble() * 
+					(tradeRange.high - tradeRange.low) + tradeRange.low + lastKnownPrice;
 	}
 	
 	private Integer createRandomQuantity(Stock stock) {

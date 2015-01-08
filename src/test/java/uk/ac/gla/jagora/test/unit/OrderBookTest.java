@@ -79,7 +79,7 @@ public class OrderBookTest {
 
 	private SellOrder createSellOrder(AbstractTrader trader, Stock stock, Integer quantity, Double price, Long tick) {
 		SellOrder sellOrder = new SellOrder(trader, stock, quantity, price);
-		stubWorld.registerOrderForTick(sellOrder, tick);
+		stubWorld.registerTickableEventForTick(sellOrder, tick);
 		return sellOrder;
 	}
 	
@@ -119,7 +119,7 @@ public class OrderBookTest {
 		AbstractTrader trader, Stock stock, Integer quantity, Double price, Long tick) {
 		
 		BuyOrder buyOrder = new BuyOrder(trader, stock, quantity, price);
-		stubWorld.registerOrderForTick(buyOrder, tick);
+		stubWorld.registerTickableEventForTick(buyOrder, tick);
 		return buyOrder;
 	}
 

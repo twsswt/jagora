@@ -34,13 +34,19 @@ public class RandomTraderTest {
 		// without needing to cancel due to lack of liquidity.
 		trader = new RandomTraderBuilder("alice",10000000.0,1)
 			.addStock(lemons, 500000)
-			.addTradeRange(lemons, 0.0, 10.0, 1, 100)
+			.addTradeRange(lemons, -.1, +.1, 1, 100)
 			.build();
+		
 	}
 
 	@Test
 	public void test() {
-
+		//Seed the exchange with initial buys and sells.
+		BuyOrder seedBuyOrder = new BuyOrder(trader, lemons, 10, 5.0);
+		marketForLemons.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
+		SellOrder seedSellOrder = new SellOrder(trader, lemons, 10, 5.0);
+		marketForLemons.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
+		
 		for (Integer i = 0; i < numberOfTraderActions; i++)
 			trader.speak(marketForLemons.createTraderStockExchangeView());
 		
@@ -63,7 +69,7 @@ public class RandomTraderTest {
 				.average()
 				.getAsDouble();
 		
-		assertEquals("", numberOfTraderActions.intValue(), sellOrders.size() + buyOrders.size());
+		assertEquals("", numberOfTraderActions.intValue() + 2, sellOrders.size() + buyOrders.size());
 
 		assertEquals("", 5, actualAverageBuyPrice, 0.1);		
 			
