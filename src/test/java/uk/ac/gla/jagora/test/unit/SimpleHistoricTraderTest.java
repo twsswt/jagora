@@ -95,7 +95,7 @@ public class SimpleHistoricTraderTest {
 		Integer totalTradeQuantity = 0;
 
 		for (ExecutedTrade executedTrade : marketForLemons.getTradeHistory(lemons)){
-			Trade trade = executedTrade.trade;
+			Trade trade = executedTrade.event;
 			averageLemonPrice =
 				(averageLemonPrice * totalTradeQuantity + trade.price * trade.quantity) / 
 				(totalTradeQuantity + trade.quantity);

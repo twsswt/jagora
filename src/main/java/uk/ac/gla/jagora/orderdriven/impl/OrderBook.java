@@ -32,7 +32,7 @@ public class OrderBook<O extends Order>  {
 		ReceivedOrder<O> toRemove = null;
 				
 		for (ReceivedOrder<O> receivedOrder : receivedOrders)
-			if (receivedOrder.order.equals(order)){
+			if (receivedOrder.event.equals(order)){
 				toRemove = receivedOrder;
 				break;
 			}
@@ -48,12 +48,12 @@ public class OrderBook<O extends Order>  {
 	public O getBestOrder() {
 		ReceivedOrder<O> receivedOrder = receivedOrders.peek();
 		
-		while (receivedOrder != null && receivedOrder.order.getRemainingQuantity() <= 0){
+		while (receivedOrder != null && receivedOrder.event.getRemainingQuantity() <= 0){
 			receivedOrders.poll();
 			receivedOrder = receivedOrders.peek();
 		}
 		
-		return receivedOrder == null? null : receivedOrder.order;		
+		return receivedOrder == null? null : receivedOrder.event;		
 	}
 
 	
@@ -68,7 +68,7 @@ public class OrderBook<O extends Order>  {
 		
 		receivedOrders
 			.stream()
-			.forEach(receivedOrder -> result.add(receivedOrder.order));
+			.forEach(receivedOrder -> result.add(receivedOrder.event));
 	
 		return result;
 	}

@@ -1,24 +1,20 @@
 package uk.ac.gla.jagora.orderdriven.impl;
 
 import uk.ac.gla.jagora.Order;
-import uk.ac.gla.jagora.TickableEvent;
+import uk.ac.gla.jagora.TickEvent;
 import uk.ac.gla.jagora.World;
 
 
-public class ReceivedOrder<T extends Order> implements Comparable<ReceivedOrder<? extends Order>>, TickableEvent {
+public class ReceivedOrder<O extends Order> extends TickEvent<O> {
 
-	public final T order;
-	public final Long tick;
-	
-	public ReceivedOrder(T order, World world) {
-		this.order = order;
-		this.tick = world.getTick(this);
+	public ReceivedOrder(O order, World world) {
+		super(order, world);
 	}
 
 	@Override
-	public int compareTo(ReceivedOrder<? extends Order> receivedOrder) {
+	public int compareTo(TickEvent<O> receivedOrder) {
 		Integer orderComparison =
-			order.compareTo(receivedOrder.order);
+			event.compareTo(receivedOrder.event);
 		
 		if (orderComparison == 0)
 			return tick.compareTo(receivedOrder.tick);
@@ -27,11 +23,6 @@ public class ReceivedOrder<T extends Order> implements Comparable<ReceivedOrder<
 	
 	@Override
 	public String toString (){
-		return String.format("%s:t=%s", order, tick);
-	}
-
-	@Override
-	public Long getTick() {
-		return tick;
+		return String.format("%s:t=%s", event, tick);
 	}
 }

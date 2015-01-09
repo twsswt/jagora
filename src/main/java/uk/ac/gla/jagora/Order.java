@@ -24,7 +24,7 @@ public abstract class Order implements Comparable<Order> {
 	
 	public Integer getRemainingQuantity (){
 		Integer tradeQuantity = 
-			tradeHistory.stream().mapToInt(executedTrade -> executedTrade.trade.quantity).sum();
+			tradeHistory.stream().mapToInt(executedTrade -> executedTrade.event.quantity).sum();
 		
 		return initialQuantity - tradeQuantity;
 	}

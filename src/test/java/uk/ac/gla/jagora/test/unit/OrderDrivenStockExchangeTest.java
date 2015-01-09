@@ -113,11 +113,11 @@ public class OrderDrivenStockExchangeTest {
 		List<ExecutedTrade> tradeHistory = orderDrivenStockExchange.getTradeHistory(oranges);
 		assertEquals ("", 2, tradeHistory.size());
 		
-		Trade firstOrangeTrade = tradeHistory.get(0).trade;
+		Trade firstOrangeTrade = tradeHistory.get(0).event;
 		assertEquals("", 25.0, firstOrangeTrade.price, 0.0);
 		assertEquals("", 20, firstOrangeTrade.quantity+0);
 		
-		Trade secondOrangeTrade = tradeHistory.get(1).trade;
+		Trade secondOrangeTrade = tradeHistory.get(1).event;
 		assertEquals("", 26.5, secondOrangeTrade.price, 0.0);
 		assertEquals("", 10, secondOrangeTrade.quantity+0);
 

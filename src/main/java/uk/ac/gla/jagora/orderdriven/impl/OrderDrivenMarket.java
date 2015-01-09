@@ -124,10 +124,10 @@ public class OrderDrivenMarket {
 		
 		TradeExecutionEvent tradeExecutedEvent = 
 			new TradeExecutionEvent(
-				executedTrade.trade.stock,
+				executedTrade.event.stock,
 				executedTrade.tick,
-				executedTrade.trade.price,
-				executedTrade.trade.quantity);
+				executedTrade.event.price,
+				executedTrade.event.quantity);
 		
 		List<TickerTapeListener> randomisedTickerTapeListeners =
 			getRandomisedTicketTapeListeners();

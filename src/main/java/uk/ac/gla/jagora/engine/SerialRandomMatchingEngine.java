@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import uk.ac.gla.jagora.StockExchange;
-import uk.ac.gla.jagora.MatchingEngine;
+import uk.ac.gla.jagora.ExecutionEngine;
 import uk.ac.gla.jagora.Trader;
 import uk.ac.gla.jagora.StockExchangeTraderView;
 import uk.ac.gla.jagora.World;
 import uk.ac.gla.jagora.util.Random;
 
-public class SerialRandomMatchingEngine implements MatchingEngine {
+public class SerialRandomMatchingEngine implements ExecutionEngine {
 	
 	private final Set<StockExchange> markets;
 	private final Set<Trader> traders;
