@@ -100,7 +100,9 @@ public class OrderBookTest {
 			
 		for (BuyOrder buyOrder : randomisedbuyOrders)
 			buyBook.recordOrder(buyOrder);
-			
+		
+		System.out.println("Expected BO ordering:"+buyOrders);
+		System.out.println(buyBook.getOpenOrders());	
 		for (BuyOrder expected : buyOrders){
 			BuyOrder actual = buyBook.getBestOrder();
 			assertEquals(expected,actual);

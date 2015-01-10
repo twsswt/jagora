@@ -16,9 +16,11 @@ public class ReceivedOrder<O extends Order> extends TickEvent<O> {
 		Integer orderComparison =
 			event.compareTo(receivedOrder.event);
 		
-		if (orderComparison.equals(0))
+		if (orderComparison == 0)
 			return tick.compareTo(receivedOrder.tick);
-		else return orderComparison;
+		else
+			return orderComparison;
+		
 	}	
 	
 	@Override

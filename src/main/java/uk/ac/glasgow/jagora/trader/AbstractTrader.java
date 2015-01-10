@@ -59,7 +59,8 @@ public abstract class AbstractTrader implements Trader {
 
 	@Override
 	public String toString (){
-		return format("trader[%s:$%.2f:%s]",name, cash, inventory);
+		//return format("trader[%s:$%.2f:%s]",name, cash, inventory);
+		return name;
 	}
 
 	/**

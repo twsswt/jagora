@@ -22,14 +22,4 @@ public class BuyOrder extends Order {
 	public int compareTo(Order order) {
 		return order.price.compareTo(this.price);
 	}
-	
-	@Override
-	public boolean equals(Object obj){
-		return super.equals(obj);
-	}
-	
-	@Override 
-	public int hashCode(){
-		return super.hashCode();
-	}
 }
