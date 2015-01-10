@@ -166,6 +166,7 @@ public class OrderDrivenStockExchangeTest {
 			stubTickerTapeListener.getLastTradeExecutionEvent();
 		
 		while(lastTradeExecutionEvent == null){
+			Thread.sleep(100);
 			lastTradeExecutionEvent = 
 				stubTickerTapeListener.getLastTradeExecutionEvent();
 		}
