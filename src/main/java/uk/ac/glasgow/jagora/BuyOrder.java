@@ -32,5 +32,4 @@ public class BuyOrder extends Order {
 	public int hashCode(){
 		return super.hashCode();
 	}
-	}
 }
