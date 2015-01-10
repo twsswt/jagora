@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project
+	name="jagora"
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+	basedir="."
+	default="build"
+	>
+	
+    <property environment="env"/>
+	
+    <path id="project.classpath">
+        <pathelement location="bin/"/>
+        <fileset dir="lib"/>
+    </path>
+	
+	<path id="pitest.classpath">
+		<fileset dir ="lib" includes="pitest*.jar,junit*.jar"/>
+	</path>
+	
+	<path id="findbugs.classpath">
+		<fileset dir ="lib" includes="*.jar"/>
+	</path>
+
+	
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+	
+	
+    <target name="resolve" description="Retrieve dependencies with apache ivy.">
+        <ivy:retrieve />
+    </target>
+
+	
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+
+
+    <target depends="clean" name="cleanall">
+    	<ivy:cleancache/>
+    </target>
+
+	
+    <target depends="init,resolve" name="compile">
+        <javac
+			destdir="bin"
+			debug="true"
+			debuglevel="lines,vars,source" 
+		>
+            <src path="src"/>
+            <classpath refid="project.classpath"/>
+        </javac>
+    </target>
+	
+	
+	<target name="test" depends="compile" >
+		
+		<mkdir dir="reports/junit/" />
+		
+		<junit printsummary="true" fork="yes">
+			<formatter type="xml"/>
+			<classpath
+				 refid="project.classpath"
+			/>
+
+			<batchtest todir="reports/junit/">
+			
+				<fileset dir="src/test/java"
+					includes="**/test/unit/*Test.java"
+					excludes="**/AllTests.java"
+				/>
+			
+			</batchtest>
+			
+		</junit>
+
+	</target>
+	
+	<target
+		name="findbugs"
+		depends="compile"
+	>
+
+		<taskdef
+			name="findbugs"
+			classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+			classpathref="findbugs.classpath"
+		/>
+
+		<mkdir dir="reports/findbugs"/>
+
+		<findbugs
+			classpathref="findbugs.classpath"
+			output="xml"
+			outputfile="reports/findbugs/report.xml"
+		>
+
+			<auxClasspath refid="project.classpath" />
+
+			<sourcePath path="src/main/java" />
+
+			<class location="bin/" />
+
+		</findbugs>
+
+	</target>
+
+	
+	<target
+		name="mutation-test"
+		depends="compile"
+	>
+
+		<taskdef
+			name="pitest"
+			classname="org.pitest.ant.PitestTask"
+			classpathref="pitest.classpath"
+		/>
+
+		<unzip src="lib/pitest-1.0.0.jar" dest=".">
+			<patternset><include name="templates/**" /></patternset>
+		</unzip>
+
+		<pitest
+			pitClasspath="pitest.classpath"
+			classPath="project.classpath"
+			targetClasses="uk.ac.glasgow.jagora.*"
+			outputFormats="XML"
+			targetTests="uk.ac.glasgow.jagora.test.unit.*"
+			verbose="true"
+			timeStampedReports="false"
+			reportDir="reports/pit/"
+			sourceDir="src/main/java,src/main/test"
+		/>
+
+	</target>
+
+
+	<target name="build" depends="compile" />
+
+</project>
