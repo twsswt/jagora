@@ -27,9 +27,7 @@ public class OrderDrivenStockExchangeImpl implements ContinuousOrderDrivenStockE
 	@Override
 	public List<ExecutedTrade> getTradeHistory(Stock stock) {
 		OrderDrivenMarket orderDrivenMarket = this.getOrderDrivenMarket(stock);
-		if (orderDrivenMarket != null)
-			return orderDrivenMarket.getTradeHistory();
-		else return null;
+		return orderDrivenMarket.getTradeHistory();
 	}
 
 	private OrderDrivenMarket getOrderDrivenMarket(Stock stock) {
@@ -64,17 +62,13 @@ public class OrderDrivenStockExchangeImpl implements ContinuousOrderDrivenStockE
 		@Override
 		public List<SellOrder> getOpenSellOrders(Stock stock) {
 			OrderDrivenMarket orderDrivenMarket = getOrderDrivenMarket(stock);
-			if (orderDrivenMarket != null)
-				return orderDrivenMarket.getSellOrders();
-			else return null;
+			return orderDrivenMarket.getSellOrders();
 		}
 		
 		@Override
 		public List<BuyOrder> getOpenBuyOrders(Stock stock) {
 			OrderDrivenMarket orderDrivenMarket = getOrderDrivenMarket(stock);
-			if (orderDrivenMarket != null)
-				return orderDrivenMarket.getBuyOrders();
-			else return null;
+			return orderDrivenMarket.getBuyOrders();
 		}
 
 		@Override
