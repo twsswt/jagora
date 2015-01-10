@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.test.unit;
 
+import static java.lang.Integer.valueOf;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -59,8 +60,8 @@ public class TradeTest {
 		assertEquals("", 10500, alice.getInventory(lemons).intValue());
 		assertEquals("",  9500, bob.getInventory(lemons).intValue());
 		
-		assertEquals("", new Integer(0), buyOrder.getRemainingQuantity());
-		assertEquals("", new Integer(500), sellOrder.getRemainingQuantity());
+		assertEquals("", valueOf(0), buyOrder.getRemainingQuantity());
+		assertEquals("", valueOf(500), sellOrder.getRemainingQuantity());
 	}
 
 }

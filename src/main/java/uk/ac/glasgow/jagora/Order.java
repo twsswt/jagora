@@ -28,7 +28,7 @@ public abstract class Order implements Comparable<Order> {
 		
 		return initialQuantity - tradeQuantity;
 	}
-	
+
 	@Override
 	public String toString (){
 		return String.format("%s:%s:%d:$%.2f", trader, stock.name, getRemainingQuantity(), price);

@@ -35,7 +35,7 @@ public class OrderBookTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		
+	
 		alice = new StubTraderBuilder("alice", 1000000.00).addStock(lemons, 10000).build();
 		bob   = new StubTraderBuilder("bob", 50000.00).addStock(lemons, 200).build();
 		
