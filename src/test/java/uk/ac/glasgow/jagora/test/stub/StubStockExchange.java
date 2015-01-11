@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.ExecutedTrade;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.TickerTapeListener;
+import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.orderdriven.ContinuousOrderDrivenStockExchangeTraderView;
 
 public class StubStockExchange implements StockExchange {
@@ -112,7 +113,7 @@ public class StubStockExchange implements StockExchange {
 		return sellOrders;
 	}
 
-	public List<ExecutedTrade> getTradeHistory(Stock stock) {
+	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
 		// Does nothing as no trades are ever executed.
 		return null;
 	}

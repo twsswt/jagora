@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.ExecutedTrade;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.TickerTapeListener;
+import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.World;
 import uk.ac.glasgow.jagora.orderdriven.ContinuousOrderDrivenStockExchange;
 import uk.ac.glasgow.jagora.orderdriven.ContinuousOrderDrivenStockExchangeTraderView;
@@ -25,7 +26,7 @@ public class OrderDrivenStockExchangeImpl implements ContinuousOrderDrivenStockE
 	}
 	
 	@Override
-	public List<ExecutedTrade> getTradeHistory(Stock stock) {
+	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
 		OrderDrivenMarket orderDrivenMarket = this.getOrderDrivenMarket(stock);
 		return orderDrivenMarket.getTradeHistory();
 	}

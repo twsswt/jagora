@@ -1,10 +1,12 @@
 package uk.ac.glasgow.jagora.orderdriven.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
 import uk.ac.glasgow.jagora.Order;
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.World;
 
 /**
@@ -14,24 +16,43 @@ import uk.ac.glasgow.jagora.World;
  * @param <O> the order type of this order book (either BuyOrder or SellOrder).
  */
 public class OrderBook<O extends Order>  {
-	
-	private PriorityQueue<ReceivedOrder<O>> receivedOrders;
+		
+	/**
+	 * Overrides default tick event ordering by comparing the stored event first
+	 * before comparing tick times.
+	 * 
+	 * @author tws
+	 *
+	 */
+	private class ReceivedOrderComparator implements Comparator<TickEvent<O>> {
+
+		@Override
+		public int compare(TickEvent<O> tickEvent1, TickEvent<O> tickEvent2) {
+			Integer eventComparison = tickEvent1.event.compareTo(tickEvent2.event);
+			if (eventComparison == 0)
+				return tickEvent1.tick.compareTo(tickEvent2.tick);
+			else return eventComparison;
+		}
+		
+	}
+
+	private PriorityQueue<TickEvent<O>> receivedOrders;
 	private World world;
 	
 	public OrderBook (World world){
 		this.world = world;
-		this.receivedOrders = new PriorityQueue<ReceivedOrder<O>>();
+		this.receivedOrders = new PriorityQueue<TickEvent<O>>(1, new ReceivedOrderComparator());
 	}
 	
 	public void recordOrder (O order){
-		receivedOrders.add(createReceivedOrder(order));
+		receivedOrders.add(world.getTick(order));
 	}
 	
 	public void cancelOrder(O order) {
 		
-		ReceivedOrder<O> toRemove = null;
+		TickEvent<O> toRemove = null;
 				
-		for (ReceivedOrder<O> receivedOrder : receivedOrders)
+		for (TickEvent<O> receivedOrder : receivedOrders)
 			if (receivedOrder.event.equals(order)){
 				toRemove = receivedOrder;
 				break;
@@ -40,13 +61,9 @@ public class OrderBook<O extends Order>  {
 		if (toRemove != null)
 			receivedOrders.remove(toRemove);
 	}
-	
-	private ReceivedOrder<O> createReceivedOrder (O order) {
-		return new ReceivedOrder<O>(order, world);
-	}
 
 	public O getBestOrder() {
-		ReceivedOrder<O> receivedOrder = receivedOrders.peek();
+		TickEvent<O> receivedOrder = receivedOrders.peek();
 		
 		while (receivedOrder != null && receivedOrder.event.getRemainingQuantity() <= 0){
 			receivedOrders.poll();
@@ -65,7 +82,7 @@ public class OrderBook<O extends Order>  {
 	public List<O> getOpenOrders() {
 		
 		List<O> result = new ArrayList<O>();
-		
+
 		receivedOrders
 			.stream()
 			.forEach(receivedOrder -> result.add(receivedOrder.event));

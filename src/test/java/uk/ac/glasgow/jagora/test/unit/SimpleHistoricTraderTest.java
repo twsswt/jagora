@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.ExecutedTrade;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.Trader;
 import uk.ac.glasgow.jagora.World;
@@ -94,7 +94,7 @@ public class SimpleHistoricTraderTest {
 		Double averageLemonPrice = 0.0;
 		Integer totalTradeQuantity = 0;
 
-		for (ExecutedTrade executedTrade : marketForLemons.getTradeHistory(lemons)){
+		for (TickEvent<Trade> executedTrade : marketForLemons.getTradeHistory(lemons)){
 			Trade trade = executedTrade.event;
 			averageLemonPrice =
 				(averageLemonPrice * totalTradeQuantity + trade.price * trade.quantity) / 

@@ -19,9 +19,9 @@ public class Trade {
 		this.buyOrder = buyOrder;
 	}
 	
-	public ExecutedTrade execute (World world) throws TradeExecutionException {
+	public TickEvent<Trade> execute (World world) throws TradeExecutionException {
 		
-		ExecutedTrade executedTrade = new ExecutedTrade(this, world);
+		TickEvent<Trade> executedTrade = world.getTick(this);
 		
 		sellOrder.satisfyTrade(executedTrade);		
 		try {

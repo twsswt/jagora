@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.ExecutedTrade;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
@@ -50,10 +49,10 @@ public class OrderBookTest {
 		
 		List<SellOrder> sellOrders =
 			Arrays.asList(
-				createSellOrder(alice, lemons, 500,  50.00, 5l), 
+				createSellOrder(alice, lemons, 500,  50.00, 4l), 
 				createSellOrder(bob,   lemons,  15, 110.00, 1l),
 				createSellOrder(alice, lemons,  10, 110.00, 2l),
-				createSellOrder(alice, lemons,   5, 200.00, 4l),
+				createSellOrder(alice, lemons,   5, 200.00, 3l),
 				createSellOrder(bob,   lemons,  10, 250.00, 0l)
 			);
 		
@@ -65,18 +64,22 @@ public class OrderBookTest {
 		for (SellOrder sellOrder : randomisedSellOrders)
 			sellBook.recordOrder(sellOrder);
 		
+		Integer tradeTick = sellOrders.size();
+
 		for (SellOrder expected : sellOrders){
 			SellOrder actual = sellBook.getBestOrder();
 			assertEquals(expected,actual);
 			
 			Trade satisfyingTrade = new Trade(lemons, expected.initialQuantity,  expected.price, actual, null);
-			actual.satisfyTrade(new ExecutedTrade(satisfyingTrade, stubWorld));
+			
+			stubWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
+			actual.satisfyTrade(stubWorld.getTick(satisfyingTrade));
 		}		
 	}
 
 	private SellOrder createSellOrder(AbstractTrader trader, Stock stock, Integer quantity, Double price, Long tick) {
 		SellOrder sellOrder = new SellOrder(trader, stock, quantity, price);
-		stubWorld.registerEventForTick(sellOrder, tick);
+		stubWorld.setTickForEvent(tick, sellOrder);
 		return sellOrder;
 	}
 	
@@ -98,18 +101,21 @@ public class OrderBookTest {
 			
 		Collections.shuffle(randomisedbuyOrders);
 			
-		for (BuyOrder buyOrder : randomisedbuyOrders)
+		for (BuyOrder buyOrder : randomisedbuyOrders){
 			buyBook.recordOrder(buyOrder);
+		}
 		
-		System.out.println("Expected BO ordering:"+buyOrders);
-		System.out.println(buyBook.getOpenOrders());	
+		Integer tradeTick = buyOrders.size();
+		
 		for (BuyOrder expected : buyOrders){
 			BuyOrder actual = buyBook.getBestOrder();
 			assertEquals(expected,actual);
 			Trade satisfyingTrade =
-				new Trade(lemons, expected.initialQuantity,  expected.price, null, actual);
+				new Trade(lemons, expected.initialQuantity,  expected.price, null, actual);	
 			
-			actual.satisfyTrade(new ExecutedTrade(satisfyingTrade, stubWorld));
+			stubWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
+
+			actual.satisfyTrade(stubWorld.getTick(satisfyingTrade));
 
 		}			
 	}
@@ -118,7 +124,7 @@ public class OrderBookTest {
 		AbstractTrader trader, Stock stock, Integer quantity, Double price, Long tick) {
 		
 		BuyOrder buyOrder = new BuyOrder(trader, stock, quantity, price);
-		stubWorld.registerEventForTick(buyOrder, tick);
+		stubWorld.setTickForEvent(tick, buyOrder);
 		return buyOrder;
 	}
 

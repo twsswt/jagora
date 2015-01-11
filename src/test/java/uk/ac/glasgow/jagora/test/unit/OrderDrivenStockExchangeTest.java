@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.ExecutedTrade;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.orderdriven.ContinuousOrderDrivenStockExchange;
@@ -110,7 +110,7 @@ public class OrderDrivenStockExchangeTest {
 		assertEquals("", 500.0 + trade1Cost - trade2Cost, bob.getCash(), 0.0);
 		assertEquals("", 10000.0 - trade1Cost + trade2Cost, alice.getCash(), 0.0);
 
-		List<ExecutedTrade> tradeHistory = continuousOrderDrivenStockExchange.getTradeHistory(oranges);
+		List<TickEvent<Trade>> tradeHistory = continuousOrderDrivenStockExchange.getTradeHistory(oranges);
 		assertEquals ("", 2, tradeHistory.size());
 		
 		Trade firstOrangeTrade = tradeHistory.get(0).event;

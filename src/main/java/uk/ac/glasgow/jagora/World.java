@@ -2,7 +2,7 @@ package uk.ac.glasgow.jagora;
 
 public interface World {
 
-	public Long getTick(Object object);
+	public <T> TickEvent<T> getTick(T event);
 
 	public boolean isAlive();
 

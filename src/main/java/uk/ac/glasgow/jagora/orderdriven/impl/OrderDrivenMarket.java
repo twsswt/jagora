@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.ExecutedTrade;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.TickerTapeListener;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionEvent;
@@ -30,7 +30,7 @@ public class OrderDrivenMarket {
 	private final OrderBook<SellOrder> sellBook;
 	private final OrderBook<BuyOrder> buyBook;
 	
-	private final List<ExecutedTrade> tradeHistory;
+	private final List<TickEvent<Trade>> tradeHistory;
 	
 	private final Collection<TickerTapeListener> tickerTapeListeners;
 	
@@ -42,7 +42,7 @@ public class OrderDrivenMarket {
 		sellBook = new OrderBook<SellOrder>(world);
 		buyBook = new OrderBook<BuyOrder>(world);
 		
-		tradeHistory = new ArrayList<ExecutedTrade>();
+		tradeHistory = new ArrayList<TickEvent<Trade>>();
 
 	}
 	
@@ -62,8 +62,8 @@ public class OrderDrivenMarket {
 		sellBook.cancelOrder(order);
 	}
 	
-	public List<ExecutedTrade> getTradeHistory() {
-		return new ArrayList<ExecutedTrade>(tradeHistory);
+	public List<TickEvent<Trade>> getTradeHistory() {
+		return new ArrayList<TickEvent<Trade>>(tradeHistory);
 	}
 	
 	public void doClearing (){
@@ -81,7 +81,7 @@ public class OrderDrivenMarket {
 				new Trade (stock, quantity, price, lowestSell, highestBuy);
 			
 			try {
-				ExecutedTrade executedTrade = trade.execute(world);
+				TickEvent<Trade> executedTrade = trade.execute(world);
 				tradeHistory.add(executedTrade);
 				notifyTickerTapeListeners(executedTrade);
 											
@@ -119,7 +119,7 @@ public class OrderDrivenMarket {
 	 * 
 	 * @param executedTrade
 	 */
-	private void notifyTickerTapeListeners(ExecutedTrade executedTrade) {	
+	private void notifyTickerTapeListeners(TickEvent<Trade> executedTrade) {	
 		
 		TradeExecutionEvent tradeExecutedEvent = 
 			new TradeExecutionEvent(

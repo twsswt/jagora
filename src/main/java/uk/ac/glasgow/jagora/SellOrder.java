@@ -8,13 +8,13 @@ public class SellOrder extends Order {
 	}
 
 	@Override
-	public void satisfyTrade(ExecutedTrade executedTrade) throws TradeExecutionException {
+	public void satisfyTrade(TickEvent<Trade> executedTrade) throws TradeExecutionException {
 		trader.sellStock(executedTrade.event);		
 		tradeHistory.add(executedTrade);
 	}
 
 	@Override
-	public void rollBackTrade(ExecutedTrade executedTrade) throws TradeExecutionException {
+	public void rollBackTrade(TickEvent<Trade> executedTrade) throws TradeExecutionException {
 		if (tradeHistory.remove(executedTrade))
 			trader.buyStock(executedTrade.event);
 	}

@@ -1,31 +1,32 @@
 package uk.ac.glasgow.jagora.test.stub;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.HashSet;
 
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.World;
 
 public class StubWorld implements World {
 	
-	private Map<Object,Long> ticks;
-	
-	public StubWorld() {
-		ticks = new HashMap<Object,Long>();
-	}
-	
-	public void registerEventForTick(Object event, Long tick){
-		
-		ticks.put(event, tick);
-	}
+	private Collection<TickEvent<?>> tickEvents = new HashSet<TickEvent<?>>();
 
 	@Override
-	public Long getTick(Object object) {
-		return ticks.get(object);
+	public <T> TickEvent<T> getTick(T event) {
+		for (TickEvent<?> tickEvent : tickEvents)
+			if (tickEvent.event == event)
+				return (TickEvent<T>)tickEvent;
+		return null;
 	}
+	
 
 	@Override
 	public boolean isAlive() {
 		return true;
+	}
+
+	public <T> void setTickForEvent(Long tick, T event) {
+		TickEvent<T> tickEvent = new TickEvent<T>(event, tick);
+		tickEvents.add(tickEvent);
 	}
 
 }

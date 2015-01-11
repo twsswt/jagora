@@ -5,14 +5,14 @@ public class TickEvent<T> implements Comparable<TickEvent<T>>{
 	public final Long tick;
 	public final T event;
 	
-	public TickEvent (T event, World world){
-		this.tick = world.getTick(event);
+	public TickEvent (T event, Long tick){
+		this.tick = tick;
 		this.event = event;
 	}
 	
 	@Override
-	public int compareTo(TickEvent<T> executedTrade) {
-		return tick.compareTo(executedTrade.tick);
+	public int compareTo(TickEvent<T> tickEvent) {
+		return tick.compareTo(tickEvent.tick);
 	}
 	
 	@Override

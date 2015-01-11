@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.ExecutedTrade;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.TickEvent;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
@@ -45,12 +45,12 @@ public class TradeTest {
 		trade = new Trade(lemons, 500, 45.0, sellOrder, buyOrder);
 		
 		world = new StubWorld();
-		world.registerEventForTick(trade, 0l);
+		world.setTickForEvent(0l, trade);
 	}
 
 	@Test
 	public void test() throws Exception {
-		ExecutedTrade executedTrade = trade.execute(world);
+		TickEvent<Trade> executedTrade = trade.execute(world);
 		
 		assertEquals("", 0l, executedTrade.tick.longValue());
 		assertEquals("", 1000000.0-45*500, alice.getCash(), 0.0);
