@@ -34,6 +34,7 @@ public class ReceivedSellOrderTest {
 
 	private TickEvent<SellOrder> createSellOrder(Integer quantity, Double price, Long tick) {
 		SellOrder sellOrder = new SellOrder(null, lemons, quantity, price);
+		world.setTickForEvent(tick, sellOrder);
 		return world.getTick(sellOrder);
 	}
 

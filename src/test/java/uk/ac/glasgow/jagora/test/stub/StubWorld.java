@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.test.stub;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -8,7 +9,7 @@ import uk.ac.glasgow.jagora.World;
 
 public class StubWorld implements World {
 	
-	private Collection<TickEvent<?>> tickEvents = new HashSet<TickEvent<?>>();
+	private Collection<TickEvent<?>> tickEvents = new ArrayList<TickEvent<?>>();
 
 	@Override
 	public <T> TickEvent<T> getTick(T event) {
