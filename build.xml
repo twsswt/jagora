@@ -134,9 +134,9 @@
 			targetClasses="uk.ac.glasgow.jagora.*"
 			outputFormats="XML"
 			targetTests="uk.ac.glasgow.jagora.test.unit.*"
-			verbose="true"
+			verbose="false"
 			timeStampedReports="false"
-			reportDir="reports/pit/"
+			reportDir="reports/pitest/"
 			sourceDir="src/main/java,src/main/test"
 		/>
 
