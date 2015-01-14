@@ -1,5 +1,8 @@
 package uk.ac.glasgow.jagora;
 
+import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.world.TickEvent;
+
 public class BuyOrder extends Order {
 
 	public BuyOrder(Trader trader, Stock stock, Integer quantity, Double price) {

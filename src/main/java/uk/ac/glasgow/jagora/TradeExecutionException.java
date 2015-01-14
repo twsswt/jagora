@@ -1,5 +1,7 @@
 package uk.ac.glasgow.jagora;
 
+import uk.ac.glasgow.jagora.trader.Trader;
+
 public class TradeExecutionException extends Exception {
 
 	/****/

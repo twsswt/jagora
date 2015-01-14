@@ -3,6 +3,9 @@ package uk.ac.glasgow.jagora;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.world.TickEvent;
+
 public abstract class Order implements Comparable<Order> {
 	
 	public final Trader trader;

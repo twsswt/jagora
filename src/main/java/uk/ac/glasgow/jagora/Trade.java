@@ -1,6 +1,9 @@
 package uk.ac.glasgow.jagora;
 
 import static java.lang.String.format;
+import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.world.TickEvent;
+import uk.ac.glasgow.jagora.world.World;
 
 public class Trade {
 
@@ -17,6 +20,14 @@ public class Trade {
 		this.price = price;
 		this.sellOrder = sellOrder;
 		this.buyOrder = buyOrder;
+	}
+	
+	public Trader getBuyer (){
+		return buyOrder.trader;
+	}
+	
+	public Trader getSeller (){
+		return sellOrder.trader;
 	}
 	
 	public TickEvent<Trade> execute (World world) throws TradeExecutionException {

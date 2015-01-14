@@ -9,10 +9,8 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.TickEvent;
-import uk.ac.glasgow.jagora.TickerTapeListener;
-import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.orderdriven.ContinuousOrderDrivenStockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
 
 public class StubStockExchange implements StockExchange {
 
@@ -31,9 +29,9 @@ public class StubStockExchange implements StockExchange {
 	}
 	
 	@Override
-	public ContinuousOrderDrivenStockExchangeTraderView createTraderStockExchangeView() {
+	public StockExchangeTraderView createTraderStockExchangeView() {
 
-		return new ContinuousOrderDrivenStockExchangeTraderView (){
+		return new StockExchangeTraderView (){
 
 			@Override
 			public Double getBestOfferPrice(Stock stock) {
@@ -72,25 +70,7 @@ public class StubStockExchange implements StockExchange {
 			@Override
 			public void cancelSellOrder(SellOrder sellOrder) {
 				getSellOrders(sellOrder.stock).remove(sellOrder);
-			}
-
-			@Override
-			public List<SellOrder> getOpenSellOrders(Stock stock) {
-				return getSellOrders(stock);
-			}
-
-			@Override
-			public List<BuyOrder> getOpenBuyOrders(Stock stock) {
-				return getBuyOrders(stock);
-			}
-
-			@Override
-			public void addTicketTapeListener(
-					TickerTapeListener tickerTapeListener, Stock stock) {
-				// Does nothing - not implemented as no trades are executed.
-				
-			}
-			
+			}			
 		};
 		
 	}
@@ -113,8 +93,9 @@ public class StubStockExchange implements StockExchange {
 		return sellOrders;
 	}
 
-	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
-		// Does nothing as no trades are ever executed.
-		return null;
+	@Override
+	public void addTicketTapeListener(TickerTapeListener tickerTapeListener, Stock stock) {
+		// Does nothing as no trades are executed.
+		
 	}
 }

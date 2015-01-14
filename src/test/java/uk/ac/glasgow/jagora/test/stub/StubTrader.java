@@ -9,7 +9,7 @@ import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
-import uk.ac.glasgow.jagora.trader.AbstractTrader;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
 
 public class StubTrader extends AbstractTrader{
 	
