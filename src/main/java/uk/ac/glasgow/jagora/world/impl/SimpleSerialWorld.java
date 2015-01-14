@@ -14,12 +14,16 @@ public class SimpleSerialWorld implements World{
 	}
 		
 	@Override
-	public synchronized <T> TickEvent<T> getTick(T event) {
-		return new TickEvent<T>(event, tickCount++);
+	public <T> TickEvent<T> getTick(T event) {
+		synchronized(tickCount){
+			return new TickEvent<T>(event, tickCount++);
+		}
 	}
 
 	@Override
 	public Boolean isAlive() {
-		return tickCount < maxTickCount;
+		synchronized(tickCount){
+			return tickCount < maxTickCount;
+		}
 	}
 }
