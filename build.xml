@@ -73,7 +73,7 @@
 			<batchtest todir="reports/junit/">
 			
 				<fileset dir="src/test/java"
-					includes="**/test/unit/*Test.java"
+					includes="**/test/**/*Test.java"
 					excludes="**/AllTests.java"
 				/>
 			
@@ -104,7 +104,7 @@
 
 			<auxClasspath refid="project.classpath" />
 
-			<sourcePath path="src/main/java" />
+			<sourcePath path="src/main/java,src/test/java" />
 
 			<class location="bin/" />
 
@@ -133,7 +133,7 @@
 			classPath="project.classpath"
 			targetClasses="uk.ac.glasgow.jagora.*"
 			outputFormats="XML"
-			targetTests="uk.ac.glasgow.jagora.test.unit.*"
+			targetTests="uk.ac.glasgow.jagora.test.*,uk.ac.glasgow.jagora.trader.test.*"
 			verbose="false"
 			timeStampedReports="false"
 			reportDir="reports/pitest/"

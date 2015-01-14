@@ -61,13 +61,12 @@ public class RandomTraderTest {
 			.mapToDouble(buyOrder -> buyOrder.price)
 			.average()
 			.getAsDouble();
-		
-		
+				
 		Double actualAverageSellPrice = 
-				sellOrders.stream()
-				.mapToDouble(sellOrder -> sellOrder.price)
-				.average()
-				.getAsDouble();
+			sellOrders.stream()
+			.mapToDouble(sellOrder -> sellOrder.price)
+			.average()
+			.getAsDouble();
 		
 		assertEquals("", numberOfTraderActions.intValue() + 2, sellOrders.size() + buyOrders.size());
 
