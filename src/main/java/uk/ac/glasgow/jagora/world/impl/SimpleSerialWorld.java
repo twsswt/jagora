@@ -7,6 +7,8 @@ public class SimpleSerialWorld implements World{
 	
 	private Long tickCount;
 	private Long maxTickCount;
+	
+	private Object syncObject = new Object();
 
 	public SimpleSerialWorld(Long maxTickCount){
 		tickCount = 0l;
@@ -15,14 +17,14 @@ public class SimpleSerialWorld implements World{
 		
 	@Override
 	public <T> TickEvent<T> getTick(T event) {
-		synchronized(tickCount){
+		synchronized(syncObject){
 			return new TickEvent<T>(event, tickCount++);
 		}
 	}
 
 	@Override
 	public Boolean isAlive() {
-		synchronized(tickCount){
+		synchronized(syncObject){
 			return tickCount < maxTickCount;
 		}
 	}
