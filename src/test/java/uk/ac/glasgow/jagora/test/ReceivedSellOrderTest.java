@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
@@ -33,9 +34,9 @@ public class ReceivedSellOrderTest {
 	}
 
 	private TickEvent<SellOrder> createSellOrder(Integer quantity, Double price, Long tick) {
-		SellOrder sellOrder = new SellOrder(null, lemons, quantity, price);
-		world.setTickForEvent(tick, sellOrder);
-		return world.getTick(sellOrder);
+		SellOrder limitSellOrder = new LimitSellOrder(null, lemons, quantity, price);
+		world.setTickForEvent(tick, limitSellOrder);
+		return world.getTick(limitSellOrder);
 	}
 
 	@Test

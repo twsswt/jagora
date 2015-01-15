@@ -11,34 +11,34 @@ public class Trade {
 	public final Integer quantity;
 	public final Double price;
 	
-	private final SellOrder sellOrder;
-	private final BuyOrder buyOrder;
+	private final SellOrder limitSellOrder;
+	private final BuyOrder limitBuyOrder;
 	
-	public Trade(Stock stock, Integer quantity, Double price, SellOrder sellOrder, BuyOrder buyOrder) {
+	public Trade(Stock stock, Integer quantity, Double price, SellOrder limitSellOrder, BuyOrder limitBuyOrder) {
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;
-		this.sellOrder = sellOrder;
-		this.buyOrder = buyOrder;
+		this.limitSellOrder = limitSellOrder;
+		this.limitBuyOrder = limitBuyOrder;
 	}
 	
 	public Trader getBuyer (){
-		return buyOrder.trader;
+		return limitBuyOrder.trader;
 	}
 	
 	public Trader getSeller (){
-		return sellOrder.trader;
+		return limitSellOrder.trader;
 	}
 	
 	public TickEvent<Trade> execute (World world) throws TradeExecutionException {
 		
 		TickEvent<Trade> executedTrade = world.getTick(this);
 		
-		sellOrder.satisfyTrade(executedTrade);		
+		limitSellOrder.satisfyTrade(executedTrade);		
 		try {
-			buyOrder.satisfyTrade(executedTrade);
+			limitBuyOrder.satisfyTrade(executedTrade);
 		} catch (TradeExecutionException e){
-			sellOrder.rollBackTrade(executedTrade);
+			limitSellOrder.rollBackTrade(executedTrade);
 			throw e;
 		}
 		

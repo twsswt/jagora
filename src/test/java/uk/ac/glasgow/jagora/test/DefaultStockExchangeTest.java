@@ -13,6 +13,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTickerTapeListener;
 import uk.ac.glasgow.jagora.test.stub.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
@@ -66,11 +68,11 @@ public class DefaultStockExchangeTest {
 		DefaultStockExchange defaultStockExchange = 
 			new DefaultStockExchange(world,	tickerTapeObserver,	marketFactory);
 		
-		SellOrder sellOrder1 = new SellOrder(bob, lemons, 50, 55.0);
+		SellOrder sellOrder1 = new LimitSellOrder(bob, lemons, 50, 55.0);
 		bob.supplyOrder(sellOrder1);
 		bob.speak(defaultStockExchange.createTraderStockExchangeView());
 
-		BuyOrder buyOrder1 = new BuyOrder(alice, lemons, 25, 45.0);
+		BuyOrder buyOrder1 = new LimitBuyOrder(alice, lemons, 25, 45.0);
 		alice.supplyOrder(buyOrder1);
 		alice.speak(defaultStockExchange.createTraderStockExchangeView());
 
@@ -80,11 +82,11 @@ public class DefaultStockExchangeTest {
 		
 		assertEquals("", 500.0, bob.getCash(), 0.0);
 		
-		SellOrder sellOrder2 = new SellOrder(bob, lemons, 10, 55.9);
+		SellOrder sellOrder2 = new LimitSellOrder(bob, lemons, 10, 55.9);
 		bob.supplyOrder(sellOrder2);
 		bob.speak(defaultStockExchange.createTraderStockExchangeView());
 		
-		BuyOrder buyOrder2 = new BuyOrder(alice, lemons, 60, 56.0);
+		BuyOrder buyOrder2 = new LimitBuyOrder(alice, lemons, 60, 56.0);
 		alice.supplyOrder(buyOrder2);
 		alice.speak(defaultStockExchange.createTraderStockExchangeView());
 		
@@ -97,16 +99,16 @@ public class DefaultStockExchangeTest {
 		assertEquals("", 500.0 + trade1Cost, bob.getCash(), 0.0);
 		assertEquals("", 10000.0 - trade1Cost, alice.getCash(), 0.0);
 		
-		SellOrder sellOrder3 = new SellOrder(alice, oranges, 20, 26.5);
+		SellOrder sellOrder3 = new LimitSellOrder(alice, oranges, 20, 26.5);
 		alice.supplyOrder(sellOrder3);
 		alice.speak(defaultStockExchange.createTraderStockExchangeView());
 		
-		SellOrder sellOrder4 = new SellOrder(alice, oranges, 20, 25.0);
+		SellOrder sellOrder4 = new LimitSellOrder(alice, oranges, 20, 25.0);
 		alice.supplyOrder(sellOrder4);
 		alice.speak(defaultStockExchange.createTraderStockExchangeView());
 
 		
-		BuyOrder buyOrder3 = new BuyOrder(bob, oranges, 30, 27.0);
+		BuyOrder buyOrder3 = new LimitBuyOrder(bob, oranges, 30, 27.0);
 		bob.supplyOrder(buyOrder3);
 		bob.speak(defaultStockExchange.createTraderStockExchangeView());
 		
@@ -167,12 +169,12 @@ public class DefaultStockExchangeTest {
 		
 		defaultStockExchange.addTicketTapeListener(stubTickerTapeListener, lemons);
 		
-		SellOrder sellOrder = new SellOrder(bob, lemons, 10, 10.0);
-		bob.supplyOrder(sellOrder);
+		SellOrder limitSellOrder = new LimitSellOrder(bob, lemons, 10, 10.0);
+		bob.supplyOrder(limitSellOrder);
 		bob.speak(defaultStockExchange.createTraderStockExchangeView());
 		
-		BuyOrder buyOrder = new BuyOrder(alice, lemons, 10, 11.0);
-		alice.supplyOrder(buyOrder);
+		BuyOrder limitBuyOrder = new LimitBuyOrder(alice, lemons, 10, 11.0);
+		alice.supplyOrder(limitBuyOrder);
 		alice.speak(defaultStockExchange.createTraderStockExchangeView());
 		
 		defaultStockExchange.doClearing();

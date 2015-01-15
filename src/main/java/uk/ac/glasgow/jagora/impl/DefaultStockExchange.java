@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Market;
 import uk.ac.glasgow.jagora.MarketFactory;
+import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
@@ -64,12 +66,12 @@ public class DefaultStockExchange implements StockExchange{
 
 		@Override
 		public Double getBestOfferPrice(Stock stock) {			
-			List<SellOrder> sellOrders =
+			List<SellOrder> limitSellOrders =
 				getMarket(stock).getSellOrders();
 			
 			try {
-				SellOrder bestSellOrder = sellOrders.get(0);
-				return bestSellOrder.price;
+				SellOrder bestSellOrder = limitSellOrders.get(0);
+				return bestSellOrder.getPrice();
 			} catch (IndexOutOfBoundsException e){
 				return null;
 			}
@@ -77,35 +79,35 @@ public class DefaultStockExchange implements StockExchange{
 
 		@Override
 		public Double getBestBidPrice(Stock stock) {
-			List<BuyOrder> buyOrders =
+			List<BuyOrder> limitBuyOrders =
 				getMarket(stock).getBuyOrders();
 
 			try {
-				BuyOrder bestBuyOrder = buyOrders.get(0);
-				return bestBuyOrder.price;
+				BuyOrder bestBuyOrder = limitBuyOrders.get(0);
+				return bestBuyOrder.getPrice();
 			} catch (IndexOutOfBoundsException e){
 				return null;
 			}
 		}
 
 		@Override
-		public void placeBuyOrder(BuyOrder buyOrder) {
-			getMarket(buyOrder.stock).recordBuyOrder(buyOrder);		
+		public void placeBuyOrder(BuyOrder limitBuyOrder) {
+			getMarket(limitBuyOrder.stock).recordBuyOrder(limitBuyOrder);		
 		}
 
 		@Override
-		public void placeSellOrder(SellOrder sellOrder) {
-			getMarket(sellOrder.stock).recordSellOrder(sellOrder);			
+		public void placeSellOrder(SellOrder limitSellOrder) {
+			getMarket(limitSellOrder.stock).recordSellOrder(limitSellOrder);			
 		}
 
 		@Override
-		public void cancelBuyOrder(BuyOrder buyOrder) {
-			getMarket(buyOrder.stock).cancelBuyOrder(buyOrder);			
+		public void cancelBuyOrder(BuyOrder limitBuyOrder) {
+			getMarket(limitBuyOrder.stock).cancelBuyOrder(limitBuyOrder);			
 		}
 
 		@Override
-		public void cancelSellOrder(SellOrder sellOrder) {
-			getMarket(sellOrder.stock).cancelSellOrder(sellOrder);
+		public void cancelSellOrder(SellOrder limitSellOrder) {
+			getMarket(limitSellOrder.stock).cancelSellOrder(limitSellOrder);
 		}		
 	}
 

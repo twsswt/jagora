@@ -17,6 +17,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.test.stub.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
@@ -83,9 +85,9 @@ public class SimpleHistoricTraderTest {
 	public void test() {
 		
 		//Create initial market conditions
-		BuyOrder seedBuyOrder = new BuyOrder(dan, lemons, 10, 5.0);
+		BuyOrder seedBuyOrder = new LimitBuyOrder(dan, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
-		SellOrder seedSellOrder = new SellOrder(dan, lemons, 10, 5.0);
+		SellOrder seedSellOrder = new LimitSellOrder(dan, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
 		
 		//Allow two random traders to create a liquid market.

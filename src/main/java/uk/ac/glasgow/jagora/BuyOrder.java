@@ -3,10 +3,10 @@ package uk.ac.glasgow.jagora;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public class BuyOrder extends Order {
+public abstract class BuyOrder extends Order implements Comparable<BuyOrder> {
 
-	public BuyOrder(Trader trader, Stock stock, Integer quantity, Double price) {
-		super(trader, stock, quantity, price);
+	public BuyOrder(Trader trader, Stock stock, Integer quantity) {
+		super(trader, stock, quantity);
 	}
 
 	@Override
@@ -20,9 +20,12 @@ public class BuyOrder extends Order {
 		if (tradeHistory.remove(executedTrade))
 			trader.sellStock(executedTrade.event);
 	}
-
+	
+	public abstract Double getPrice();
+	
 	@Override
-	public int compareTo(Order order) {
-		return order.price.compareTo(this.price);
+	public int compareTo(BuyOrder order) {
+		return order.getPrice().compareTo(this.getPrice());
 	}
+
 }

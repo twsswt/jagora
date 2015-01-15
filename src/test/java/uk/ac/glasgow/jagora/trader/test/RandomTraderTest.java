@@ -10,6 +10,8 @@ import org.junit.Test;
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubStockExchange;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
@@ -42,33 +44,33 @@ public class RandomTraderTest {
 	@Test
 	public void test() {
 		//Seed the exchange with initial buys and sells.
-		BuyOrder seedBuyOrder = new BuyOrder(trader, lemons, 10, 5.0);
+		BuyOrder seedBuyOrder = new LimitBuyOrder(trader, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
-		SellOrder seedSellOrder = new SellOrder(trader, lemons, 10, 5.0);
+		SellOrder seedSellOrder = new LimitSellOrder(trader, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
 		
 		for (Integer i = 0; i < numberOfTraderActions; i++)
 			trader.speak(marketForLemons.createTraderStockExchangeView());
 		
-		List<BuyOrder> buyOrders = 
+		List<BuyOrder> BuyOrders = 
 			marketForLemons.getBuyOrders(lemons);		
 		
-		List<SellOrder> sellOrders = 
+		List<SellOrder> SellOrders = 
 				marketForLemons.getSellOrders(lemons);
 		
 		Double actualAverageBuyPrice = 
-			buyOrders.stream()
-			.mapToDouble(buyOrder -> buyOrder.price)
+			BuyOrders.stream()
+			.mapToDouble(buyOrder -> buyOrder.getPrice())
 			.average()
 			.getAsDouble();
 				
 		Double actualAverageSellPrice = 
-			sellOrders.stream()
-			.mapToDouble(sellOrder -> sellOrder.price)
+			SellOrders.stream()
+			.mapToDouble(sellOrder -> sellOrder.getPrice())
 			.average()
 			.getAsDouble();
 		
-		assertEquals("", numberOfTraderActions.intValue() + 2, sellOrders.size() + buyOrders.size());
+		assertEquals("", numberOfTraderActions.intValue() + 2, SellOrders.size() + BuyOrders.size());
 
 		assertEquals("", 5, actualAverageBuyPrice, 0.1);		
 			

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
@@ -37,7 +38,7 @@ public class StubStockExchange implements StockExchange {
 			public Double getBestOfferPrice(Stock stock) {
 				return getSellOrders(stock)
 					.stream()
-					.mapToDouble(sellOrder -> sellOrder.price)
+					.mapToDouble(sellOrder -> sellOrder.getPrice())
 					.min()
 					.getAsDouble();
 			}
@@ -46,51 +47,51 @@ public class StubStockExchange implements StockExchange {
 			public Double getBestBidPrice(Stock stock) {
 				return getBuyOrders(stock)
 					.stream()
-					.mapToDouble(buyOrder -> buyOrder.price)
+					.mapToDouble(buyOrder -> buyOrder.getPrice())
 					.max()
 					.getAsDouble();
 			}
 
 			@Override
-			public void placeBuyOrder(BuyOrder buyOrder) {
-				getBuyOrders(buyOrder.stock).add(buyOrder);
+			public void placeBuyOrder(BuyOrder BuyOrder) {
+				getBuyOrders(BuyOrder.stock).add(BuyOrder);
 			}
 
 			@Override
-			public void placeSellOrder(SellOrder sellOrder) {
-				getSellOrders(sellOrder.stock).add(sellOrder);
+			public void placeSellOrder(SellOrder SellOrder) {
+				getSellOrders(SellOrder.stock).add(SellOrder);
 			}
 
 			@Override
-			public void cancelBuyOrder(BuyOrder buyOrder) {
-				getBuyOrders(buyOrder.stock).remove(buyOrder);
+			public void cancelBuyOrder(BuyOrder BuyOrder) {
+				getBuyOrders(BuyOrder.stock).remove(BuyOrder);
 				
 			}
 
 			@Override
-			public void cancelSellOrder(SellOrder sellOrder) {
-				getSellOrders(sellOrder.stock).remove(sellOrder);
+			public void cancelSellOrder(SellOrder SellOrder) {
+				getSellOrders(SellOrder.stock).remove(SellOrder);
 			}			
 		};
 		
 	}
 
 	public List<BuyOrder> getBuyOrders(Stock stock) {
-		List<BuyOrder> buyOrders = allBuyOrders.get(stock);
-		if (buyOrders == null){
-			buyOrders = new ArrayList<BuyOrder>();
-			allBuyOrders.put(stock, buyOrders);
+		List<BuyOrder> BuyOrders = allBuyOrders.get(stock);
+		if (BuyOrders == null){
+			BuyOrders = new ArrayList<BuyOrder>();
+			allBuyOrders.put(stock, BuyOrders);
 		}
-		return buyOrders;
+		return BuyOrders;
 	}
 
 	public List<SellOrder> getSellOrders(Stock stock) {
-		List<SellOrder> sellOrders = allSellOrders.get(stock);
-		if (sellOrders == null){
-			sellOrders = new ArrayList<SellOrder>();
-			allSellOrders.put(stock, sellOrders);
+		List<SellOrder> SellOrders = allSellOrders.get(stock);
+		if (SellOrders == null){
+			SellOrders = new ArrayList<SellOrder>();
+			allSellOrders.put(stock, SellOrders);
 		}
-		return sellOrders;
+		return SellOrders;
 	}
 
 	@Override

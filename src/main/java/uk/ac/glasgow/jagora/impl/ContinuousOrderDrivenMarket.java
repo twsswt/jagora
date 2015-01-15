@@ -33,33 +33,21 @@ public class ContinuousOrderDrivenMarket implements Market {
 		buyBook = new OrderBook<BuyOrder>(world);
 	}
 	
-	/**
-	 * @see uk.Market.ac.glasgow.jagora.OrderDrivenMarket#recordBuyOrder(uk.ac.glasgow.jagora.BuyOrder)
-	 */
 	@Override
 	public void recordBuyOrder(BuyOrder order) {
 		buyBook.recordOrder(order);
 	}
 	
-	/**
-	 * @see uk.Market.ac.glasgow.jagora.OrderDrivenMarket#recordSellOrder(uk.ac.glasgow.jagora.SellOrder)
-	 */
 	@Override
 	public void recordSellOrder(SellOrder order) {
 		sellBook.recordOrder(order);
 	}
 	
-	/**
-	 * @see uk.Market.ac.glasgow.jagora.OrderDrivenMarket#cancelBuyOrder(uk.ac.glasgow.jagora.BuyOrder)
-	 */
 	@Override
 	public void cancelBuyOrder(BuyOrder order) {
 		buyBook.cancelOrder(order);
 	}
 	
-	/**
-	 * @see uk.Market.ac.glasgow.jagora.OrderDrivenMarket#cancelSellOrder(uk.ac.glasgow.jagora.SellOrder)
-	 */
 	@Override
 	public void cancelSellOrder(SellOrder order) {
 		sellBook.cancelOrder(order);
@@ -84,7 +72,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 					highestBuy.getRemainingQuantity()
 				);
 			
-			Double price = lowestSell.price;		
+			Double price = lowestSell.getPrice();		
 			
 			Trade trade = 
 				new Trade (stock, quantity, price, lowestSell, highestBuy);
@@ -117,7 +105,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 		return 
 			lowestSell != null &&
 			highestBuy != null &&
-			highestBuy.price >= lowestSell.price;
+			highestBuy.getPrice() >= lowestSell.getPrice();
 	}
 	
 	@Override

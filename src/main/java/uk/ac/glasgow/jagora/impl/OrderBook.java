@@ -15,7 +15,7 @@ import uk.ac.glasgow.jagora.world.World;
  *
  * @param <O> the order type of this order book (either BuyOrder or SellOrder).
  */
-public class OrderBook<O extends Order>  {
+public class OrderBook<O extends Order & Comparable<O>>  {
 		
 	/**
 	 * Overrides default tick event ordering by comparing the stored event first

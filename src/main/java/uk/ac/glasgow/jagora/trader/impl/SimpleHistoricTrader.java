@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.OptionalDouble;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.util.Random;
@@ -68,9 +68,9 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements TickerTa
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		
-		BuyOrder buyOrder = 
-			new BuyOrder(this, randomStock, quantity, bestOfferPrice);
-		placeSafeBuyOrder(traderMarketView, buyOrder);
+		LimitBuyOrder limitBuyOrder = 
+			new LimitBuyOrder(this, randomStock, quantity, bestOfferPrice);
+		placeSafeBuyOrder(traderMarketView, limitBuyOrder);
 	}
 
 	private void placeSellOrder(
@@ -78,9 +78,9 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements TickerTa
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		
-		SellOrder sellOrder = 
-			new SellOrder(this, randomStock, quantity, bestOfferPrice);
-		placeSafeSellOrder(traderMarketView, sellOrder);
+		LimitSellOrder limitSellOrder = 
+			new LimitSellOrder(this, randomStock, quantity, bestOfferPrice);
+		placeSafeSellOrder(traderMarketView, limitSellOrder);
 	}
 
 	

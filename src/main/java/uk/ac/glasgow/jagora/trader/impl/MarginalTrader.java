@@ -2,10 +2,10 @@ package uk.ac.glasgow.jagora.trader.impl;
 
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.util.Random;
 
 /**
@@ -47,8 +47,8 @@ public class MarginalTrader extends AbstractTrader {
 
 		Integer quantity = random.nextInt(inventory.get(randomStock));
 
-		SellOrder sellOrder = new SellOrder(this, randomStock, quantity, price);
-		traderMarketView.placeSellOrder(sellOrder);
+		LimitSellOrder limitSellOrder = new LimitSellOrder(this, randomStock, quantity, price);
+		traderMarketView.placeSellOrder(limitSellOrder);
 
 	}
 
@@ -64,8 +64,8 @@ public class MarginalTrader extends AbstractTrader {
 
 		Integer quantity = (int) (getCash() / buyPrice);
 
-		BuyOrder buyOrder = new BuyOrder(this, randomStock, quantity, buyPrice);
-		traderMarketView.placeBuyOrder(buyOrder);
+		LimitBuyOrder limitBuyOrder = new LimitBuyOrder(this, randomStock, quantity, buyPrice);
+		traderMarketView.placeBuyOrder(limitBuyOrder);
 
 	}
 

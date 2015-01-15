@@ -12,6 +12,8 @@ import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubStockExchange;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.trader.Trader;
@@ -51,10 +53,10 @@ public class MarginalTraderTest {
 		StockExchangeTraderView traderOrderDrivenMarketView = 
 			marketForLemons.createTraderStockExchangeView();
 		
-		BuyOrder buyOrder = new BuyOrder(bob, lemons, 10, 5.1);
+		BuyOrder buyOrder = new LimitBuyOrder(bob, lemons, 10, 5.1);
 		traderOrderDrivenMarketView.placeBuyOrder(buyOrder);
 		
-		SellOrder sellOrder = new SellOrder(bob, lemons, 10, 4.9);
+		SellOrder sellOrder = new LimitSellOrder(bob, lemons, 10, 4.9);
 		traderOrderDrivenMarketView.placeSellOrder(sellOrder);
 		
 		for (Integer i = 0; i < numberOfTraderActions; i++) 
@@ -99,7 +101,7 @@ public class MarginalTraderTest {
 	private Double computeTotalPrice(List<? extends Order> orders) {
 		return
 			orders.stream()
-				.mapToDouble(order -> order.price)
+				.mapToDouble(order -> order.getPrice())
 				.sum();
 	}
 

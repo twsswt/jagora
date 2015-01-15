@@ -6,22 +6,19 @@ import java.util.List;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public abstract class Order implements Comparable<Order> {
+public abstract class Order {
 	
 	public final Trader trader;
 	public final Stock stock;
-		
-	public final Double price;
-	
+			
 	public final Integer initialQuantity;
 	
 	protected final List<TickEvent<Trade>> tradeHistory;
 	
-	public Order(Trader trader, Stock stock, Integer quantity, Double price) {
+	public Order(Trader trader, Stock stock, Integer quantity) {
 		this.trader = trader;
 		this.stock = stock;
 		this.initialQuantity = quantity;
-		this.price = price;
 		this.tradeHistory = new ArrayList<TickEvent<Trade>>();
 	}
 	
@@ -34,11 +31,19 @@ public abstract class Order implements Comparable<Order> {
 
 	@Override
 	public String toString (){
-		return String.format("%s:%s:%d:$%.2f", trader, stock.name, getRemainingQuantity(), price);
+		return String.format("%s:%s:%d", trader, stock.name, getRemainingQuantity());
 	}
 	
+	public abstract void satisfyTrade (TickEvent<Trade> trade) throws TradeExecutionException;
+	
+	public abstract void rollBackTrade (TickEvent<Trade> trade) throws TradeExecutionException;
+	
+	public abstract Double getPrice();
+
 	@Override
 	public int hashCode() {
+		Double price = getPrice();
+		
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((price == null) ? 0 : price.hashCode());
@@ -47,6 +52,8 @@ public abstract class Order implements Comparable<Order> {
 
 	@Override
 	public boolean equals(Object obj) {
+		Double price = getPrice();
+		
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -55,15 +62,10 @@ public abstract class Order implements Comparable<Order> {
 			return false;
 		Order other = (Order) obj;
 		if (price == null) {
-			if (other.price != null)
+			if (other.getPrice() != null)
 				return false;
-		} else if (!price.equals(other.price))
+		} else if (!price.equals(other.getPrice()))
 			return false;
 		return true;
 	}
-
-	
-	public abstract void satisfyTrade (TickEvent<Trade> trade) throws TradeExecutionException;
-	
-	public abstract void rollBackTrade (TickEvent<Trade> trade) throws TradeExecutionException;
 }

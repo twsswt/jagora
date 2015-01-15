@@ -10,6 +10,8 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
@@ -21,8 +23,8 @@ public class TradeTest {
 	
 	private StubTrader alice, bob;
 	
-	private BuyOrder buyOrder;
-	private SellOrder sellOrder;
+	private BuyOrder limitBuyOrder;
+	private SellOrder limitSellOrder;
 	
 	private ManualTickWorld world;
 	
@@ -39,10 +41,10 @@ public class TradeTest {
 			.build();
 	
 		
-		buyOrder = new BuyOrder(alice, lemons, 500, 50.0);
-		sellOrder = new SellOrder(bob, lemons, 1000, 45.0);
+		limitBuyOrder = new LimitBuyOrder(alice, lemons, 500, 50.0);
+		limitSellOrder = new LimitSellOrder(bob, lemons, 1000, 45.0);
 		
-		trade = new Trade(lemons, 500, 45.0, sellOrder, buyOrder);
+		trade = new Trade(lemons, 500, 45.0, limitSellOrder, limitBuyOrder);
 		
 		world = new ManualTickWorld();
 		world.setTickForEvent(0l, trade);
@@ -60,8 +62,8 @@ public class TradeTest {
 		assertEquals("", 10500, alice.getInventory(lemons).intValue());
 		assertEquals("",  9500, bob.getInventory(lemons).intValue());
 		
-		assertEquals("", valueOf(0), buyOrder.getRemainingQuantity());
-		assertEquals("", valueOf(500), sellOrder.getRemainingQuantity());
+		assertEquals("", valueOf(0), limitBuyOrder.getRemainingQuantity());
+		assertEquals("", valueOf(500), limitSellOrder.getRemainingQuantity());
 	}
 
 }

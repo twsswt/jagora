@@ -7,6 +7,8 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTrader extends SafeAbstractTrader {
@@ -76,7 +78,7 @@ public class RandomTrader extends SafeAbstractTrader {
 			Double price = createRandomPrice(randomStock);
 			
 			SellOrder sellOrder =
-				new SellOrder(this, randomStock, quantity, price);
+				new LimitSellOrder(this, randomStock, quantity, price);
 
 			placeSafeSellOrder(traderMarketView, sellOrder);
 			
@@ -100,7 +102,7 @@ public class RandomTrader extends SafeAbstractTrader {
 		if (price * quantity < availableCash){
 			
 			BuyOrder buyOrder =
-				new BuyOrder(this, stock, quantity, price);
+				new LimitBuyOrder(this, stock, quantity, price);
 			
 			placeSafeBuyOrder(traderMarketView, buyOrder);
 			

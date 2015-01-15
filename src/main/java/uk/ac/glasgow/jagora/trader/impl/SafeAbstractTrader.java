@@ -8,6 +8,8 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 
 public abstract class SafeAbstractTrader extends AbstractTrader {
 
@@ -20,10 +22,10 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		this.openSellOrders = new ArrayList<SellOrder>();
 	}
 	
-	protected void placeSafeBuyOrder(StockExchangeTraderView traderView, BuyOrder buyOrder) {
-		if (buyOrder.price * buyOrder.getRemainingQuantity() <= getAvailableCash()){
-			traderView.placeBuyOrder(buyOrder);
-			openBuyOrders.add(buyOrder);
+	protected void placeSafeBuyOrder(StockExchangeTraderView traderView, BuyOrder limitBuyOrder) {
+		if (limitBuyOrder.getPrice() * limitBuyOrder.getRemainingQuantity() <= getAvailableCash()){
+			traderView.placeBuyOrder(limitBuyOrder);
+			openBuyOrders.add(limitBuyOrder);
 		}
 	}
 	
@@ -41,8 +43,7 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		openSellOrders.remove(sellOrder);
 	}
 
-	protected void cancelSafeBuyOrder(StockExchangeTraderView traderMarketView,
-			BuyOrder randomBuyOrder) {
+	protected void cancelSafeBuyOrder(StockExchangeTraderView traderMarketView,	BuyOrder randomBuyOrder) {
 		traderMarketView.cancelBuyOrder(randomBuyOrder);
 		openBuyOrders.remove(randomBuyOrder);
 	}
@@ -50,7 +51,7 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	protected Double getAvailableCash() {
 		Double committedCash =
 			openBuyOrders.stream()
-			.mapToDouble(buyOrder -> (buyOrder.price * buyOrder.getRemainingQuantity()))
+			.mapToDouble(buyOrder -> (buyOrder.getPrice() * buyOrder.getRemainingQuantity()))
 			.sum();
 		
 		return getCash() - committedCash;
