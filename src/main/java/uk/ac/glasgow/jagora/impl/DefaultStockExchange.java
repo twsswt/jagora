@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Market;
 import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
@@ -47,11 +45,11 @@ public class DefaultStockExchange implements StockExchange{
 				market.doClearing());
 	}
 	
-	public List<BuyOrder> getBuyOrders(Stock stock){
+	public List<AbstractBuyOrder> getBuyOrders(Stock stock){
 		return getMarket(stock).getBuyOrders();
 	}
 	
-	public List<SellOrder> getSellOrders(Stock stock){
+	public List<AbstractSellOrder> getSellOrders(Stock stock){
 		return getMarket(stock).getSellOrders();
 	}
 		
@@ -64,11 +62,11 @@ public class DefaultStockExchange implements StockExchange{
 
 		@Override
 		public Double getBestOfferPrice(Stock stock) {			
-			List<SellOrder> limitSellOrders =
+			List<AbstractSellOrder> limitSellOrders =
 				getMarket(stock).getSellOrders();
 			
 			try {
-				SellOrder bestSellOrder = limitSellOrders.get(0);
+				AbstractSellOrder bestSellOrder = limitSellOrders.get(0);
 				return bestSellOrder.getPrice();
 			} catch (IndexOutOfBoundsException e){
 				return null;
@@ -77,11 +75,11 @@ public class DefaultStockExchange implements StockExchange{
 
 		@Override
 		public Double getBestBidPrice(Stock stock) {
-			List<BuyOrder> limitBuyOrders =
+			List<AbstractBuyOrder> limitBuyOrders =
 				getMarket(stock).getBuyOrders();
 
 			try {
-				BuyOrder bestBuyOrder = limitBuyOrders.get(0);
+				AbstractBuyOrder bestBuyOrder = limitBuyOrders.get(0);
 				return bestBuyOrder.getPrice();
 			} catch (IndexOutOfBoundsException e){
 				return null;
@@ -89,22 +87,22 @@ public class DefaultStockExchange implements StockExchange{
 		}
 
 		@Override
-		public void placeBuyOrder(BuyOrder limitBuyOrder) {
+		public void placeBuyOrder(AbstractBuyOrder limitBuyOrder) {
 			getMarket(limitBuyOrder.stock).recordBuyOrder(limitBuyOrder);		
 		}
 
 		@Override
-		public void placeSellOrder(SellOrder limitSellOrder) {
+		public void placeSellOrder(AbstractSellOrder limitSellOrder) {
 			getMarket(limitSellOrder.stock).recordSellOrder(limitSellOrder);			
 		}
 
 		@Override
-		public void cancelBuyOrder(BuyOrder limitBuyOrder) {
+		public void cancelBuyOrder(AbstractBuyOrder limitBuyOrder) {
 			getMarket(limitBuyOrder.stock).cancelBuyOrder(limitBuyOrder);			
 		}
 
 		@Override
-		public void cancelSellOrder(SellOrder limitSellOrder) {
+		public void cancelSellOrder(AbstractSellOrder limitSellOrder) {
 			getMarket(limitSellOrder.stock).cancelSellOrder(limitSellOrder);
 		}		
 	}

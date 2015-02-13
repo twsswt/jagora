@@ -6,10 +6,10 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
+import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
@@ -23,8 +23,8 @@ public class TradeTest {
 	
 	private StubTrader alice, bob;
 	
-	private BuyOrder limitBuyOrder;
-	private SellOrder limitSellOrder;
+	private AbstractBuyOrder limitBuyOrder;
+	private AbstractSellOrder limitSellOrder;
 	
 	private ManualTickWorld world;
 	

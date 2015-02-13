@@ -10,10 +10,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
+import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.impl.OrderBook;
@@ -30,8 +30,8 @@ public class OrderBookTest {
 		
 	private ManualTickWorld manualTickWorld;
 
-	private OrderBook<SellOrder> sellBook;
-	private OrderBook<BuyOrder> buyBook;
+	private OrderBook<AbstractSellOrder> sellBook;
+	private OrderBook<AbstractBuyOrder> buyBook;
 	
 	
 	@Before
@@ -42,8 +42,8 @@ public class OrderBookTest {
 		
 		manualTickWorld = new ManualTickWorld();
 				
-		sellBook = new OrderBook<SellOrder>(manualTickWorld);
-		buyBook = new OrderBook<BuyOrder>(manualTickWorld);
+		sellBook = new OrderBook<AbstractSellOrder>(manualTickWorld);
+		buyBook = new OrderBook<AbstractBuyOrder>(manualTickWorld);
 	}
 
 	@Test
@@ -68,8 +68,8 @@ public class OrderBookTest {
 		
 		Integer tradeTick = limitSellOrders.size();
 
-		for (SellOrder expected : limitSellOrders){
-			SellOrder actual = sellBook.getBestOrder();
+		for (AbstractSellOrder expected : limitSellOrders){
+			AbstractSellOrder actual = sellBook.getBestOrder();
 			assertEquals(expected,actual);
 			
 			Trade satisfyingTrade = new Trade(lemons, expected.initialQuantity,  expected.getPrice(), actual, null);
@@ -103,14 +103,14 @@ public class OrderBookTest {
 			
 		Collections.shuffle(randomisedbuyOrders);
 			
-		for (BuyOrder limitBuyOrder : randomisedbuyOrders){
+		for (AbstractBuyOrder limitBuyOrder : randomisedbuyOrders){
 			buyBook.recordOrder(limitBuyOrder);
 		}
 		
 		Integer tradeTick = limitBuyOrders.size();
 		
-		for (BuyOrder expected : limitBuyOrders){
-			BuyOrder actual = buyBook.getBestOrder();
+		for (AbstractBuyOrder expected : limitBuyOrders){
+			AbstractBuyOrder actual = buyBook.getBestOrder();
 			assertEquals(expected,actual);
 			Trade satisfyingTrade =
 				new Trade(lemons, expected.initialQuantity,  expected.getPrice(), null, actual);	

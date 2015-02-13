@@ -3,10 +3,10 @@ package uk.ac.glasgow.jagora.trader.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
+import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -77,13 +77,13 @@ public class RandomTrader extends SafeAbstractTrader {
 			Integer quantity = random.nextInt(uncommittedQuantity);
 			Double price = createRandomPrice(randomStock);
 			
-			SellOrder sellOrder =
+			AbstractSellOrder sellOrder =
 				new LimitSellOrder(this, randomStock, quantity, price);
 
 			placeSafeSellOrder(traderMarketView, sellOrder);
 			
 		} else {
-			SellOrder randomSellOrder = random.chooseElement(openSellOrders);
+			AbstractSellOrder randomSellOrder = random.chooseElement(openSellOrders);
 			if (randomSellOrder != null){
 				cancelSafeSellOrder(traderMarketView, randomSellOrder);
 			}
@@ -101,13 +101,13 @@ public class RandomTrader extends SafeAbstractTrader {
 		
 		if (price * quantity < availableCash){
 			
-			BuyOrder buyOrder =
+			AbstractBuyOrder buyOrder =
 				new LimitBuyOrder(this, stock, quantity, price);
 			
 			placeSafeBuyOrder(traderMarketView, buyOrder);
 			
 		} else {
-			BuyOrder randomBuyOrder = random.chooseElement(openBuyOrders);
+			AbstractBuyOrder randomBuyOrder = random.chooseElement(openBuyOrders);
 			if (randomBuyOrder != null){
 				cancelSafeBuyOrder(traderMarketView, randomBuyOrder);
 			}

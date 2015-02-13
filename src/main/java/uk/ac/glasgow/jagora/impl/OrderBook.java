@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 
@@ -15,7 +14,7 @@ import uk.ac.glasgow.jagora.world.World;
  *
  * @param <O> the order type of this order book (either BuyOrder or SellOrder).
  */
-public class OrderBook<O extends Order & Comparable<O>>  {
+public class OrderBook<O extends AbstractOrder & Comparable<O>>  {
 		
 	/**
 	 * Overrides default tick event ordering by comparing the stored event first

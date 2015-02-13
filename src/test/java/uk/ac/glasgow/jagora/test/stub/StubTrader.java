@@ -4,25 +4,25 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
-import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.AbstractOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
 
 public class StubTrader extends AbstractTrader{
 	
-	private final Queue<Order> orders;
+	private final Queue<AbstractOrder> orders;
 	
 	public StubTrader(String name, Double cash, Map<Stock, Integer> inventory) {
 		super(name, cash, inventory);
-		this.orders = new LinkedList<Order>();
+		this.orders = new LinkedList<AbstractOrder>();
 	}
 
 	@Override
 	public void speak(StockExchangeTraderView market) {
-		Order nextOrder = orders.poll();
+		AbstractOrder nextOrder = orders.poll();
 		if (nextOrder != null)
 			if (nextOrder instanceof LimitSellOrder)
 				market.placeSellOrder((LimitSellOrder)nextOrder);
@@ -31,7 +31,7 @@ public class StubTrader extends AbstractTrader{
 		
 	}
 	
-	public void supplyOrder (Order order){
+	public void supplyOrder (AbstractOrder order){
 		orders.offer(order);
 	}
 }

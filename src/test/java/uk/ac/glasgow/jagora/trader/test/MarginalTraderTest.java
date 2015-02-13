@@ -7,11 +7,11 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.Order;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
+import uk.ac.glasgow.jagora.impl.AbstractOrder;
+import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubStockExchange;
@@ -53,10 +53,10 @@ public class MarginalTraderTest {
 		StockExchangeTraderView traderOrderDrivenMarketView = 
 			marketForLemons.createTraderStockExchangeView();
 		
-		BuyOrder buyOrder = new LimitBuyOrder(bob, lemons, 10, 5.1);
+		AbstractBuyOrder buyOrder = new LimitBuyOrder(bob, lemons, 10, 5.1);
 		traderOrderDrivenMarketView.placeBuyOrder(buyOrder);
 		
-		SellOrder sellOrder = new LimitSellOrder(bob, lemons, 10, 4.9);
+		AbstractSellOrder sellOrder = new LimitSellOrder(bob, lemons, 10, 4.9);
 		traderOrderDrivenMarketView.placeSellOrder(sellOrder);
 		
 		for (Integer i = 0; i < numberOfTraderActions; i++) 
@@ -65,8 +65,8 @@ public class MarginalTraderTest {
 		// Given at least one bid and ask in the market, the marginal
 		// trader should continually add slightly better trades.
 		
-		List<SellOrder> sellOrders = marketForLemons.getSellOrders(lemons);
-		List<BuyOrder> buyOrders = marketForLemons.getBuyOrders(lemons);
+		List<AbstractSellOrder> sellOrders = marketForLemons.getSellOrders(lemons);
+		List<AbstractBuyOrder> buyOrders = marketForLemons.getBuyOrders(lemons);
 		
 		assertEquals("", numberOfTraderActions + 2, sellOrders.size() + buyOrders.size());
 		
@@ -77,7 +77,7 @@ public class MarginalTraderTest {
 	}
 	
 	private void checkTotalPrice(
-		List<? extends Order> orders, Double counterPartyPrice, Double marginalPrice) {
+		List<? extends AbstractOrder> orders, Double counterPartyPrice, Double marginalPrice) {
 		
 		Double expected =
 			computeExpectedPrice(counterPartyPrice, orders, marginalPrice);
@@ -88,7 +88,7 @@ public class MarginalTraderTest {
 	}
 	
 	private Double computeExpectedPrice(
-			Double counterPartyPrice, List<? extends Order> orders, Double marginalPrice){
+			Double counterPartyPrice, List<? extends AbstractOrder> orders, Double marginalPrice){
 			
 			Double totalMarginalDifference = 
 					computeMarginalDifference(orders);
@@ -98,14 +98,14 @@ public class MarginalTraderTest {
 		}
 
 
-	private Double computeTotalPrice(List<? extends Order> orders) {
+	private Double computeTotalPrice(List<? extends AbstractOrder> orders) {
 		return
 			orders.stream()
 				.mapToDouble(order -> order.getPrice())
 				.sum();
 	}
 
-	private Double computeMarginalDifference(List<? extends Order> orders) {
+	private Double computeMarginalDifference(List<? extends AbstractOrder> orders) {
 		return orders.size() * orders.size() * Double.MIN_NORMAL / 2;
 	}
 

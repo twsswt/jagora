@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
+import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -85,9 +85,9 @@ public class SimpleHistoricTraderTest {
 	public void test() {
 		
 		//Create initial market conditions
-		BuyOrder seedBuyOrder = new LimitBuyOrder(dan, lemons, 10, 5.0);
+		AbstractBuyOrder seedBuyOrder = new LimitBuyOrder(dan, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
-		SellOrder seedSellOrder = new LimitSellOrder(dan, lemons, 10, 5.0);
+		AbstractSellOrder seedSellOrder = new LimitSellOrder(dan, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
 		
 		//Allow two random traders to create a liquid market.

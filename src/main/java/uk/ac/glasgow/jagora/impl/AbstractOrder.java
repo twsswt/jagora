@@ -1,12 +1,15 @@
-package uk.ac.glasgow.jagora;
+package uk.ac.glasgow.jagora.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public abstract class Order {
+public abstract class AbstractOrder {
 	
 	public final Trader trader;
 	public final Stock stock;
@@ -15,7 +18,7 @@ public abstract class Order {
 	
 	protected final List<TickEvent<Trade>> tradeHistory;
 	
-	public Order(Trader trader, Stock stock, Integer quantity) {
+	public AbstractOrder(Trader trader, Stock stock, Integer quantity) {
 		this.trader = trader;
 		this.stock = stock;
 		this.initialQuantity = quantity;
@@ -60,7 +63,7 @@ public abstract class Order {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Order other = (Order) obj;
+		AbstractOrder other = (AbstractOrder) obj;
 		if (price == null) {
 			if (other.getPrice() != null)
 				return false;

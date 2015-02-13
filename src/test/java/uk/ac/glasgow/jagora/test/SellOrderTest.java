@@ -6,19 +6,19 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 
 public class SellOrderTest {
 	
 	private static final Stock lemons = new Stock("lemons");
 	
-	private SellOrder[] limitSellOrders;
+	private AbstractSellOrder[] limitSellOrders;
 
 	@Before
 	public void setUp() throws Exception {
-		limitSellOrders = new SellOrder[3];
+		limitSellOrders = new AbstractSellOrder[3];
 		
 		limitSellOrders[0] = new LimitSellOrder(null, lemons, 10, 50.0);
 		limitSellOrders[1] = new LimitSellOrder(null, lemons, 10, 50.0);

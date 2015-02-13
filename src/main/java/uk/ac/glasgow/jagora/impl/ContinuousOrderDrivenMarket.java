@@ -3,9 +3,7 @@ package uk.ac.glasgow.jagora.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Market;
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
@@ -22,34 +20,34 @@ public class ContinuousOrderDrivenMarket implements Market {
 	public final Stock stock;
 	public final World world;
 
-	private final OrderBook<SellOrder> sellBook;
-	private final OrderBook<BuyOrder> buyBook;
+	private final OrderBook<AbstractSellOrder> sellBook;
+	private final OrderBook<AbstractBuyOrder> buyBook;
 			
 	public ContinuousOrderDrivenMarket (Stock stock, World world){
 		this.stock = stock;
 		this.world = world;
 
-		sellBook = new OrderBook<SellOrder>(world);
-		buyBook = new OrderBook<BuyOrder>(world);
+		sellBook = new OrderBook<AbstractSellOrder>(world);
+		buyBook = new OrderBook<AbstractBuyOrder>(world);
 	}
 	
 	@Override
-	public void recordBuyOrder(BuyOrder order) {
+	public void recordBuyOrder(AbstractBuyOrder order) {
 		buyBook.recordOrder(order);
 	}
 	
 	@Override
-	public void recordSellOrder(SellOrder order) {
+	public void recordSellOrder(AbstractSellOrder order) {
 		sellBook.recordOrder(order);
 	}
 	
 	@Override
-	public void cancelBuyOrder(BuyOrder order) {
+	public void cancelBuyOrder(AbstractBuyOrder order) {
 		buyBook.cancelOrder(order);
 	}
 	
 	@Override
-	public void cancelSellOrder(SellOrder order) {
+	public void cancelSellOrder(AbstractSellOrder order) {
 		sellBook.cancelOrder(order);
 	}
 		
@@ -62,8 +60,8 @@ public class ContinuousOrderDrivenMarket implements Market {
 		List<TickEvent<Trade>> executedTrades =
 			new ArrayList<TickEvent<Trade>>();
 		
-		SellOrder lowestSell = sellBook.getBestOrder();
-		BuyOrder highestBuy = buyBook.getBestOrder();
+		AbstractSellOrder lowestSell = sellBook.getBestOrder();
+		AbstractBuyOrder highestBuy = buyBook.getBestOrder();
 
 		while (aTradeCanBeExecuted(lowestSell, highestBuy)){
 			Integer quantity = 
@@ -101,7 +99,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 
 	private boolean aTradeCanBeExecuted(
-		SellOrder lowestSell, BuyOrder highestBuy) {
+		AbstractSellOrder lowestSell, AbstractBuyOrder highestBuy) {
 		return 
 			lowestSell != null &&
 			highestBuy != null &&
@@ -109,12 +107,12 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 	
 	@Override
-	public List<BuyOrder> getBuyOrders() {
+	public List<AbstractBuyOrder> getBuyOrders() {
 		return buyBook.getOpenOrders();
 	}
 
 	@Override
-	public List<SellOrder> getSellOrders() {
+	public List<AbstractSellOrder> getSellOrders() {
 		return sellBook.getOpenOrders();
 	}
 

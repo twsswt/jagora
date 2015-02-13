@@ -1,11 +1,14 @@
-package uk.ac.glasgow.jagora;
+package uk.ac.glasgow.jagora.impl;
 
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public abstract class BuyOrder extends Order implements Comparable<BuyOrder> {
+public abstract class AbstractBuyOrder extends AbstractOrder implements Comparable<AbstractBuyOrder> {
 
-	public BuyOrder(Trader trader, Stock stock, Integer quantity) {
+	public AbstractBuyOrder(Trader trader, Stock stock, Integer quantity) {
 		super(trader, stock, quantity);
 	}
 
@@ -24,7 +27,7 @@ public abstract class BuyOrder extends Order implements Comparable<BuyOrder> {
 	public abstract Double getPrice();
 	
 	@Override
-	public int compareTo(BuyOrder order) {
+	public int compareTo(AbstractBuyOrder order) {
 		return order.getPrice().compareTo(this.getPrice());
 	}
 

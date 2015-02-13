@@ -1,6 +1,8 @@
 package uk.ac.glasgow.jagora;
 
 import static java.lang.String.format;
+import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
+import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
@@ -11,10 +13,10 @@ public class Trade {
 	public final Integer quantity;
 	public final Double price;
 	
-	private final SellOrder sellOrder;
-	private final BuyOrder buyOrder;
+	private final AbstractSellOrder sellOrder;
+	private final AbstractBuyOrder buyOrder;
 	
-	public Trade(Stock stock, Integer quantity, Double price, SellOrder sellOrder, BuyOrder buyOrder) {
+	public Trade(Stock stock, Integer quantity, Double price, AbstractSellOrder sellOrder, AbstractBuyOrder buyOrder) {
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;

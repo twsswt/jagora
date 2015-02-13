@@ -1,10 +1,9 @@
 package uk.ac.glasgow.jagora.impl;
 
-import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.Trader;
 
-public class LimitBuyOrder extends BuyOrder {
+public class LimitBuyOrder extends AbstractBuyOrder {
 
 	public final Double price;
 	
