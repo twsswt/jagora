@@ -141,7 +141,7 @@ public class SimpleHistoricTraderTest {
 					.getAsDouble();
 		
 		assertThat("", aliceSellAveragePrice, greaterThan(averageLemonPrice));
-		assertThat("", aliceBuyAveragePrice, lessThan(averageLemonPrice));
 
+		assertThat("", aliceBuyAveragePrice, lessThan(averageLemonPrice));
 	}
 }
