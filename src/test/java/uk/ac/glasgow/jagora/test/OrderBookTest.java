@@ -10,15 +10,19 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
 import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
+import uk.ac.glasgow.jagora.impl.AbstractTrade;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.impl.OrderBook;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
+import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
 
 public class OrderBookTest {
@@ -30,8 +34,8 @@ public class OrderBookTest {
 		
 	private ManualTickWorld manualTickWorld;
 
-	private OrderBook<AbstractSellOrder> sellBook;
-	private OrderBook<AbstractBuyOrder> buyBook;
+	private OrderBook<SellOrder> sellBook;
+	private OrderBook<BuyOrder> buyBook;
 	
 	
 	@Before
@@ -42,8 +46,8 @@ public class OrderBookTest {
 		
 		manualTickWorld = new ManualTickWorld();
 				
-		sellBook = new OrderBook<AbstractSellOrder>(manualTickWorld);
-		buyBook = new OrderBook<AbstractBuyOrder>(manualTickWorld);
+		sellBook = new OrderBook<SellOrder>(manualTickWorld);
+		buyBook = new OrderBook<BuyOrder>(manualTickWorld);
 	}
 
 	@Test
@@ -68,11 +72,11 @@ public class OrderBookTest {
 		
 		Integer tradeTick = limitSellOrders.size();
 
-		for (AbstractSellOrder expected : limitSellOrders){
-			AbstractSellOrder actual = sellBook.getBestOrder();
+		for (SellOrder expected : limitSellOrders){
+			SellOrder actual = sellBook.getBestOrder();
 			assertEquals(expected,actual);
 			
-			Trade satisfyingTrade = new Trade(lemons, expected.initialQuantity,  expected.getPrice(), actual, null);
+			Trade satisfyingTrade = new AbstractTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), actual, null);
 			
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
@@ -103,17 +107,17 @@ public class OrderBookTest {
 			
 		Collections.shuffle(randomisedbuyOrders);
 			
-		for (AbstractBuyOrder limitBuyOrder : randomisedbuyOrders){
+		for (BuyOrder limitBuyOrder : randomisedbuyOrders){
 			buyBook.recordOrder(limitBuyOrder);
 		}
 		
 		Integer tradeTick = limitBuyOrders.size();
 		
-		for (AbstractBuyOrder expected : limitBuyOrders){
-			AbstractBuyOrder actual = buyBook.getBestOrder();
+		for (BuyOrder expected : limitBuyOrders){
+			BuyOrder actual = buyBook.getBestOrder();
 			assertEquals(expected,actual);
 			Trade satisfyingTrade =
-				new Trade(lemons, expected.initialQuantity,  expected.getPrice(), null, actual);	
+				new AbstractTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);	
 			
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 

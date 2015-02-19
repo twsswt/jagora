@@ -6,10 +6,11 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
-import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
+import uk.ac.glasgow.jagora.impl.AbstractTrade;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
@@ -23,12 +24,12 @@ public class TradeTest {
 	
 	private StubTrader alice, bob;
 	
-	private AbstractBuyOrder limitBuyOrder;
-	private AbstractSellOrder limitSellOrder;
+	private BuyOrder limitBuyOrder;
+	private SellOrder limitSellOrder;
 	
 	private ManualTickWorld world;
 	
-	private Trade trade;
+	private AbstractTrade trade;
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,7 +45,7 @@ public class TradeTest {
 		limitBuyOrder = new LimitBuyOrder(alice, lemons, 500, 50.0);
 		limitSellOrder = new LimitSellOrder(bob, lemons, 1000, 45.0);
 		
-		trade = new Trade(lemons, 500, 45.0, limitSellOrder, limitBuyOrder);
+		trade = new AbstractTrade(lemons, 500, 45.0, limitSellOrder, limitBuyOrder);
 		
 		world = new ManualTickWorld();
 		world.setTickForEvent(0l, trade);

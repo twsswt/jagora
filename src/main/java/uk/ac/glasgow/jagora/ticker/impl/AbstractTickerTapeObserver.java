@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.impl.AbstractTrade;
 import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
 import uk.ac.glasgow.jagora.ticker.TickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
@@ -34,7 +35,7 @@ public abstract class AbstractTickerTapeObserver implements TickerTapeObserver {
 		
 		executedTrades
 			.stream()
-			.filter(executedTrade -> executedTrade.event.stock.equals(oranges))
+			.filter(executedTrade -> executedTrade.event.getStock().equals(oranges))
 			.forEach(executedTrade -> result.add(executedTrade));
 
 		return result;
@@ -49,6 +50,7 @@ public abstract class AbstractTickerTapeObserver implements TickerTapeObserver {
 	@Override
 	public void notifyTickerTapeListeners(List<TickEvent<Trade>> newlyExecutedTrades) {
 		executedTrades.addAll(newlyExecutedTrades);
+		
 		for (TickEvent<Trade> executedTrade: executedTrades)
 			notifyTickerTapeListenersOfTrade(executedTrade);
 	}
@@ -57,13 +59,13 @@ public abstract class AbstractTickerTapeObserver implements TickerTapeObserver {
 	
 		TradeExecutionEvent tradeExecutedEvent = 
 			new TradeExecutionEvent(
-				executedTrade.event.stock,
+				executedTrade.event.getStock(),
 				executedTrade.tick,
-				executedTrade.event.price,
-				executedTrade.event.quantity);
+				executedTrade.event.getPrice(),
+				executedTrade.event.getQuantity());
 		
 		List<TickerTapeListener> randomisedTickerTapeListeners =
-			getRandomisedTicketTapeListeners(executedTrade.event.stock);
+			getRandomisedTicketTapeListeners(executedTrade.event.getStock());
 		
 		for (TickerTapeListener tickerTapeListener: randomisedTickerTapeListeners)
 			notifyTickerTapeListenerOfTrade(tradeExecutedEvent, tickerTapeListener);

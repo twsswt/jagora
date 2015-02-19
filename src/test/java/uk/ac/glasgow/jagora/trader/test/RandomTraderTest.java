@@ -7,9 +7,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
-import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubStockExchange;
@@ -18,7 +18,7 @@ import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
 
 public class RandomTraderTest {
 	
-	private final Integer numberOfTraderActions = 10000;
+	private final Integer numberOfTraderActions = 10;
 	
 	private Trader trader;
 	private Stock lemons;
@@ -44,18 +44,18 @@ public class RandomTraderTest {
 	@Test
 	public void test() {
 		//Seed the exchange with initial buys and sells.
-		AbstractBuyOrder seedBuyOrder = new LimitBuyOrder(trader, lemons, 10, 5.0);
+		BuyOrder seedBuyOrder = new LimitBuyOrder(trader, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
-		AbstractSellOrder seedSellOrder = new LimitSellOrder(trader, lemons, 10, 5.0);
+		SellOrder seedSellOrder = new LimitSellOrder(trader, lemons, 10, 5.0);
 		marketForLemons.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
 		
 		for (Integer i = 0; i < numberOfTraderActions; i++)
 			trader.speak(marketForLemons.createTraderStockExchangeView());
 		
-		List<AbstractBuyOrder> BuyOrders = 
+		List<BuyOrder> BuyOrders = 
 			marketForLemons.getBuyOrders(lemons);		
 		
-		List<AbstractSellOrder> SellOrders = 
+		List<SellOrder> SellOrders = 
 				marketForLemons.getSellOrders(lemons);
 		
 		Double actualAverageBuyPrice = 

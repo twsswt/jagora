@@ -3,18 +3,19 @@ package uk.ac.glasgow.jagora.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public abstract class AbstractOrder {
+public abstract class AbstractOrder implements Order {
 	
-	public final Trader trader;
-	public final Stock stock;
+	private final Trader trader;
+	private final Stock stock;
 			
-	public final Integer initialQuantity;
+	private final Integer initialQuantity;
 	
 	protected final List<TickEvent<Trade>> tradeHistory;
 	
@@ -25,9 +26,20 @@ public abstract class AbstractOrder {
 		this.tradeHistory = new ArrayList<TickEvent<Trade>>();
 	}
 	
+	@Override
+	public Trader getTrader (){
+		return trader;
+	}
+	
+	@Override
+	public Stock getStock (){
+		return stock;
+	}
+	
+	@Override
 	public Integer getRemainingQuantity (){
 		Integer tradeQuantity = 
-			tradeHistory.stream().mapToInt(executedTrade -> executedTrade.event.quantity).sum();
+			tradeHistory.stream().mapToInt(executedTrade -> executedTrade.event.getQuantity()).sum();
 		
 		return initialQuantity - tradeQuantity;
 	}
@@ -37,10 +49,13 @@ public abstract class AbstractOrder {
 		return String.format("%s:%s:%d", trader, stock.name, getRemainingQuantity());
 	}
 	
+	@Override
 	public abstract void satisfyTrade (TickEvent<Trade> trade) throws TradeExecutionException;
 	
+	@Override
 	public abstract void rollBackTrade (TickEvent<Trade> trade) throws TradeExecutionException;
 	
+	@Override
 	public abstract Double getPrice();
 
 	@Override
@@ -63,7 +78,7 @@ public abstract class AbstractOrder {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AbstractOrder other = (AbstractOrder) obj;
+		Order other = (Order) obj;
 		if (price == null) {
 			if (other.getPrice() != null)
 				return false;

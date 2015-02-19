@@ -31,6 +31,11 @@ public class SerialRandomEngineBuilder {
 		traders.add(trader);
 		return this;
 	}
+	
+	public SerialRandomEngineBuilder addTraders(Set<Trader> traders){
+		this.traders.addAll(traders);
+		return this;
+	}
 
 	public SerialRandomEngine build() {
 		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed));

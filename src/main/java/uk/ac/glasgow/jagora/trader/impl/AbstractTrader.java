@@ -68,14 +68,14 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void sellStock(Trade trade) throws TradeExecutionException {
-		Integer currentQuantity = inventory.getOrDefault(trade.stock, 0);
+		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0);
 
-		if (currentQuantity < trade.quantity){ 
+		if (currentQuantity < trade.getQuantity()){ 
 			String message = format("Seller [%s] cannot satisfy trade [%s].", name, trade);
 			throw new TradeExecutionException (message, trade, this);
 		} else {
-			inventory.put(trade.stock, currentQuantity - trade.quantity);
-			cash += trade.price * trade.quantity;
+			inventory.put(trade.getStock(), currentQuantity - trade.getQuantity());
+			cash += trade.getPrice() * trade.getQuantity();
 			mySellTrades.add(trade);
 		}
 	}
@@ -85,15 +85,15 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void buyStock(Trade trade) throws TradeExecutionException {
-		Double totalPrice = trade.price * trade.quantity;
+		Double totalPrice = trade.getPrice() * trade.getQuantity();
 		
 		if (totalPrice > cash){
 			String message = format("Buyer [%s] cannot satisfy trade [%s].", name, trade);
 			throw new TradeExecutionException (message, trade, this);		
 		} else {
 			cash -= totalPrice;
-			Integer currentQuantity = inventory.getOrDefault(trade.stock, 0);
-			inventory.put(trade.stock, currentQuantity + trade.quantity);
+			Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0);
+			inventory.put(trade.getStock(), currentQuantity + trade.getQuantity());
 			myBuyTrades.add(trade);
 		}
 	}

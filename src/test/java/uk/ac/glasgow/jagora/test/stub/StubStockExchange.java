@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
@@ -14,8 +16,8 @@ import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
 
 public class StubStockExchange implements StockExchange {
 
-	private final Map<Stock,List<AbstractBuyOrder>> allBuyOrders;
-	private final Map<Stock,List<AbstractSellOrder>> allSellOrders;
+	private final Map<Stock,List<BuyOrder>> allBuyOrders;
+	private final Map<Stock,List<SellOrder>> allSellOrders;
 
 	/**
 	 * Does nothing.
@@ -24,8 +26,8 @@ public class StubStockExchange implements StockExchange {
 	public void doClearing() {	}
 	
 	public StubStockExchange (){
-		allBuyOrders = new HashMap<Stock,List<AbstractBuyOrder>> ();
-		allSellOrders = new HashMap<Stock,List<AbstractSellOrder>>();
+		allBuyOrders = new HashMap<Stock,List<BuyOrder>> ();
+		allSellOrders = new HashMap<Stock,List<SellOrder>>();
 	}
 	
 	@Override
@@ -52,42 +54,42 @@ public class StubStockExchange implements StockExchange {
 			}
 
 			@Override
-			public void placeBuyOrder(AbstractBuyOrder BuyOrder) {
-				getBuyOrders(BuyOrder.stock).add(BuyOrder);
+			public void placeBuyOrder(BuyOrder buyOrder) {
+				getBuyOrders(buyOrder.getStock()).add(buyOrder);
 			}
 
 			@Override
-			public void placeSellOrder(AbstractSellOrder SellOrder) {
-				getSellOrders(SellOrder.stock).add(SellOrder);
+			public void placeSellOrder(SellOrder SellOrder) {
+				getSellOrders(SellOrder.getStock()).add(SellOrder);
 			}
 
 			@Override
-			public void cancelBuyOrder(AbstractBuyOrder BuyOrder) {
-				getBuyOrders(BuyOrder.stock).remove(BuyOrder);
+			public void cancelBuyOrder(BuyOrder BuyOrder) {
+				getBuyOrders(BuyOrder.getStock()).remove(BuyOrder);
 				
 			}
 
 			@Override
-			public void cancelSellOrder(AbstractSellOrder SellOrder) {
-				getSellOrders(SellOrder.stock).remove(SellOrder);
+			public void cancelSellOrder(SellOrder SellOrder) {
+				getSellOrders(SellOrder.getStock()).remove(SellOrder);
 			}			
 		};
 		
 	}
 
-	public List<AbstractBuyOrder> getBuyOrders(Stock stock) {
-		List<AbstractBuyOrder> BuyOrders = allBuyOrders.get(stock);
+	public List<BuyOrder> getBuyOrders(Stock stock) {
+		List<BuyOrder> BuyOrders = allBuyOrders.get(stock);
 		if (BuyOrders == null){
-			BuyOrders = new ArrayList<AbstractBuyOrder>();
+			BuyOrders = new ArrayList<BuyOrder>();
 			allBuyOrders.put(stock, BuyOrders);
 		}
 		return BuyOrders;
 	}
 
-	public List<AbstractSellOrder> getSellOrders(Stock stock) {
-		List<AbstractSellOrder> SellOrders = allSellOrders.get(stock);
+	public List<SellOrder> getSellOrders(Stock stock) {
+		List<SellOrder> SellOrders = allSellOrders.get(stock);
 		if (SellOrders == null){
-			SellOrders = new ArrayList<AbstractSellOrder>();
+			SellOrders = new ArrayList<SellOrder>();
 			allSellOrders.put(stock, SellOrders);
 		}
 		return SellOrders;

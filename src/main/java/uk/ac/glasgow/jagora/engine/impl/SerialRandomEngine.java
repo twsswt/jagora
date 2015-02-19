@@ -5,12 +5,12 @@ import java.util.Set;
 
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
-import uk.ac.glasgow.jagora.engine.ExecutionEngine;
+import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 
-public class SerialRandomEngine implements ExecutionEngine {
+public class SerialRandomEngine implements TradingEngine {
 	
 	private final Set<StockExchange> markets;
 	private final Set<Trader> traders;

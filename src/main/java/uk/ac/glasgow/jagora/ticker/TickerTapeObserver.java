@@ -4,6 +4,7 @@ import java.util.List;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.impl.AbstractTrade;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 public interface TickerTapeObserver {
@@ -20,6 +21,6 @@ public interface TickerTapeObserver {
 	 * trade for a particular stock.
 	 * @param executedTrade
 	 */
-	public abstract void notifyTickerTapeListeners(List<TickEvent<Trade>> executedTrades);
+	public abstract void notifyTickerTapeListeners(List<TickEvent<Trade>> list);
 
 }

@@ -3,10 +3,10 @@ package uk.ac.glasgow.jagora.trader.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
-import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
-import uk.ac.glasgow.jagora.impl.AbstractSellOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -30,9 +30,6 @@ public class RandomTrader extends SafeAbstractTrader {
 	
 	private final Map<Stock,TradeRange> tradeRanges;
 	private final Random random;
-
-	private Map<Stock,Double> lastKnownPrices;
-
 	
 	public RandomTrader(
 		String name, Double cash, Map<Stock, Integer> inventory,
@@ -41,59 +38,49 @@ public class RandomTrader extends SafeAbstractTrader {
 		super(name, cash, inventory);
 		this.random = random;
 		this.tradeRanges = new HashMap<Stock,TradeRange>(tradeRanges);
-		this.lastKnownPrices = new HashMap<Stock,Double>();
 	}
 
 	@Override
 	public void speak(StockExchangeTraderView traderMarketView) {
 		Stock randomStock = random.chooseElement(tradeRanges.keySet());
 		
-		updateLastKnownPrice(traderMarketView, randomStock);
-
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
 		else 
 			performRandomBuyAction(randomStock, traderMarketView);
 	}
 
-	private void updateLastKnownPrice(
-			StockExchangeTraderView traderMarketView, Stock stock) {
-
-		Double bestBidPrice = traderMarketView.getBestBidPrice(stock);
-		Double bestOfferPrice = traderMarketView.getBestOfferPrice(stock);
-		
-		if (bestBidPrice != null && bestOfferPrice != null)
-			lastKnownPrices.put(stock, (bestBidPrice + bestOfferPrice) / 2 );
-	}
-
 	private void performRandomSellAction(
-		Stock randomStock, StockExchangeTraderView traderMarketView) {
+		Stock stock, StockExchangeTraderView stockExchangeTraderView) {
 		
 		Integer uncommittedQuantity = 
-			getAvailableQuantity(randomStock);
+			getAvailableQuantity(stock);
 		
 		if (uncommittedQuantity > 0){
 			
 			Integer quantity = random.nextInt(uncommittedQuantity);
-			Double price = createRandomPrice(randomStock);
+			Double bestOfferPrice = stockExchangeTraderView.getBestOfferPrice(stock);
 			
-			AbstractSellOrder sellOrder =
-				new LimitSellOrder(this, randomStock, quantity, price);
+			Double price = createRandomPrice(stock, bestOfferPrice);
+			
+			SellOrder sellOrder =
+				new LimitSellOrder(this, stock, quantity, price);
 
-			placeSafeSellOrder(traderMarketView, sellOrder);
+			placeSafeSellOrder(stockExchangeTraderView, sellOrder);
 			
 		} else {
-			AbstractSellOrder randomSellOrder = random.chooseElement(openSellOrders);
+			SellOrder randomSellOrder = random.chooseElement(openSellOrders);
 			if (randomSellOrder != null){
-				cancelSafeSellOrder(traderMarketView, randomSellOrder);
+				cancelSafeSellOrder(stockExchangeTraderView, randomSellOrder);
 			}
 		}
 	}
 
 	private void performRandomBuyAction(
-		Stock stock, StockExchangeTraderView traderMarketView) {
+		Stock stock, StockExchangeTraderView stockExchangeTraderView) {
 		
-		Double price = createRandomPrice(stock);
+		Double bestBidPrice = stockExchangeTraderView.getBestBidPrice(stock);
+		Double price = createRandomPrice(stock, bestBidPrice);
 		
 		Integer quantity = createRandomQuantity(stock);
 		
@@ -101,28 +88,26 @@ public class RandomTrader extends SafeAbstractTrader {
 		
 		if (price * quantity < availableCash){
 			
-			AbstractBuyOrder buyOrder =
+			BuyOrder buyOrder =
 				new LimitBuyOrder(this, stock, quantity, price);
 			
-			placeSafeBuyOrder(traderMarketView, buyOrder);
+			placeSafeBuyOrder(stockExchangeTraderView, buyOrder);
 			
 		} else {
-			AbstractBuyOrder randomBuyOrder = random.chooseElement(openBuyOrders);
+			BuyOrder randomBuyOrder = random.chooseElement(openBuyOrders);
 			if (randomBuyOrder != null){
-				cancelSafeBuyOrder(traderMarketView, randomBuyOrder);
+				cancelSafeBuyOrder(stockExchangeTraderView, randomBuyOrder);
 			}
 		}
 		
 	}
 
-	private Double createRandomPrice(Stock stock) {
-		
-		Double lastKnownPrice = lastKnownPrices.get(stock);
-		
+	private Double createRandomPrice(Stock stock, Double bestPrice) {
+				
 		TradeRange tradeRange = tradeRanges.get(stock);
 			return
 				random.nextDouble() * 
-					(tradeRange.high - tradeRange.low) + tradeRange.low + lastKnownPrice;
+					(tradeRange.high - tradeRange.low) + tradeRange.low + bestPrice;
 	}
 	
 	private Integer createRandomQuantity(Stock stock) {

@@ -8,11 +8,11 @@ import org.junit.Test;
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.engine.ExecutionEngine;
+import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.test.stub.SerialTickerTapeObserver;
+import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.BuyOnlyTrader;
 import uk.ac.glasgow.jagora.trader.impl.SellOnlyTrader;
@@ -28,7 +28,7 @@ public class SerialRandomEngineTest {
 	private static final Double stockPrice = 1.0;
 	private static final Integer orderQuantity = 1;
 
-	private ExecutionEngine engine;
+	private TradingEngine engine;
 	
 	private StockExchange stockExchange;
 	private Stock lemons;
