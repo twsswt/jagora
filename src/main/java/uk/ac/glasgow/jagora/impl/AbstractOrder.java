@@ -1,5 +1,7 @@
 package uk.ac.glasgow.jagora.impl;
 
+import static java.lang.String.format;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +48,8 @@ public abstract class AbstractOrder implements Order {
 
 	@Override
 	public String toString (){
-		return String.format("%s:%s:%d", trader, stock.name, getRemainingQuantity());
+		return format("[trader=%s, stock=%s, quantity=%d, price=%.2f]", 
+			trader.getName(), stock.name, getRemainingQuantity(), getPrice());
 	}
 	
 	@Override

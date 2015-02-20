@@ -4,7 +4,6 @@ import java.util.List;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.impl.AbstractTrade;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 public interface TickerTapeObserver {

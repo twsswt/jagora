@@ -4,7 +4,6 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
-import uk.ac.glasgow.jagora.impl.AbstractTrade;
 
 /**
  * Specifies the behaviour of a trader who is able to speak on a stock exchange
@@ -60,5 +59,7 @@ public interface Trader {
 	 * @param traderView
 	 */
 	public abstract void speak(StockExchangeTraderView traderView);
+
+	public abstract String getName();
 	
 }

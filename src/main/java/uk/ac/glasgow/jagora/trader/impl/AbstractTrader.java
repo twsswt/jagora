@@ -25,7 +25,7 @@ public abstract class AbstractTrader implements Trader {
 	/**
 	 * A unique identifier for the trader.
 	 */
-	public final String name;
+	private final String name;
 
 	private Double cash; 
 	protected final Map<Stock,Integer> inventory;
@@ -39,6 +39,10 @@ public abstract class AbstractTrader implements Trader {
 		this.inventory = new HashMap<Stock,Integer>(inventory);
 		this.mySellTrades = new ArrayList<Trade>();
 		this.myBuyTrades = new ArrayList<Trade>();
+	}
+	
+	public String getName (){
+		return name;
 	}
 	
 	/**

@@ -11,7 +11,6 @@ import java.util.Set;
 
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.impl.AbstractTrade;
 import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
 import uk.ac.glasgow.jagora.ticker.TickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
@@ -29,13 +28,13 @@ public abstract class AbstractTickerTapeObserver implements TickerTapeObserver {
 	}
 	
 
-	public List<TickEvent<Trade>> getTradeHistory(Stock oranges) {
+	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
 		
 		List<TickEvent<Trade>> result = new ArrayList<TickEvent<Trade>>();
 		
 		executedTrades
 			.stream()
-			.filter(executedTrade -> executedTrade.event.getStock().equals(oranges))
+			.filter(executedTrade -> executedTrade.event.getStock().equals(stock))
 			.forEach(executedTrade -> result.add(executedTrade));
 
 		return result;
@@ -51,7 +50,7 @@ public abstract class AbstractTickerTapeObserver implements TickerTapeObserver {
 	public void notifyTickerTapeListeners(List<TickEvent<Trade>> newlyExecutedTrades) {
 		executedTrades.addAll(newlyExecutedTrades);
 		
-		for (TickEvent<Trade> executedTrade: executedTrades)
+		for (TickEvent<Trade> executedTrade: newlyExecutedTrades)
 			notifyTickerTapeListenersOfTrade(executedTrade);
 	}
 

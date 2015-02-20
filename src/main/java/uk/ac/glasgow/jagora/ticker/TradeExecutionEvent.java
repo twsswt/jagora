@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.ticker;
 
+import static java.lang.String.format;
 import uk.ac.glasgow.jagora.Stock;
 
 public class TradeExecutionEvent {
@@ -17,6 +18,6 @@ public class TradeExecutionEvent {
 
 	@Override
 	public String toString() {
-		return "TradeExecutionEvent [" + tick + ":" + tick	+ ":" + price + ":" + quantity + "]";
+		return format("[tick=%d, stock=%s, quantity=%d, price=%.2f]", tick, stock, quantity, price);
 	}
 }
