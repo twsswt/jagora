@@ -13,6 +13,5 @@ public interface StockExchange {
 
 	public StockExchangeTraderView createTraderStockExchangeView();
 
-	public void addTicketTapeListener(
-		TickerTapeListener tickerTapeListener, Stock stock);	
+	public void addTickerTapeListener(TickerTapeListener tickerTapeListener);	
 }

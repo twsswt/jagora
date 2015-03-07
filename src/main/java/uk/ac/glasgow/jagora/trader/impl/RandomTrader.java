@@ -15,17 +15,14 @@ import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTrader extends SafeAbstractTrader {
-	
-	protected static class StockData {
+		
+	protected static class RangeData {
 		
 		public final Stock stock;
 		public final Double low, high;
 		public final Integer minQuantity, maxQuantity;
 		
-		private Double lastKnownBestBid;
-		private Double lastKnownBestOffer;
-		
-		public StockData(Stock stock, Double lowPrice, Double highPrice, Integer minQuantity, Integer maxQuantity){
+		public RangeData(Stock stock, Double lowPrice, Double highPrice, Integer minQuantity, Integer maxQuantity){
 			this.stock = stock;
 			this.low = lowPrice;
 			this.high = highPrice;
@@ -33,38 +30,27 @@ public class RandomTrader extends SafeAbstractTrader {
 			this.maxQuantity = maxQuantity;
 		}
 
-		public Double updateAndGetOfferPrice(StockExchangeTraderView stockExchangeTraderView) {
-			Double currentBestOffer = stockExchangeTraderView.getBestOfferPrice(stock);
-			if (currentBestOffer != null)
-				lastKnownBestOffer = currentBestOffer;
-			return lastKnownBestOffer;
-		}
-		
-		public Double updateAndGetBidPrice(StockExchangeTraderView stockExchangeTraderView) {
-			Double currentBestBid = stockExchangeTraderView.getBestBidPrice(stock);
-			if (currentBestBid != null)
-				lastKnownBestBid = currentBestBid;
-			return lastKnownBestBid;
-		}
-
 	}
 	
-	private final Map<Stock,StockData> stockDatas;
+	private final Map<Stock,RangeData> sellRangeData;
+	private final Map<Stock,RangeData> buyRangeData;
+
 	private final Random random;
 	
 	
 	public RandomTrader(
 		String name, Double cash, Map<Stock, Integer> inventory,
-		Random random, Map<Stock,StockData> stockDatas) {
+		Random random, Map<Stock,RangeData> sellRangeDatas, Map<Stock,RangeData> buyRangeDatas) {
 		
 		super(name, cash, inventory);
 		this.random = random;
-		this.stockDatas = new HashMap<Stock,StockData>(stockDatas);
+		this.sellRangeData = new HashMap<Stock,RangeData>(sellRangeDatas);
+		this.buyRangeData = new HashMap<Stock,RangeData>(buyRangeDatas);
 	}
 
 	@Override
 	public void speak(StockExchangeTraderView traderMarketView) {
-		Stock randomStock = random.chooseElement(stockDatas.keySet());
+		Stock randomStock = random.chooseElement(sellRangeData.keySet());
 		
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
@@ -77,15 +63,16 @@ public class RandomTrader extends SafeAbstractTrader {
 		
 		Integer uncommittedQuantity = 
 			getAvailableQuantity(stock);
+		RangeData rangeData = sellRangeData.get(stock);
 		
-		Integer quantity = createRandomQuantity(stock, uncommittedQuantity);
+		Integer quantity = createRandomQuantity(stock, uncommittedQuantity, rangeData);
 		
 		if (quantity > 0){
 			
-			Double offerPrice = stockDatas.get(stock).updateAndGetOfferPrice(stockExchangeTraderView);
-			if (offerPrice == null) return;
+			Double offerPrice = stockExchangeTraderView.getLastKnownBestOfferPrice(stock);
 			
-			Double price = createRandomPrice(stock, offerPrice);
+			if (offerPrice == null) return;
+			Double price = createRandomPrice(stock, offerPrice, rangeData);
 
 			SellOrder sellOrder =
 				new LimitSellOrder(this, stock, quantity, price);
@@ -102,13 +89,14 @@ public class RandomTrader extends SafeAbstractTrader {
 	private void performRandomBuyAction(
 		Stock stock, StockExchangeTraderView stockExchangeTraderView) {
 		
-		Double bestBidPrice = stockDatas.get(stock).updateAndGetBidPrice(stockExchangeTraderView);
+		Double bestBidPrice = stockExchangeTraderView.getLastKnownBestBidPrice(stock);
 		if (bestBidPrice == null) return;
-		Double price = createRandomPrice(stock, bestBidPrice);
+		RangeData rangeData = buyRangeData.get(stock);
+		Double price = createRandomPrice(stock, bestBidPrice, rangeData);
 
 		Double availableCash = getAvailableCash();
 		
-		Integer quantity = createRandomQuantity(stock, (int)(availableCash/price));
+		Integer quantity = createRandomQuantity(stock, (int)(availableCash/price), rangeData);
 		
 		if (quantity > 0){
 			
@@ -124,26 +112,23 @@ public class RandomTrader extends SafeAbstractTrader {
 		}
 	}
 
-	private Double createRandomPrice(Stock stock, Double midPoint) {
+	private Double createRandomPrice(Stock stock, Double midPoint, RangeData rangeData) {
 		
-		StockData stockData = stockDatas.get(stock);
-		Double relativePriceRange = stockData.high - stockData.low;
+		Double relativePriceRange = rangeData.high - rangeData.low;
 		Double randomPrice = 
-			random.nextDouble() *  relativePriceRange + stockData.low + midPoint;
+				random.nextDouble() *  relativePriceRange + rangeData.low + midPoint;
 		
 		return max(randomPrice, 0.0);
 	}
 	
-	private Integer createRandomQuantity(Stock stock, Integer ceiling) {
-		StockData stockData = stockDatas.get(stock);
+	private Integer createRandomQuantity(Stock stock, Integer ceiling, RangeData rangeData) {
 		
 		Integer relativeRange = 
-			stockData.maxQuantity-stockData.minQuantity;
+			rangeData.maxQuantity-rangeData.minQuantity;
 		
 		Integer randomQuantity = 
-			random.nextInt(relativeRange) + stockData.minQuantity;
+			random.nextInt(relativeRange) + rangeData.minQuantity;
 
 		return min(randomQuantity, ceiling);
 	}
-	
 }

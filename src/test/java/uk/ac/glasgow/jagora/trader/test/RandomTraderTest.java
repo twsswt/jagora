@@ -17,18 +17,16 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
 
 public class RandomTraderTest {
-	
-	private final Integer numberOfTraderActions = 10;
-	
+		
 	private Trader trader;
 	private Stock lemons;
 	
-	private StubStockExchange marketForLemons;
+	private StubStockExchange stockExchange;
 
 	@Before
 	public void setUp() throws Exception {
 		
-		marketForLemons = new StubStockExchange();
+		stockExchange = new StubStockExchange();
 		
 		lemons  = new Stock("lemons");
 		
@@ -36,7 +34,7 @@ public class RandomTraderTest {
 		// without needing to cancel due to lack of liquidity.
 		trader = new RandomTraderBuilder("alice",10000000.0,1)
 			.addStock(lemons, 500000)
-			.addTradeRange(lemons, -.1, +.1, 1, 100)
+			.setTradeRange(lemons, 1, 100, -.1, +.1, -.1, +.1)
 			.build();
 		
 	}
@@ -45,32 +43,32 @@ public class RandomTraderTest {
 	public void test() {
 		//Seed the exchange with initial buys and sells.
 		BuyOrder seedBuyOrder = new LimitBuyOrder(trader, lemons, 10, 5.0);
-		marketForLemons.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
+		stockExchange.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
 		SellOrder seedSellOrder = new LimitSellOrder(trader, lemons, 10, 5.0);
-		marketForLemons.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
+		stockExchange.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
 		
-		for (Integer i = 0; i < numberOfTraderActions; i++)
-			trader.speak(marketForLemons.createTraderStockExchangeView());
+		trader.speak(stockExchange.createTraderStockExchangeView());
+		trader.speak(stockExchange.createTraderStockExchangeView());
 		
-		List<BuyOrder> BuyOrders = 
-			marketForLemons.getBuyOrders(lemons);		
+		List<BuyOrder> buyOrders = 
+			stockExchange.getBuyOrders(lemons);		
 		
-		List<SellOrder> SellOrders = 
-				marketForLemons.getSellOrders(lemons);
+		List<SellOrder> sellOrders = 
+				stockExchange.getSellOrders(lemons);
 		
 		Double actualAverageBuyPrice = 
-			BuyOrders.stream()
+			buyOrders.stream()
 			.mapToDouble(buyOrder -> buyOrder.getPrice())
 			.average()
 			.getAsDouble();
 				
 		Double actualAverageSellPrice = 
-			SellOrders.stream()
+			sellOrders.stream()
 			.mapToDouble(sellOrder -> sellOrder.getPrice())
 			.average()
 			.getAsDouble();
 		
-		assertEquals("", numberOfTraderActions.intValue() + 2, SellOrders.size() + BuyOrders.size());
+		assertEquals("", 2 + 2, sellOrders.size() + buyOrders.size());
 
 		assertEquals("", 5, actualAverageBuyPrice, 0.1);		
 			

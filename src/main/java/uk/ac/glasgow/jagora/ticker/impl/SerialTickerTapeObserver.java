@@ -3,7 +3,7 @@ package uk.ac.glasgow.jagora.ticker.impl;
 import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 
-public class SerialTickerTapeObserver extends AbstractTickerTapeObserver {
+public class SerialTickerTapeObserver extends AbstractTickerTapeObservable {
 	
 	@Override
 	protected void notifyTickerTapeListenerOfTrade(

@@ -70,6 +70,16 @@ public class StubStockExchange implements StockExchange {
 			@Override
 			public void cancelSellOrder(SellOrder SellOrder) {
 				getSellOrders(SellOrder.getStock()).remove(SellOrder);
+			}
+
+			@Override
+			public Double getLastKnownBestOfferPrice(Stock stock) {
+				return getBestOfferPrice(stock);
+			}
+
+			@Override
+			public Double getLastKnownBestBidPrice(Stock stock) {
+				return getBestBidPrice(stock);
 			}			
 		};
 		
@@ -94,7 +104,7 @@ public class StubStockExchange implements StockExchange {
 	}
 
 	@Override
-	public void addTicketTapeListener(TickerTapeListener tickerTapeListener, Stock stock) {
+	public void addTickerTapeListener(TickerTapeListener tickerTapeListener) {
 		// Does nothing as no trades are executed.
 		
 	}

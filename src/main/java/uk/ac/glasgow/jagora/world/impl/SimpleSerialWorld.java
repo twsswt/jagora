@@ -28,4 +28,9 @@ public class SimpleSerialWorld implements World{
 			return tickCount < maxTickCount;
 		}
 	}
+
+	@Override
+	public Long getCurrentTick() {
+		return tickCount;
+	}
 }

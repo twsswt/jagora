@@ -10,7 +10,7 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 
-public class AbstractTrade implements Trade {
+public class DefaultTrade implements Trade {
 
 	private final Stock stock;
 	private final Integer quantity;
@@ -19,7 +19,7 @@ public class AbstractTrade implements Trade {
 	private final SellOrder sellOrder;
 	private final BuyOrder buyOrder;
 	
-	public AbstractTrade(Stock stock, Integer quantity, Double price, SellOrder sellOrder, BuyOrder buyOrder) {
+	public DefaultTrade(Stock stock, Integer quantity, Double price, SellOrder sellOrder, BuyOrder buyOrder) {
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;
@@ -52,7 +52,7 @@ public class AbstractTrade implements Trade {
 
 	@Override
 	public String toString() {
-		return format("%s:%d:$%.2f", getStock(), getQuantity(), getPrice());
+		return format("%s->(%s:%d:$%.2f)->%s", getSeller(), getStock(), getQuantity(), getPrice(), getBuyer());
 	}
 
 	public Stock getStock() {

@@ -43,7 +43,7 @@ public class RandomSpreadCrossingTraderTest {
 		
 		trader = new RandomSpreadCrossingTraderBuilder("alice",10000000.0,1)
 			.addStock(lemons, 500000)
-			.addTradeRange(lemons, 10, spread)
+			.addTradeRange(lemons, 1, 10, spread)
 			.build();
 		
 	}

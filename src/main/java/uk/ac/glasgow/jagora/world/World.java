@@ -6,4 +6,6 @@ public interface World {
 
 	public Boolean isAlive();
 
+	public Long getCurrentTick();
+
 }

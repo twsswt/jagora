@@ -73,7 +73,6 @@ public abstract class AbstractTrader implements Trader {
 	@Override
 	public void sellStock(Trade trade) throws TradeExecutionException {
 		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0);
-
 		if (currentQuantity < trade.getQuantity()){ 
 			String message = format("Seller [%s] cannot satisfy trade [%s].", name, trade);
 			throw new TradeExecutionException (message, trade, this);

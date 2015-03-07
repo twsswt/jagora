@@ -2,18 +2,16 @@ package uk.ac.glasgow.jagora.ticker;
 
 import java.util.List;
 
-import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public interface TickerTapeObserver {
+public interface TickerTapeObservable {
 
 	/**
-	 * Registers the listener to receive notifications of a trade in a particular stock.
+	 * Registers the listener to receive notifications of trades 
 	 * @param tickerTapeListener
-	 * @param stock
 	 */
-	public abstract void addTicketTapeListener(TickerTapeListener tickerTapeListener, Stock stock);
+	public abstract void addTicketTapeListener(TickerTapeListener tickerTapeListener);
 
 	/**
 	 * Notifies all registered ticker tape listeners of the occurrence of a new

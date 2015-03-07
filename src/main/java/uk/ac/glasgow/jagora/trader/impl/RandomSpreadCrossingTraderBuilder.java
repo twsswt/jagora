@@ -7,46 +7,30 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTrader.TradeRange;
 import uk.ac.glasgow.jagora.util.Random;
 
-public class RandomSpreadCrossingTraderBuilder {
-	private String name;
-	private Double cash;
-	
-	private Map<Stock, Integer> inventory;
-	
-	private Integer seed;
+public class RandomSpreadCrossingTraderBuilder extends AbstractTraderBuilder {
+
 	private Map<Stock, TradeRange> tradeRanges;
 	
 	public RandomSpreadCrossingTraderBuilder(String name, Double cash, Integer seed){
-		this.name = name;
-		this.cash = cash;
-		this.inventory = new HashMap<Stock,Integer>();
-		this.seed = seed;
+		super (name, cash, seed);
 		tradeRanges = new HashMap<Stock,TradeRange>();
 	}
 	
-	public RandomSpreadCrossingTraderBuilder addStock(Stock stock, Integer quantity){
-		inventory.put(stock, quantity);
-		return this;
-	}
-	
 	public RandomSpreadCrossingTraderBuilder addTradeRange(
-		Stock stock, Integer quantity, Double price){
+		Stock stock, Integer minQuantity, int maxQuantity, Double price){
 		
-		tradeRanges.put(stock, new TradeRange(quantity, price));
+		tradeRanges.put(stock, new TradeRange(minQuantity, maxQuantity, price));
 		return this;
 	}
-	
-	public RandomSpreadCrossingTraderBuilder setName(String name) {
-		this.name = name;
-		return this;
-	}
-	
-	public RandomSpreadCrossingTraderBuilder setCash(Double cash){
-		this.cash = cash;
-		return this;
-	}
-	
+		
 	public RandomSpreadCrossingTrader build(){
-		return new RandomSpreadCrossingTrader(name, cash, inventory, new Random(seed), tradeRanges);
+		return new RandomSpreadCrossingTrader(
+			getName(), getCash(), getInventory(), new Random(getSeed()), tradeRanges);
+	}
+	
+	@Override
+	public RandomSpreadCrossingTraderBuilder addStock (Stock stock, Integer quantity){
+		super.addStock(stock, quantity);
+		return this;
 	}
 }

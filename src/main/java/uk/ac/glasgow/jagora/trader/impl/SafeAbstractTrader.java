@@ -29,21 +29,20 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	
 	protected void placeSafeSellOrder(StockExchangeTraderView traderView, SellOrder sellOrder) {
 		if (sellOrder.getRemainingQuantity() <= getAvailableQuantity(sellOrder.getStock())){
-			traderView.placeSellOrder(sellOrder);
 			openSellOrders.add(sellOrder);
+			traderView.placeSellOrder(sellOrder);
 		}
 	}
 	
 	protected void cancelSafeSellOrder(
-			StockExchangeTraderView traderMarketView, SellOrder sellOrder) {
-
-		traderMarketView.cancelSellOrder(sellOrder);
+			StockExchangeTraderView stockExchangeTraderView, SellOrder sellOrder) {
+		stockExchangeTraderView.cancelSellOrder(sellOrder);
 		openSellOrders.remove(sellOrder);
 	}
 
-	protected void cancelSafeBuyOrder(StockExchangeTraderView traderMarketView,	BuyOrder randomBuyOrder) {
-		traderMarketView.cancelBuyOrder(randomBuyOrder);
-		openBuyOrders.remove(randomBuyOrder);
+	protected void cancelSafeBuyOrder(StockExchangeTraderView traderMarketView,	BuyOrder buyOrder) {
+		traderMarketView.cancelBuyOrder(buyOrder);
+		openBuyOrders.remove(buyOrder);
 	}
 
 	protected Double getAvailableCash() {
@@ -64,5 +63,4 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		
 		return inventory.getOrDefault(stock, 0) - committedQuantity;
 	}
-
 }

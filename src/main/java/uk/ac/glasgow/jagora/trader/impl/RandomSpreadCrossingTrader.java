@@ -17,11 +17,13 @@ import uk.ac.glasgow.jagora.util.Random;
 public class RandomSpreadCrossingTrader extends SafeAbstractTrader {
 	
 	protected static class TradeRange {
-		public final Integer quantity;
+		public final Integer minQuantity;
+		public final Integer maxQuantity;
 		public final Double price;
 		
-		public TradeRange(Integer quantity, Double price){
-			this.quantity = quantity;
+		public TradeRange(Integer minQuantity, Integer maxQuantity, Double price){
+			this.minQuantity = minQuantity;
+			this.maxQuantity = maxQuantity;
 			this.price = price;
 		}
 	}
@@ -114,8 +116,10 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader {
 	}
 	
 	private Integer createRandomQuantity(Stock stock, Integer ceiling) {
-		TradeRange tradeRange = tradeRanges.get(stock);
-
-		return min(random.nextInt(tradeRange.quantity)+1, ceiling);
+		TradeRange stockData = tradeRanges.get(stock);
+		
+		Integer tradeQuantityRange = stockData.maxQuantity - stockData.minQuantity;
+		
+		return min(random.nextInt(tradeQuantityRange) + stockData.minQuantity, ceiling);
 	}
 }

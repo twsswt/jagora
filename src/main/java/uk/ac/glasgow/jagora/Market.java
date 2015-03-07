@@ -24,4 +24,12 @@ public interface Market {
 	public abstract List<BuyOrder> getBuyOrders();
 
 	public abstract List<SellOrder> getSellOrders();
+
+	public abstract Double getBestBidPrice();
+	
+	public abstract Double getBestOfferPrice();
+	
+	public abstract Double getLastKnownBestBidPrice();
+	
+	public abstract Double getLastKnownBestOfferPrice();
 }

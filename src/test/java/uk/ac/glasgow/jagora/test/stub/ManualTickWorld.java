@@ -28,4 +28,9 @@ public class ManualTickWorld implements World {
 		tickEvents.add(tickEvent);
 	}
 
+	@Override
+	public Long getCurrentTick() {
+		return 0l;
+	}
+
 }

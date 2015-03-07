@@ -72,24 +72,22 @@ public class ContinuousOrderDrivenMarket implements Market {
 					highestBuy.getRemainingQuantity()
 				);
 			
-			Double price = lowestSell.getPrice();		
-			
-			AbstractTrade trade = 
-				new AbstractTrade (stock, quantity, price, lowestSell, highestBuy);
-			
+			Double price = lowestSell.getPrice();	
+			Trade trade = 
+				new DefaultTrade (stock, quantity, price, lowestSell, highestBuy);
 			try {
 				TickEvent<Trade> executedTrade = trade.execute(world);
 				executedTrades.add(executedTrade);
 											
 			} catch (TradeExecutionException e) {
 				Trader culprit = e.getCulprit();
+								
 				if (culprit.equals(lowestSell.getTrader()))
 					sellBook.cancelOrder(lowestSell);
 				else if (culprit.equals(highestBuy.getTrader()))
 					buyBook.cancelOrder(highestBuy);
 				
 				//TODO Penalise the trader that caused the trade to fail.
-				
 				e.printStackTrace();
 			}
 			
@@ -120,5 +118,25 @@ public class ContinuousOrderDrivenMarket implements Market {
 	@Override
 	public String toString() {
 		return String.format("bids%s:asks%s", buyBook, sellBook);
+	}
+
+	@Override
+	public Double getBestBidPrice() {
+		return buyBook.getBestPrice();
+	}
+
+	@Override
+	public Double getBestOfferPrice() {
+		return sellBook.getBestPrice();
+	}
+
+	@Override
+	public Double getLastKnownBestBidPrice() {
+		return buyBook.getLastKnownBestPrice();
+	}
+
+	@Override
+	public Double getLastKnownBestOfferPrice() {
+		return sellBook.getLastKnownBestPrice();
 	}
 }

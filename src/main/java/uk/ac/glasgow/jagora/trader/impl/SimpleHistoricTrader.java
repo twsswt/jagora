@@ -49,18 +49,18 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements TickerTa
 		
 		Double averageTradePrice = 
 			computeAverageTradePrice(randomStock);
+		if (averageTradePrice == null) return;
 		
 		Double bestBidPrice =
 			traderMarketView.getBestBidPrice(randomStock);
 		
 		Double bestOfferPrice = 
 			traderMarketView.getBestOfferPrice(randomStock);
-		
-		if (averageTradePrice != null)
-			if (bestOfferPrice != null && bestOfferPrice < averageTradePrice)
-				placeBuyOrder(traderMarketView, randomStock, bestOfferPrice);
-			else if (bestBidPrice != null && bestBidPrice > averageTradePrice)
-				placeSellOrder(traderMarketView, randomStock, bestOfferPrice);		
+				
+		if (bestOfferPrice != null && bestOfferPrice < averageTradePrice)
+			placeBuyOrder(traderMarketView, randomStock, bestOfferPrice);
+		else if (bestBidPrice != null && bestBidPrice > averageTradePrice)
+			placeSellOrder(traderMarketView, randomStock, bestBidPrice);		
 	}
 
 	private void placeBuyOrder(

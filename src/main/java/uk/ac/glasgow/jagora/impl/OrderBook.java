@@ -38,6 +38,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 
 	private PriorityQueue<TickEvent<O>> receivedOrders;
 	private World world;
+	private Double lastKnownBestPrice;
 	
 	public OrderBook (World world){
 		this.world = world;
@@ -46,6 +47,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 	
 	public void recordOrder (O order){
 		receivedOrders.add(world.getTick(order));
+		updateLastKnownBestPrice();
 	}
 	
 	public void cancelOrder(O order) {
@@ -53,13 +55,15 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		TickEvent<O> toRemove = null;
 				
 		for (TickEvent<O> receivedOrder : receivedOrders)
-			if (receivedOrder.event.equals(order)){
+			if (receivedOrder.event == order){
 				toRemove = receivedOrder;
 				break;
 			}
 		
-		if (toRemove != null)
+		if (toRemove != null){
 			receivedOrders.remove(toRemove);
+			updateLastKnownBestPrice();
+		}
 	}
 
 	public O getBestOrder() {
@@ -68,6 +72,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		while (receivedOrder != null && receivedOrder.event.getRemainingQuantity() <= 0){
 			receivedOrders.poll();
 			receivedOrder = receivedOrders.peek();
+			updateLastKnownBestPrice();
 		}
 		
 		return receivedOrder == null? null : receivedOrder.event;		
@@ -89,4 +94,21 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 	
 		return result;
 	}
+
+	public Double getBestPrice() {
+		Order order = getBestOrder();
+		if (order == null) return null;
+		else return order.getPrice();
+	}
+
+	public Double getLastKnownBestPrice() {
+		return lastKnownBestPrice;
+	}
+	
+	private void updateLastKnownBestPrice() {
+		Double currentBestPrice = getBestPrice();
+		if (currentBestPrice != null)
+			lastKnownBestPrice = currentBestPrice;
+	}
+
 }

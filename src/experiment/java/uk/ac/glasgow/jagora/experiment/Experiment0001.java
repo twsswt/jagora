@@ -67,11 +67,11 @@ public class Experiment0001 {
 					.addStock(lemons, 1000)
 					.build();
 			
-			stockExchange.addTicketTapeListener(historicTrader, lemons);
+			stockExchange.addTickerTapeListener(historicTrader);
 			traders.add(historicTrader);
 		}
 		
-		stockExchange.addTicketTapeListener(new StdOutTickerTapeListener(), lemons);
+		stockExchange.addTickerTapeListener(new StdOutTickerTapeListener());
 		
 		engine = new SerialRandomEngineBuilder(world, seed)
 			.addStockExchange(stockExchange)

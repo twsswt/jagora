@@ -12,7 +12,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeTraderView;
 import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
-import uk.ac.glasgow.jagora.ticker.TickerTapeObserver;
+import uk.ac.glasgow.jagora.ticker.TickerTapeObservable;
 import uk.ac.glasgow.jagora.world.World;
 
 public class DefaultStockExchange implements StockExchange{
@@ -21,12 +21,12 @@ public class DefaultStockExchange implements StockExchange{
 	private MarketFactory marketFactory;
 	private final Map<Stock,Market> markets;
 	
-	private final TickerTapeObserver tickerTapeObserver;
+	private final TickerTapeObservable tickerTapeObservable;
 		
-	public DefaultStockExchange (World world, TickerTapeObserver tickerTapeObserver, MarketFactory marketFactory){	
+	public DefaultStockExchange (World world, TickerTapeObservable tickerTapeObservable, MarketFactory marketFactory){	
 		this.world = world;
 		this.marketFactory = marketFactory;
-		this.tickerTapeObserver = tickerTapeObserver;
+		this.tickerTapeObservable = tickerTapeObservable;
 		markets = new HashMap<Stock,Market>();
 	}
 	
@@ -43,7 +43,7 @@ public class DefaultStockExchange implements StockExchange{
 	@Override
 	public void doClearing() {
 		for (Market market: markets.values())
-			tickerTapeObserver.notifyTickerTapeListeners(
+			tickerTapeObservable.notifyTickerTapeListeners(
 				market.doClearing());
 	}
 	
@@ -64,29 +64,23 @@ public class DefaultStockExchange implements StockExchange{
 
 		@Override
 		public Double getBestOfferPrice(Stock stock) {			
-			List<SellOrder> sellOrders =
-				getMarket(stock).getSellOrders();
-			
-			try {
-				SellOrder bestSellOrder = sellOrders.get(0);
-				return bestSellOrder.getPrice();
-			} catch (IndexOutOfBoundsException e){
-				return null;
-			}
+			return getMarket(stock).getBestOfferPrice();
 		}
 
 		@Override
 		public Double getBestBidPrice(Stock stock) {
-			List<BuyOrder> limitBuyOrders =
-				getMarket(stock).getBuyOrders();
-
-			try {
-				BuyOrder bestBuyOrder = limitBuyOrders.get(0);
-				return bestBuyOrder.getPrice();
-			} catch (IndexOutOfBoundsException e){
-				return null;
-			}
+			return getMarket(stock).getBestBidPrice();
 		}
+		
+		@Override
+		public Double getLastKnownBestOfferPrice(Stock stock) {
+			return getMarket(stock).getLastKnownBestOfferPrice();
+		}
+
+		@Override
+		public Double getLastKnownBestBidPrice(Stock stock) {
+			return getMarket(stock).getLastKnownBestBidPrice();
+		}	
 
 		@Override
 		public void placeBuyOrder(BuyOrder buyOrder) {
@@ -106,11 +100,12 @@ public class DefaultStockExchange implements StockExchange{
 		@Override
 		public void cancelSellOrder(SellOrder sellOrder) {
 			getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
-		}		
+		}
+	
 	}
 
 	@Override
-	public void addTicketTapeListener(TickerTapeListener tickerTapeListener, Stock stock) {
-		tickerTapeObserver.addTicketTapeListener(tickerTapeListener, stock);
+	public void addTickerTapeListener(TickerTapeListener tickerTapeListener) {
+		tickerTapeObservable.addTicketTapeListener(tickerTapeListener);
 	}
 }

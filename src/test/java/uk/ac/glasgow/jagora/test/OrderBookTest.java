@@ -14,7 +14,7 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.impl.AbstractTrade;
+import uk.ac.glasgow.jagora.impl.DefaultTrade;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.impl.OrderBook;
@@ -73,7 +73,7 @@ public class OrderBookTest {
 			SellOrder actual = sellBook.getBestOrder();
 			assertEquals(expected,actual);
 			
-			Trade satisfyingTrade = new AbstractTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), actual, null);
+			Trade satisfyingTrade = new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), actual, null);
 			
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
@@ -114,7 +114,7 @@ public class OrderBookTest {
 			BuyOrder actual = buyBook.getBestOrder();
 			assertEquals(expected,actual);
 			Trade satisfyingTrade =
-				new AbstractTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);	
+				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);	
 			
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 

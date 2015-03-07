@@ -12,5 +12,9 @@ public interface StockExchangeTraderView {
 	
 	public void cancelBuyOrder(BuyOrder buyOrder);
 	
-	public void cancelSellOrder(SellOrder sellOrder);	
+	public void cancelSellOrder(SellOrder sellOrder);
+
+	public Double getLastKnownBestOfferPrice(Stock stock);
+
+	public Double getLastKnownBestBidPrice(Stock stock);	
 }

@@ -31,6 +31,7 @@ public class SerialRandomEngine implements TradingEngine {
 			StockExchange exchange = random.chooseElement(exchanges);
 			StockExchangeTraderView traderView = exchange.createTraderStockExchangeView();
 			Trader trader = random.chooseElement(traders);
+
 			trader.speak(traderView);
 			exchange.doClearing();
 		}

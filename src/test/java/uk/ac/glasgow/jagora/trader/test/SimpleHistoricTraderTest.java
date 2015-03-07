@@ -14,6 +14,7 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.StockExchangeTraderView;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
@@ -38,7 +39,7 @@ public class SimpleHistoricTraderTest {
 	private final Integer seed = 1;
 
 	private Stock lemons;
-	private StockExchange marketForLemons;
+	private StockExchange stockExchange;
 	
 	private SimpleHistoricTrader alice;
 	private Trader bob;
@@ -59,7 +60,7 @@ public class SimpleHistoricTraderTest {
 		
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		
-		marketForLemons = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
+		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
 
 		alice = new SimpleHistoricTraderBuilder("alice",initialTraderCash, seed)
 			.addStock(lemons, initialNumberOfLemons)
@@ -67,18 +68,18 @@ public class SimpleHistoricTraderTest {
 		
 		bob = new RandomTraderBuilder("bob", initialTraderCash, seed)
 			.addStock(lemons, initialNumberOfLemons)
-			.addTradeRange(lemons, 0.1, -.1, 0, 100)
+			.setTradeRange(lemons, 1, 100, -.1, +.1, -.1, +.1)
 			.build();
 		
 		charlie = new RandomTraderBuilder("charlie", initialTraderCash, seed)
 			.addStock(lemons, initialNumberOfLemons)
-			.addTradeRange(lemons, 0.1, -.1, 0, 100)
+			.setTradeRange(lemons, 1, 100, -.1, +.1, -.1, +.1)
 			.build();
 		
 		dan = new StubTraderBuilder("dan", initialTraderCash)
 			.addStock(lemons, 10).build();
 		
-		marketForLemons.addTicketTapeListener(alice, lemons);
+		stockExchange.addTickerTapeListener(alice);
 	}
 
 	@Test
@@ -86,25 +87,27 @@ public class SimpleHistoricTraderTest {
 		
 		//Create initial market conditions
 		BuyOrder seedBuyOrder = new LimitBuyOrder(dan, lemons, 10, 5.0);
-		marketForLemons.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
+		stockExchange.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
 		SellOrder seedSellOrder = new LimitSellOrder(dan, lemons, 10, 5.0);
-		marketForLemons.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
+		stockExchange.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
 		
 		//Allow two random traders to create a liquid market.
 		for (Integer i = 0; i < numberOfTraderActions/2; i++){
-			bob.speak(marketForLemons.createTraderStockExchangeView());
-			charlie.speak(marketForLemons.createTraderStockExchangeView());
-			marketForLemons.doClearing();
+			bob.speak(stockExchange.createTraderStockExchangeView());
+			charlie.speak(stockExchange.createTraderStockExchangeView());
+			stockExchange.doClearing();
+			
+			StockExchangeTraderView xyz = stockExchange.createTraderStockExchangeView();
 		}
 		
 		//Alice now participates.
 		for (Integer i = 0; i < numberOfTraderActions/2; i++){
-			bob.speak(marketForLemons.createTraderStockExchangeView());
-			marketForLemons.doClearing();
-			charlie.speak(marketForLemons.createTraderStockExchangeView());
-			marketForLemons.doClearing();
-			alice.speak(marketForLemons.createTraderStockExchangeView());
-			marketForLemons.doClearing();
+			bob.speak(stockExchange.createTraderStockExchangeView());
+			stockExchange.doClearing();
+			charlie.speak(stockExchange.createTraderStockExchangeView());
+			stockExchange.doClearing();
+			alice.speak(stockExchange.createTraderStockExchangeView());
+			stockExchange.doClearing();
 		}		
 			
 		List<TickEvent<Trade>> executedTrades = tickerTapeObserver.getTradeHistory(lemons);
@@ -120,8 +123,7 @@ public class SimpleHistoricTraderTest {
 				executedTrades.stream()
 				.filter(executedTrade -> executedTrade.event.getBuyer().equals(alice))
 				.collect(Collectors.toList());
-			
-		
+				
 		Double averageLemonPrice = 
 			executedTrades.stream()
 				.mapToDouble(executedTrade->executedTrade.event.getPrice())

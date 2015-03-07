@@ -18,7 +18,7 @@ import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTickerTapeListener;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.TickerTapeObserver;
+import uk.ac.glasgow.jagora.ticker.TickerTapeObservable;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.ThreadedTickerTapeObserver;
@@ -158,16 +158,16 @@ public class DefaultStockExchangeTest {
 	@Test(timeout=20000)
 	public void testTickerTapeNotification () throws Exception {
 		
-		TickerTapeObserver tickerTapeObserver = new ThreadedTickerTapeObserver ();
+		TickerTapeObservable tickerTapeObservable = new ThreadedTickerTapeObserver ();
 
 		DefaultStockExchange defaultStockExchange = 
-			new DefaultStockExchange(world,	tickerTapeObserver,	marketFactory);
+			new DefaultStockExchange(world,	tickerTapeObservable,	marketFactory);
 
 		
 		StubTickerTapeListener stubTickerTapeListener = 
 			new StubTickerTapeListener();
 		
-		defaultStockExchange.addTicketTapeListener(stubTickerTapeListener, lemons);
+		defaultStockExchange.addTickerTapeListener(stubTickerTapeListener);
 		
 		SellOrder limitSellOrder = new LimitSellOrder(bob, lemons, 10, 10.0);
 		bob.supplyOrder(limitSellOrder);

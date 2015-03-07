@@ -10,7 +10,7 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.impl.AbstractTrade;
+import uk.ac.glasgow.jagora.impl.DefaultTrade;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
@@ -29,7 +29,7 @@ public class TradeTest {
 	
 	private ManualTickWorld world;
 	
-	private AbstractTrade trade;
+	private DefaultTrade trade;
 
 	@Before
 	public void setUp() throws Exception {
@@ -45,7 +45,7 @@ public class TradeTest {
 		limitBuyOrder = new LimitBuyOrder(alice, lemons, 500, 50.0);
 		limitSellOrder = new LimitSellOrder(bob, lemons, 1000, 45.0);
 		
-		trade = new AbstractTrade(lemons, 500, 45.0, limitSellOrder, limitBuyOrder);
+		trade = new DefaultTrade(lemons, 500, 45.0, limitSellOrder, limitBuyOrder);
 		
 		world = new ManualTickWorld();
 		world.setTickForEvent(0l, trade);
