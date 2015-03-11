@@ -1,0 +1,48 @@
+package uk.ac.glasgow.jagora.trader.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
+import uk.ac.glasgow.jagora.world.World;
+
+public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
+
+	private List<ScheduledLimitBuyOrder> scheduledOrders = new ArrayList<ScheduledLimitBuyOrder>();
+	
+	public InstitutionalInvestorTraderBuilder(String name, Double cash,	Integer seed) {
+		super(name, cash, seed);
+	}
+
+	public InstitutionalInvestorTrader build() {
+		return new InstitutionalInvestorTrader(getName(), getCash(), getInventory(), scheduledOrders);
+	}
+
+	@Override
+	public InstitutionalInvestorTraderBuilder setName(String name) {
+		super.setName(name);
+		return this;
+	}
+
+	@Override
+	public InstitutionalInvestorTraderBuilder setCash(Double cash) {
+		super.setCash(cash);
+		return this;
+	}
+
+	@Override
+	public InstitutionalInvestorTraderBuilder addStock(Stock stock, Integer quantity) {
+		super.addStock(stock, quantity);
+		return this;
+	}
+
+	public InstitutionalInvestorTraderBuilder addScheduledLimitBuyOrder(
+			Long delay,  World world, Stock stock, Integer quantity) {
+		scheduledOrders.add(new ScheduledLimitBuyOrder(delay, world, stock, quantity));
+		return this;
+	}
+	
+	
+
+}
