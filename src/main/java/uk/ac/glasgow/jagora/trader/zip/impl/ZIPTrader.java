@@ -51,10 +51,8 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			this.highLimit = highLimit;
 			this.stock = stock;
 			
-			targetPrice = getConstrainedRandomPrice();
-			
-			Double orderPrice = getConstrainedRandomPrice();
-			managedOrder = createNewOrder(orderPrice);
+			targetPrice = getConstrainedRandomPrice();			
+			managedOrder = createNewOrder(targetPrice);
 			
 		}
 
@@ -271,13 +269,13 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		level2View.registerOrderListener(this);
 		level2View.registerTradeListener(this);
 		updateCurrentOrderJob ();
-		if (currentOrderJob != null)
+		if (!currentOrderJobIsFinished())
 			currentOrderJob.updateOrder(level2View);
 		
 	}
-	
+		
 	private void updateCurrentOrderJob() {
-		while (orderJobsSpecifications.size() > 0 && currentOrderJobIsFinished()){
+		while (currentOrderJobIsFinished() && !orderJobsSpecifications.isEmpty()){
 			currentOrderJob = orderJobsSpecifications.poll().createOrderJob(this);
 		}
 	}

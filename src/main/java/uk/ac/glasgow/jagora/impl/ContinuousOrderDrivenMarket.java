@@ -9,7 +9,7 @@ import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
-import uk.ac.glasgow.jagora.pricer.Pricer;
+import uk.ac.glasgow.jagora.pricer.TradePricer;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
@@ -26,12 +26,12 @@ public class ContinuousOrderDrivenMarket implements Market {
 	private final OrderBook<SellOrder> sellBook;
 	private final OrderBook<BuyOrder> buyBook;
 	
-	private final Pricer pricer;
+	private final TradePricer tradePricer;
 			
-	public ContinuousOrderDrivenMarket (Stock stock, World world, Pricer pricer){
+	public ContinuousOrderDrivenMarket (Stock stock, World world, TradePricer tradePricer){
 		this.stock = stock;
 		this.world = world;
-		this.pricer = pricer;
+		this.tradePricer = tradePricer;
 
 		sellBook = new OrderBook<SellOrder>(world);
 		buyBook = new OrderBook<BuyOrder>(world);
@@ -79,7 +79,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 					highestBid.getRemainingQuantity()
 				);
 			
-			Double price = pricer.priceTrade(highestBuyEvent, lowestSellEvent);	
+			Double price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);	
 			
 			Trade trade = 
 				new DefaultTrade (stock, quantity, price, lowestSell, highestBid);

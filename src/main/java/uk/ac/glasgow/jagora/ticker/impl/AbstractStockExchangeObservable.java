@@ -98,7 +98,11 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		Order event = orderEvent.event;
 		OrderEntryEvent orderEntryEvent = 
 			new OrderEntryEvent(
-				event.getTrader(), event.getStock(), event.getPrice(), event instanceof SellOrder);
+				orderEvent.tick,
+				event.getTrader(), 
+				event.getStock(), 
+				event.getPrice(), 
+				event instanceof SellOrder);
 		
 		for (OrderListener orderListener : randomisedOrderListeners)
 			notifyOrderListenerOfOrder(orderEntryEvent, orderListener);

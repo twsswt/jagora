@@ -4,7 +4,7 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public interface Pricer {
+public interface TradePricer {
 	
 	Double priceTrade(TickEvent<BuyOrder> highestBid, TickEvent<SellOrder> lowestSell);
 }

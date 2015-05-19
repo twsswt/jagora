@@ -2,10 +2,10 @@ package uk.ac.glasgow.jagora.pricer.impl;
 
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.pricer.Pricer;
+import uk.ac.glasgow.jagora.pricer.TradePricer;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-public class OldestOrderPricer implements Pricer {
+public class OldestOrderPricer implements TradePricer {
 
 	@Override
 	public Double priceTrade(TickEvent<BuyOrder> highestBid,TickEvent<SellOrder> lowestSell) {
