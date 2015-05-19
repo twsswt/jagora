@@ -11,25 +11,25 @@ import uk.ac.glasgow.jagora.world.TickEvent;
  */
 public interface Market {
 
-	public abstract void recordBuyOrder(BuyOrder order);
+	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order);
 
-	public abstract void recordSellOrder(SellOrder order);
+	public TickEvent<SellOrder> recordSellOrder(SellOrder order);
 
-	public abstract void cancelBuyOrder(BuyOrder order);
+	public void cancelBuyOrder(BuyOrder order);
 
-	public abstract void cancelSellOrder(SellOrder order);
+	public void cancelSellOrder(SellOrder order);
 
-	public abstract List<TickEvent<Trade>> doClearing();
+	public List<TickEvent<Trade>> doClearing();
 
-	public abstract List<BuyOrder> getBuyOrders();
+	public List<BuyOrder> getBuyOrders();
 
-	public abstract List<SellOrder> getSellOrders();
+	public List<SellOrder> getSellOrders();
 
-	public abstract Double getBestBidPrice();
+	public Double getBestBidPrice();
 	
-	public abstract Double getBestOfferPrice();
+	public Double getBestOfferPrice();
 	
-	public abstract Double getLastKnownBestBidPrice();
+	public Double getLastKnownBestBidPrice();
 	
-	public abstract Double getLastKnownBestOfferPrice();
+	public Double getLastKnownBestOfferPrice();
 }

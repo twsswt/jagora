@@ -6,7 +6,7 @@ import java.util.Queue;
 
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
@@ -21,7 +21,7 @@ public class StubTrader extends AbstractTrader{
 	}
 
 	@Override
-	public void speak(StockExchangeTraderView market) {
+	public void speak(StockExchangeLevel1View market) {
 		Order nextOrder = orders.poll();
 		if (nextOrder != null)
 			if (nextOrder instanceof LimitSellOrder)

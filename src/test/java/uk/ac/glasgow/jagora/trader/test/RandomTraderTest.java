@@ -13,12 +13,12 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubStockExchange;
-import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
 
 public class RandomTraderTest {
 		
-	private Trader trader;
+	private Level1Trader trader;
 	private Stock lemons;
 	
 	private StubStockExchange stockExchange;
@@ -43,12 +43,12 @@ public class RandomTraderTest {
 	public void test() {
 		//Seed the exchange with initial buys and sells.
 		BuyOrder seedBuyOrder = new LimitBuyOrder(trader, lemons, 10, 5.0);
-		stockExchange.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
+		stockExchange.createLevel1View().placeBuyOrder(seedBuyOrder);
 		SellOrder seedSellOrder = new LimitSellOrder(trader, lemons, 10, 5.0);
-		stockExchange.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
+		stockExchange.createLevel1View().placeSellOrder(seedSellOrder);
 		
-		trader.speak(stockExchange.createTraderStockExchangeView());
-		trader.speak(stockExchange.createTraderStockExchangeView());
+		trader.speak(stockExchange.createLevel1View());
+		trader.speak(stockExchange.createLevel1View());
 		
 		List<BuyOrder> buyOrders = 
 			stockExchange.getBuyOrders(lemons);		

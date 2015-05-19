@@ -1,6 +1,8 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 
 /**
@@ -11,20 +13,33 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
  * @author Tim
  *
  */
-public class ThreadedTickerTapeObserver extends AbstractTickerTapeObservable {
+public class ThreadedTickerTapeObserver extends AbstractStockExchangeObservable {
 
 	public ThreadedTickerTapeObserver() {
 		super();
 	}
 	
-	protected void notifyTickerTapeListenerOfTrade(
-		TradeExecutionEvent tradeExecutedEvent, TickerTapeListener tickerTapeListener) {
+	protected void notifyTradeListenerOfTrade(
+		TradeExecutionEvent tradeExecutedEvent, TradeListener tradeListener) {
 		
 		new Thread (){
 			@Override
 			public void run (){
-				tickerTapeListener.tradeExecuted(tradeExecutedEvent);
+				tradeListener.tradeExecuted(tradeExecutedEvent);
 			}
 		}.start();
+	}
+
+	@Override
+	public void notifyOrderListenerOfOrder(
+		OrderEntryEvent orderEntryEvent,	OrderListener orderListener) {
+		
+		new Thread (){
+			@Override
+			public void run (){
+				orderListener.orderEntered(orderEntryEvent);
+			}
+		}.start();
+		
 	}
 }

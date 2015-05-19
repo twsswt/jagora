@@ -1,12 +1,11 @@
 package uk.ac.glasgow.jagora.experiment;
 
 import java.io.PrintStream;
-import java.util.Date;
 
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 
-public class PriceTimeLoggerTickerTapeListener implements TickerTapeListener {
+public class PriceTimeLoggerTickerTapeListener implements TradeListener {
 	
 	private PrintStream printStream;
 	

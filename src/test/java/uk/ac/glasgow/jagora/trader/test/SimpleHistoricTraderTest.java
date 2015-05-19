@@ -14,7 +14,7 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
@@ -23,7 +23,7 @@ import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
@@ -42,10 +42,10 @@ public class SimpleHistoricTraderTest {
 	private StockExchange stockExchange;
 	
 	private SimpleHistoricTrader alice;
-	private Trader bob;
-	private Trader charlie;
+	private Level1Trader bob;
+	private Level1Trader charlie;
 	
-	private Trader dan;
+	private Level1Trader dan;
 	
 	private World world;
 	
@@ -79,7 +79,7 @@ public class SimpleHistoricTraderTest {
 		dan = new StubTraderBuilder("dan", initialTraderCash)
 			.addStock(lemons, 10).build();
 		
-		stockExchange.addTickerTapeListener(alice);
+		stockExchange.createLevel1View().registerTradeListener(alice);
 	}
 
 	@Test
@@ -87,26 +87,26 @@ public class SimpleHistoricTraderTest {
 		
 		//Create initial market conditions
 		BuyOrder seedBuyOrder = new LimitBuyOrder(dan, lemons, 10, 5.0);
-		stockExchange.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
+		stockExchange.createLevel1View().placeBuyOrder(seedBuyOrder);
 		SellOrder seedSellOrder = new LimitSellOrder(dan, lemons, 10, 5.0);
-		stockExchange.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
+		stockExchange.createLevel1View().placeSellOrder(seedSellOrder);
 		
 		//Allow two random traders to create a liquid market.
 		for (Integer i = 0; i < numberOfTraderActions/2; i++){
-			bob.speak(stockExchange.createTraderStockExchangeView());
-			charlie.speak(stockExchange.createTraderStockExchangeView());
+			bob.speak(stockExchange.createLevel1View());
+			charlie.speak(stockExchange.createLevel1View());
 			stockExchange.doClearing();
 			
-			StockExchangeTraderView xyz = stockExchange.createTraderStockExchangeView();
+			StockExchangeLevel1View xyz = stockExchange.createLevel1View();
 		}
 		
 		//Alice now participates.
 		for (Integer i = 0; i < numberOfTraderActions/2; i++){
-			bob.speak(stockExchange.createTraderStockExchangeView());
+			bob.speak(stockExchange.createLevel1View());
 			stockExchange.doClearing();
-			charlie.speak(stockExchange.createTraderStockExchangeView());
+			charlie.speak(stockExchange.createLevel1View());
 			stockExchange.doClearing();
-			alice.speak(stockExchange.createTraderStockExchangeView());
+			alice.speak(stockExchange.createLevel1View());
 			stockExchange.doClearing();
 		}		
 			

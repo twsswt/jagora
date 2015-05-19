@@ -34,13 +34,13 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 	
 	@Override
-	public void recordBuyOrder(BuyOrder order) {
-		buyBook.recordOrder(order);
+	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order) {
+		return buyBook.recordOrder(order);
 	}
 	
 	@Override
-	public void recordSellOrder(SellOrder order) {
-		sellBook.recordOrder(order);
+	public TickEvent<SellOrder> recordSellOrder(SellOrder order) {
+		return sellBook.recordOrder(order);
 	}
 	
 	@Override

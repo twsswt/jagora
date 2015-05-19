@@ -14,7 +14,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubStockExchange;
-import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTraderBuilder;
 
 public class RandomSpreadCrossingTraderTest {
@@ -26,7 +26,7 @@ public class RandomSpreadCrossingTraderTest {
 	
 	private final Double spread = 1.0;
 	
-	private Trader trader;
+	private Level1Trader trader;
 	private Stock lemons;
 	
 	private StubStockExchange stockExchange;
@@ -52,12 +52,12 @@ public class RandomSpreadCrossingTraderTest {
 	public void test() {
 		//Seed the exchange with initial buys and sells.
 		BuyOrder seedBuyOrder = new LimitBuyOrder(trader, lemons, 10, seedBuyPrice);
-		stockExchange.createTraderStockExchangeView().placeBuyOrder(seedBuyOrder);
+		stockExchange.createLevel1View().placeBuyOrder(seedBuyOrder);
 		SellOrder seedSellOrder = new LimitSellOrder(trader, lemons, 10, seedSellPrice);
-		stockExchange.createTraderStockExchangeView().placeSellOrder(seedSellOrder);
+		stockExchange.createLevel1View().placeSellOrder(seedSellOrder);
 		
 		for (Integer i : range(0, numberOfTraderActions).toArray())
-			trader.speak(stockExchange.createTraderStockExchangeView());		
+			trader.speak(stockExchange.createLevel1View());		
 			
 		
 		List<BuyOrder> buyOrders = 

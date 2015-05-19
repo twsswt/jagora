@@ -1,10 +1,16 @@
 package uk.ac.glasgow.jagora;
 
-public interface StockExchangeTraderView {
+import uk.ac.glasgow.jagora.ticker.TradeListener;
+
+public interface StockExchangeLevel1View {
 	
 	public Double getBestOfferPrice(Stock stock);
 	
 	public Double getBestBidPrice(Stock stock);
+	
+	public Double getLastKnownBestOfferPrice(Stock stock);
+
+	public Double getLastKnownBestBidPrice(Stock stock);
 	
 	public void placeBuyOrder (BuyOrder buyOrder);
 	
@@ -13,8 +19,7 @@ public interface StockExchangeTraderView {
 	public void cancelBuyOrder(BuyOrder buyOrder);
 	
 	public void cancelSellOrder(SellOrder sellOrder);
+	
+	public void registerTradeListener(TradeListener tradeListener);
 
-	public Double getLastKnownBestOfferPrice(Stock stock);
-
-	public Double getLastKnownBestBidPrice(Stock stock);	
 }

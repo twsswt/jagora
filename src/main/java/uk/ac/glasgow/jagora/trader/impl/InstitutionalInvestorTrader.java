@@ -10,7 +10,7 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 
 public class InstitutionalInvestorTrader extends SafeAbstractTrader {
 	
@@ -25,7 +25,7 @@ public class InstitutionalInvestorTrader extends SafeAbstractTrader {
 	}
 
 	@Override
-	public void speak(StockExchangeTraderView traderMarketView) {
+	public void speak(StockExchangeLevel1View traderMarketView) {
 		ScheduledLimitBuyOrder nextScheduledOrder = scheduledOrders.peek();
 		
 		while (nextScheduledOrder != null && nextScheduledOrder.shouldBeExecuted() ){

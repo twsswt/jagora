@@ -9,7 +9,7 @@ import java.util.Map;
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -49,7 +49,7 @@ public class RandomTrader extends SafeAbstractTrader {
 	}
 
 	@Override
-	public void speak(StockExchangeTraderView traderMarketView) {
+	public void speak(StockExchangeLevel1View traderMarketView) {
 		Stock randomStock = random.chooseElement(sellRangeData.keySet());
 		
 		if (random.nextBoolean())
@@ -59,7 +59,7 @@ public class RandomTrader extends SafeAbstractTrader {
 	}
 
 	private void performRandomSellAction(
-		Stock stock, StockExchangeTraderView stockExchangeTraderView) {
+		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
 		Integer uncommittedQuantity = 
 			getAvailableQuantity(stock);
@@ -69,7 +69,7 @@ public class RandomTrader extends SafeAbstractTrader {
 		
 		if (quantity > 0){
 			
-			Double offerPrice = stockExchangeTraderView.getLastKnownBestOfferPrice(stock);
+			Double offerPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);
 			
 			if (offerPrice == null) return;
 			Double price = createRandomPrice(stock, offerPrice, rangeData);
@@ -77,19 +77,19 @@ public class RandomTrader extends SafeAbstractTrader {
 			SellOrder sellOrder =
 				new LimitSellOrder(this, stock, quantity, price);
 
-			placeSafeSellOrder(stockExchangeTraderView, sellOrder);
+			placeSafeSellOrder(stockExchangeLevel1View, sellOrder);
 			
 		} else {
 			SellOrder randomSellOrder = random.chooseElement(openSellOrders);
 			if (randomSellOrder != null)
-				cancelSafeSellOrder(stockExchangeTraderView, randomSellOrder);
+				cancelSafeSellOrder(stockExchangeLevel1View, randomSellOrder);
 		}
 	}
 
 	private void performRandomBuyAction(
-		Stock stock, StockExchangeTraderView stockExchangeTraderView) {
+		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
-		Double bestBidPrice = stockExchangeTraderView.getLastKnownBestBidPrice(stock);
+		Double bestBidPrice = stockExchangeLevel1View.getLastKnownBestBidPrice(stock);
 		if (bestBidPrice == null) return;
 		RangeData rangeData = buyRangeData.get(stock);
 		Double price = createRandomPrice(stock, bestBidPrice, rangeData);
@@ -103,12 +103,12 @@ public class RandomTrader extends SafeAbstractTrader {
 			BuyOrder buyOrder =
 				new LimitBuyOrder(this, stock, quantity, price);
 			
-			placeSafeBuyOrder(stockExchangeTraderView, buyOrder);
+			placeSafeBuyOrder(stockExchangeLevel1View, buyOrder);
 			
 		} else {
 			BuyOrder buyOrder = random.chooseElement(openBuyOrders);
 			if (buyOrder != null)
-				cancelSafeBuyOrder(stockExchangeTraderView, buyOrder);
+				cancelSafeBuyOrder(stockExchangeLevel1View, buyOrder);
 		}
 	}
 

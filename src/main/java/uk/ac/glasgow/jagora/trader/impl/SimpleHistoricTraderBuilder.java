@@ -56,7 +56,7 @@ public class SimpleHistoricTraderBuilder {
 			new SimpleHistoricTrader(
 				name, cash, inventory, new Random(seed));
 		for (StockExchange stockExchange: stockExchanges)
-			stockExchange.addTickerTapeListener(trader);
+			stockExchange.createLevel1View().registerTradeListener(trader);
 		return trader;
 	}
 	

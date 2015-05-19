@@ -3,7 +3,7 @@ package uk.ac.glasgow.jagora.trader.impl;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -28,7 +28,7 @@ public class MarginalTrader extends AbstractTrader {
 	}
 
 	@Override
-	public void speak(StockExchangeTraderView traderMarketView) {
+	public void speak(StockExchangeLevel1View traderMarketView) {
 		if (random.nextBoolean()) {
 			performMarginalBuyOrder(traderMarketView);
 		} else
@@ -36,7 +36,7 @@ public class MarginalTrader extends AbstractTrader {
 	}
 
 	private void performMarginalSellOrder(
-		StockExchangeTraderView traderMarketView) {
+		StockExchangeLevel1View traderMarketView) {
 
 		Stock randomStock = random.chooseElement(inventory.keySet());
 
@@ -53,7 +53,7 @@ public class MarginalTrader extends AbstractTrader {
 	}
 
 	private void performMarginalBuyOrder(
-			StockExchangeTraderView traderMarketView) {
+			StockExchangeLevel1View traderMarketView) {
 		
 		Stock randomStock = random.chooseElement(inventory.keySet());
 

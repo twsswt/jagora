@@ -1,7 +1,6 @@
 package uk.ac.glasgow.jagora.trader;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
 
@@ -50,15 +49,6 @@ public interface Trader {
 	 *             funds.
 	 */
 	public abstract void buyStock(Trade trade) throws TradeExecutionException;
-
-	/**
-	 * Supplies this trader with an opportunity to speak on the stock exchange.
-	 * Regulation of interaction with the stock exchange is implemented by the
-	 * supplied trader view.
-	 * 
-	 * @param traderView
-	 */
-	public abstract void speak(StockExchangeTraderView traderView);
 
 	public abstract String getName();
 	

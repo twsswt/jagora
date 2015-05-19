@@ -10,9 +10,12 @@ import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
-import uk.ac.glasgow.jagora.ticker.TickerTapeObservable;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.StockExchangeLevel2View;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
+import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
+import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 
 public class DefaultStockExchange implements StockExchange{
@@ -21,12 +24,12 @@ public class DefaultStockExchange implements StockExchange{
 	private MarketFactory marketFactory;
 	private final Map<Stock,Market> markets;
 	
-	private final TickerTapeObservable tickerTapeObservable;
+	private final StockExchangeObservable stockExchangeObservable;
 		
-	public DefaultStockExchange (World world, TickerTapeObservable tickerTapeObservable, MarketFactory marketFactory){	
+	public DefaultStockExchange (World world, StockExchangeObservable stockExchangeObservable, MarketFactory marketFactory){	
 		this.world = world;
 		this.marketFactory = marketFactory;
-		this.tickerTapeObservable = tickerTapeObservable;
+		this.stockExchangeObservable = stockExchangeObservable;
 		markets = new HashMap<Stock,Market>();
 	}
 	
@@ -43,7 +46,7 @@ public class DefaultStockExchange implements StockExchange{
 	@Override
 	public void doClearing() {
 		for (Market market: markets.values())
-			tickerTapeObservable.notifyTickerTapeListeners(
+			stockExchangeObservable.notifyTradeListeners(
 				market.doClearing());
 	}
 	
@@ -56,11 +59,11 @@ public class DefaultStockExchange implements StockExchange{
 	}
 		
 	@Override
-	public StockExchangeTraderView createTraderStockExchangeView() {
-		return new TraderOrderDrivenMarketViewImpl ();
+	public StockExchangeLevel1View createLevel1View() {
+		return new DefaultLevel1View ();
 	}
 	
-	private class TraderOrderDrivenMarketViewImpl implements StockExchangeTraderView {
+	private class DefaultLevel1View implements StockExchangeLevel1View {
 
 		@Override
 		public Double getBestOfferPrice(Stock stock) {			
@@ -84,12 +87,16 @@ public class DefaultStockExchange implements StockExchange{
 
 		@Override
 		public void placeBuyOrder(BuyOrder buyOrder) {
-			getMarket(buyOrder.getStock()).recordBuyOrder(buyOrder);		
+			TickEvent<BuyOrder> orderEvent =
+				getMarket(buyOrder.getStock()).recordBuyOrder(buyOrder);
+			stockExchangeObservable.notifyOrderListeners(orderEvent);		
 		}
 
 		@Override
 		public void placeSellOrder(SellOrder sellOrder) {
-			getMarket(sellOrder.getStock()).recordSellOrder(sellOrder);			
+			TickEvent<SellOrder> orderEvent = 
+				getMarket(sellOrder.getStock()).recordSellOrder(sellOrder);	
+			stockExchangeObservable.notifyOrderListeners(orderEvent);
 		}
 
 		@Override
@@ -101,11 +108,26 @@ public class DefaultStockExchange implements StockExchange{
 		public void cancelSellOrder(SellOrder sellOrder) {
 			getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
 		}
-	
+		
+		@Override
+		public void registerTradeListener(TradeListener tradeListener) {
+			stockExchangeObservable.registerTradeListener(tradeListener);
+		}
+		
 	}
 
 	@Override
-	public void addTickerTapeListener(TickerTapeListener tickerTapeListener) {
-		tickerTapeObservable.addTicketTapeListener(tickerTapeListener);
+	public StockExchangeLevel2View createLevel2View() {
+		return new DefaultLevel2View ();
 	}
+	
+	public class DefaultLevel2View extends DefaultLevel1View implements StockExchangeLevel2View {
+
+		@Override
+		public void registerOrderListener(OrderListener orderListener) {
+			stockExchangeObservable.registerOrderListener(orderListener);
+		}
+
+	}
+
 }

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.trader.Trader;
 
 public abstract class AbstractTraderBuilder {
 

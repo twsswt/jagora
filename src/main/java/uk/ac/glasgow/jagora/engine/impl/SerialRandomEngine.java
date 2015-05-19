@@ -3,25 +3,24 @@ package uk.ac.glasgow.jagora.engine.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
-import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 
 public class SerialRandomEngine implements TradingEngine {
 	
 	private final Set<StockExchange> exchanges;
-	private final Set<Trader> traders;
+	private final Set<Level1Trader> traders;
 	private final World world;
 	private final Random random;
 	
-	public SerialRandomEngine (World world, Set<StockExchange> exchanges, Set<Trader> traders, Random random){
+	public SerialRandomEngine (World world, Set<StockExchange> exchanges, Set<Level1Trader> traders, Random random){
 		this.world = world;
 		this.exchanges = new HashSet<StockExchange>(exchanges);
-		this.traders = new HashSet<Trader>(traders);
+		this.traders = new HashSet<Level1Trader>(traders);
 		this.random = random;
 	}
 	
@@ -29,8 +28,8 @@ public class SerialRandomEngine implements TradingEngine {
 	public void run() {
 		while (world.isAlive()) {
 			StockExchange exchange = random.chooseElement(exchanges);
-			StockExchangeTraderView traderView = exchange.createTraderStockExchangeView();
-			Trader trader = random.chooseElement(traders);
+			StockExchangeLevel1View traderView = exchange.createLevel1View();
+			Level1Trader trader = random.chooseElement(traders);
 
 			trader.speak(traderView);
 			exchange.doClearing();

@@ -18,6 +18,8 @@ public interface Order {
 			throws TradeExecutionException;
 
 	public abstract Double getPrice();
+	
+	public Boolean isFilled();
 
 
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.world.World;
 
 public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {

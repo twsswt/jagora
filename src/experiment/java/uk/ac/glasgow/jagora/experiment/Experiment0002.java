@@ -16,7 +16,7 @@ import org.junit.Test;
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
@@ -25,7 +25,7 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTrader;
@@ -76,12 +76,12 @@ public class Experiment0002 {
 		
 		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
 
-		Set<Trader> traders = new HashSet<Trader>();
+		Set<Level1Trader> traders = new HashSet<Level1Trader>();
 		
-		Trader dan = new StubTraderBuilder("stub", initialTraderCash)
+		Level1Trader dan = new StubTraderBuilder("stub", initialTraderCash)
 			.addStock(lemons, initialTraderStock).build();
 		
-		StockExchangeTraderView dansView = stockExchange.createTraderStockExchangeView();
+		StockExchangeLevel1View dansView = stockExchange.createLevel1View();
 		dansView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, 9.75));
 		dansView.placeSellOrder(new LimitSellOrder(dan, lemons, 5, 10.25));
 		
@@ -117,7 +117,7 @@ public class Experiment0002 {
 			
 			String name = createTraderName(SimpleHistoricTrader.class, i);
 			
-			Trader trader = 
+			Level1Trader trader = 
 				new SimpleHistoricTraderBuilder(name,initialTraderCash, seed)
 				.addStock(lemons, initialTraderStock)
 				.monitorStockExchange(stockExchange)
@@ -129,7 +129,7 @@ public class Experiment0002 {
 			
 			String name = createTraderName(InstitutionalInvestorTrader.class, i);
 			
-			Trader trader = 
+			Level1Trader trader = 
 				new InstitutionalInvestorTraderBuilder(name,200000.01, seed)
 				.addStock(lemons, 1100)
 				.addScheduledLimitBuyOrder(5000l, world, lemons, 4000)
@@ -140,10 +140,10 @@ public class Experiment0002 {
 
 		PrintStream printStream = new PrintStream(new FileOutputStream("prices.txt"));
 		
-		stockExchange.addTickerTapeListener(
+		stockExchange.createLevel1View().registerTradeListener(
 			new PriceTimeLoggerTickerTapeListener(printStream));
 		
-		stockExchange.addTickerTapeListener(
+		stockExchange.createLevel1View().registerTradeListener(
 			new TimeListenerTickerTapeListener( durationInMilliSeconds));
 		
 		//stockExchange.addTickerTapeListener(
@@ -155,7 +155,7 @@ public class Experiment0002 {
 			.build();
 	}
 
-	private String createTraderName(Class<? extends Trader> clazz, Integer i) {
+	private String createTraderName(Class<? extends Level1Trader> clazz, Integer i) {
 		String traderTypeName = clazz.getSimpleName();
 		String nameFormat = "%s[%d]";
 		return format(nameFormat, traderTypeName, i);

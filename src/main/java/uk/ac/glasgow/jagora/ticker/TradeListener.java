@@ -1,5 +1,5 @@
 package uk.ac.glasgow.jagora.ticker;
 
-public interface TickerTapeListener {
+public interface TradeListener {
 	 public void tradeExecuted (TradeExecutionEvent tradeExecutionEvent);
 }

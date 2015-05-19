@@ -1,7 +1,5 @@
 package uk.ac.glasgow.jagora;
 
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
-
 /**
  * Represents the basic functionality of a stock exchange.
  * @author Tim
@@ -11,7 +9,8 @@ public interface StockExchange {
 
 	public void doClearing ();
 
-	public StockExchangeTraderView createTraderStockExchangeView();
+	public StockExchangeLevel1View createLevel1View();
+	
+	public StockExchangeLevel2View createLevel2View();
 
-	public void addTickerTapeListener(TickerTapeListener tickerTapeListener);	
 }

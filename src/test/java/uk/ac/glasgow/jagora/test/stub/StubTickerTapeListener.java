@@ -1,9 +1,9 @@
 package uk.ac.glasgow.jagora.test.stub;
 
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 
-public class StubTickerTapeListener implements TickerTapeListener {
+public class StubTickerTapeListener implements TradeListener {
 	
 	private TradeExecutionEvent lastTradeExecutionEvent;
 

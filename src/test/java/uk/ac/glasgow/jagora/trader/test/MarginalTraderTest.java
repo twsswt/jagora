@@ -11,12 +11,12 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubStockExchange;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.MarginalTraderBuilder;
 
 public class MarginalTraderTest {
@@ -26,8 +26,8 @@ public class MarginalTraderTest {
 	
 	private Stock lemons;
 	
-	private Trader alice;
-	private Trader bob;
+	private Level1Trader alice;
+	private Level1Trader bob;
 	
 	private StubStockExchange marketForLemons;
 
@@ -50,8 +50,8 @@ public class MarginalTraderTest {
 	@Test
 	public void test() {
 		
-		StockExchangeTraderView traderOrderDrivenMarketView = 
-			marketForLemons.createTraderStockExchangeView();
+		StockExchangeLevel1View traderOrderDrivenMarketView = 
+			marketForLemons.createLevel1View();
 		
 		BuyOrder buyOrder = new LimitBuyOrder(bob, lemons, 10, 5.1);
 		traderOrderDrivenMarketView.placeBuyOrder(buyOrder);

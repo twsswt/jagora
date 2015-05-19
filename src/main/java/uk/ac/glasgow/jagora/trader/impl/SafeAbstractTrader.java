@@ -7,7 +7,7 @@ import java.util.Map;
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 
 public abstract class SafeAbstractTrader extends AbstractTrader {
 
@@ -20,14 +20,14 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		this.openSellOrders = new ArrayList<SellOrder>();
 	}
 	
-	protected void placeSafeBuyOrder(StockExchangeTraderView traderView, BuyOrder buyOrder) {
+	protected void placeSafeBuyOrder(StockExchangeLevel1View traderView, BuyOrder buyOrder) {
 		if (buyOrder.getPrice() * buyOrder.getRemainingQuantity() <= getAvailableCash()){
 			traderView.placeBuyOrder(buyOrder);
 			openBuyOrders.add(buyOrder);
 		}
 	}
 	
-	protected void placeSafeSellOrder(StockExchangeTraderView traderView, SellOrder sellOrder) {
+	protected void placeSafeSellOrder(StockExchangeLevel1View traderView, SellOrder sellOrder) {
 		if (sellOrder.getRemainingQuantity() <= getAvailableQuantity(sellOrder.getStock())){
 			openSellOrders.add(sellOrder);
 			traderView.placeSellOrder(sellOrder);
@@ -35,12 +35,12 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	}
 	
 	protected void cancelSafeSellOrder(
-			StockExchangeTraderView stockExchangeTraderView, SellOrder sellOrder) {
-		stockExchangeTraderView.cancelSellOrder(sellOrder);
+			StockExchangeLevel1View stockExchangeLevel1View, SellOrder sellOrder) {
+		stockExchangeLevel1View.cancelSellOrder(sellOrder);
 		openSellOrders.remove(sellOrder);
 	}
 
-	protected void cancelSafeBuyOrder(StockExchangeTraderView traderMarketView,	BuyOrder buyOrder) {
+	protected void cancelSafeBuyOrder(StockExchangeLevel1View traderMarketView,	BuyOrder buyOrder) {
 		traderMarketView.cancelBuyOrder(buyOrder);
 		openBuyOrders.remove(buyOrder);
 	}

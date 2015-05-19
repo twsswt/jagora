@@ -9,8 +9,10 @@ import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.StockExchangeLevel2View;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 public class StubStockExchange implements StockExchange {
 
@@ -29,61 +31,70 @@ public class StubStockExchange implements StockExchange {
 	}
 	
 	@Override
-	public StockExchangeTraderView createTraderStockExchangeView() {
-
-		return new StockExchangeTraderView (){
-
-			@Override
-			public Double getBestOfferPrice(Stock stock) {
-				return getSellOrders(stock)
-					.stream()
-					.mapToDouble(sellOrder -> sellOrder.getPrice())
-					.min()
-					.getAsDouble();
-			}
-
-			@Override
-			public Double getBestBidPrice(Stock stock) {
-				return getBuyOrders(stock)
-					.stream()
-					.mapToDouble(buyOrder -> buyOrder.getPrice())
-					.max()
-					.getAsDouble();
-			}
-
-			@Override
-			public void placeBuyOrder(BuyOrder buyOrder) {
-				getBuyOrders(buyOrder.getStock()).add(buyOrder);
-			}
-
-			@Override
-			public void placeSellOrder(SellOrder SellOrder) {
-				getSellOrders(SellOrder.getStock()).add(SellOrder);
-			}
-
-			@Override
-			public void cancelBuyOrder(BuyOrder BuyOrder) {
-				getBuyOrders(BuyOrder.getStock()).remove(BuyOrder);
-				
-			}
-
-			@Override
-			public void cancelSellOrder(SellOrder SellOrder) {
-				getSellOrders(SellOrder.getStock()).remove(SellOrder);
-			}
-
-			@Override
-			public Double getLastKnownBestOfferPrice(Stock stock) {
-				return getBestOfferPrice(stock);
-			}
-
-			@Override
-			public Double getLastKnownBestBidPrice(Stock stock) {
-				return getBestBidPrice(stock);
-			}			
-		};
-		
+	public StockExchangeLevel1View createLevel1View() {
+		return new StubLevel1View ();
 	}
+		
+		
+		
+	protected class StubLevel1View implements StockExchangeLevel1View {
+		@Override
+		public Double getBestOfferPrice(Stock stock) {
+			return getSellOrders(stock)
+				.stream()
+				.mapToDouble(sellOrder -> sellOrder.getPrice())
+				.min()
+				.getAsDouble();
+		}
+
+		@Override
+		public Double getBestBidPrice(Stock stock) {
+			return getBuyOrders(stock)
+				.stream()
+				.mapToDouble(buyOrder -> buyOrder.getPrice())
+				.max()
+				.getAsDouble();
+		}
+
+		@Override
+		public void placeBuyOrder(BuyOrder buyOrder) {
+			getBuyOrders(buyOrder.getStock()).add(buyOrder);
+		}
+
+		@Override
+		public void placeSellOrder(SellOrder SellOrder) {
+			getSellOrders(SellOrder.getStock()).add(SellOrder);
+		}
+
+		@Override
+		public void cancelBuyOrder(BuyOrder BuyOrder) {
+			getBuyOrders(BuyOrder.getStock()).remove(BuyOrder);
+			
+		}
+
+		@Override
+		public void cancelSellOrder(SellOrder SellOrder) {
+			getSellOrders(SellOrder.getStock()).remove(SellOrder);
+		}
+
+		@Override
+		public Double getLastKnownBestOfferPrice(Stock stock) {
+			return getBestOfferPrice(stock);
+		}
+
+		@Override
+		public Double getLastKnownBestBidPrice(Stock stock) {
+			return getBestBidPrice(stock);
+		}
+
+		@Override
+		public void registerTradeListener(TradeListener tradeListener) {
+			// Does nothing as no trades are executed.
+			
+		}
+			
+	}
+
 
 	public List<BuyOrder> getBuyOrders(Stock stock) {
 		List<BuyOrder> BuyOrders = allBuyOrders.get(stock);
@@ -103,9 +114,21 @@ public class StubStockExchange implements StockExchange {
 		return SellOrders;
 	}
 
+
 	@Override
-	public void addTickerTapeListener(TickerTapeListener tickerTapeListener) {
-		// Does nothing as no trades are executed.
-		
+	public StockExchangeLevel2View createLevel2View() {
+		return new StubLevel2View();
 	}
+	
+	protected class StubLevel2View extends StubLevel1View implements StockExchangeLevel2View {
+
+		@Override
+		public void registerOrderListener(
+			OrderListener orderListener) {
+			// TODO Auto-generated method stub
+
+		}
+
+	}
+
 }

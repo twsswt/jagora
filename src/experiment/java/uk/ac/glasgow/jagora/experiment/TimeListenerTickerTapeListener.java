@@ -2,10 +2,10 @@ package uk.ac.glasgow.jagora.experiment;
 
 import static java.lang.String.format;
 
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 
-public class TimeListenerTickerTapeListener implements TickerTapeListener {
+public class TimeListenerTickerTapeListener implements TradeListener {
 
 	private Long maxTicks;
 		

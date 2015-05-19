@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.OptionalDouble;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeTraderView;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.TickerTapeListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.util.Random;
 
@@ -22,7 +22,7 @@ import uk.ac.glasgow.jagora.util.Random;
  * @author tws
  *
  */
-public class SimpleHistoricTrader extends SafeAbstractTrader implements TickerTapeListener {
+public class SimpleHistoricTrader extends SafeAbstractTrader implements TradeListener {
 	
 	private Collection<TradeExecutionEvent> tradeExecutionEvents;
 
@@ -44,7 +44,7 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements TickerTa
 	}
 
 	@Override
-	public void speak(StockExchangeTraderView traderMarketView) {
+	public void speak(StockExchangeLevel1View traderMarketView) {
 		Stock randomStock = random.chooseElement(inventory.keySet());
 		
 		Double averageTradePrice = 
@@ -64,7 +64,7 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements TickerTa
 	}
 
 	private void placeBuyOrder(
-		StockExchangeTraderView traderMarketView, Stock randomStock, Double bestOfferPrice) {
+		StockExchangeLevel1View traderMarketView, Stock randomStock, Double bestOfferPrice) {
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		
@@ -74,7 +74,7 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements TickerTa
 	}
 
 	private void placeSellOrder(
-		StockExchangeTraderView traderMarketView, Stock randomStock, Double bestOfferPrice) {
+		StockExchangeLevel1View traderMarketView, Stock randomStock, Double bestOfferPrice) {
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		

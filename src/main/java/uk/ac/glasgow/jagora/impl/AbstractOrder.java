@@ -53,6 +53,11 @@ public abstract class AbstractOrder implements Order {
 	}
 	
 	@Override
+	public Boolean isFilled (){
+		return this.getRemainingQuantity() <= 0; 
+	}
+	
+	@Override
 	public abstract void satisfyTrade (TickEvent<Trade> trade) throws TradeExecutionException;
 	
 	@Override

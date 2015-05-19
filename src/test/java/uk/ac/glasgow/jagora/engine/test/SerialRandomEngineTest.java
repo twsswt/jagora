@@ -13,7 +13,7 @@ import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.BuyOnlyTrader;
 import uk.ac.glasgow.jagora.trader.impl.SellOnlyTrader;
 import uk.ac.glasgow.jagora.world.World;
@@ -51,11 +51,11 @@ public class SerialRandomEngineTest {
 		stockExchange = 
 			new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
 		
-		Trader alice = 
+		Level1Trader alice = 
 			new BuyOnlyTrader(
 				"alice", initialCash, lemons, stockPrice, orderQuantity);
 		
-		Trader bob =
+		Level1Trader bob =
 			new SellOnlyTrader(
 				"bob", initialStock, lemons, stockPrice, orderQuantity);
 		

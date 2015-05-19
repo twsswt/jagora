@@ -45,9 +45,11 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		this.receivedOrders = new PriorityQueue<TickEvent<O>>(1, new ReceivedOrderComparator());
 	}
 	
-	public void recordOrder (O order){
-		receivedOrders.add(world.getTick(order));
+	public TickEvent<O> recordOrder (O order){
+		TickEvent<O> event = world.getTick(order);
+		receivedOrders.add(event);
 		updateLastKnownBestPrice();
+		return event;
 	}
 	
 	public void cancelOrder(O order) {
