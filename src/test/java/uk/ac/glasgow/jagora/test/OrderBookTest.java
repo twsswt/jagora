@@ -70,7 +70,7 @@ public class OrderBookTest {
 		Integer tradeTick = limitSellOrders.size();
 
 		for (SellOrder expected : limitSellOrders){
-			SellOrder actual = sellBook.getBestOrder();
+			SellOrder actual = sellBook.getBestOrder().event;
 			assertEquals(expected,actual);
 			
 			Trade satisfyingTrade = new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), actual, null);
@@ -104,23 +104,25 @@ public class OrderBookTest {
 			
 		Collections.shuffle(randomisedbuyOrders);
 			
-		for (BuyOrder limitBuyOrder : randomisedbuyOrders){
+		for (BuyOrder limitBuyOrder : randomisedbuyOrders)
 			buyBook.recordOrder(limitBuyOrder);
-		}
+		
+		List<BuyOrder> actualBestBuyOrders = new ArrayList<BuyOrder>();
 		
 		Integer tradeTick = limitBuyOrders.size();
 		
 		for (BuyOrder expected : limitBuyOrders){
-			BuyOrder actual = buyBook.getBestOrder();
-			assertEquals(expected,actual);
+			BuyOrder actual = buyBook.getBestOrder().event;
+			actualBestBuyOrders.add(actual);
+			
 			Trade satisfyingTrade =
 				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);	
-			
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
-
-		}			
+		}
+		
+		assertEquals(limitBuyOrders, actualBestBuyOrders);
 	}
 	
 	private LimitBuyOrder createBuyOrder(

@@ -23,6 +23,7 @@ import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -70,7 +71,7 @@ public class Experiment0002 {
 		world = new TimedWorld(startTime, durationInMilliSeconds);
 		//world = new SimpleSerialWorld(durationInMilliSeconds);
 		
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory();
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
 		
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		

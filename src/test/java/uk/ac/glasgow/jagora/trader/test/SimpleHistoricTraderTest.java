@@ -21,6 +21,7 @@ import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.StockExchange;
+import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -56,7 +57,7 @@ public class SimpleHistoricTraderTest {
 		world = new SimpleSerialWorld(numberOfTraderActions*5l);
 		lemons = new Stock("lemons");
 		
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory();
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
 		
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		

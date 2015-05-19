@@ -132,6 +132,16 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			return managedOrder.isFilled();
 		}
 		
+		@Override
+		public String toString (){
+			String template = 
+				"%s[managing=%s,target=%.2f]";
+			
+			return String.format(
+				template,
+				ZIPTrader.this.toString(), managedOrder.toString(), targetPrice);
+		}
+		
 	}
 	
 	public class BuyOrderJob extends OrderJob<BuyOrder> {
@@ -175,7 +185,6 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 				level1View.cancelBuyOrder(managedOrder);
 			level1View.placeBuyOrder(order);	
 		}
-
 	
 	}
 	

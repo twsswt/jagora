@@ -17,6 +17,7 @@ import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -45,7 +46,7 @@ public class Experiment0001 {
 		world = new SimpleSerialWorld(numberOfTraderActions);
 		lemons = new Stock("lemons");
 		
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory();
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
 		
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		
@@ -72,7 +73,7 @@ public class Experiment0001 {
 			traders.add(historicTrader);
 		}
 		
-		stockExchange.createLevel1View().registerTradeListener(new StdOutTickerTapeListener());
+		stockExchange.createLevel1View().registerTradeListener(new StdOutTradeListener());
 		
 		engine = new SerialRandomEngineBuilder(world, seed)
 			.addStockExchange(stockExchange)

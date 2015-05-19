@@ -68,7 +68,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		}
 	}
 
-	public O getBestOrder() {
+	public TickEvent<O> getBestOrder() {
 		TickEvent<O> receivedOrder = receivedOrders.peek();
 		
 		while (receivedOrder != null && receivedOrder.event.getRemainingQuantity() <= 0){
@@ -77,7 +77,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 			updateLastKnownBestPrice();
 		}
 		
-		return receivedOrder == null? null : receivedOrder.event;		
+		return receivedOrder;		
 	}
 
 	
@@ -98,9 +98,9 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 	}
 
 	public Double getBestPrice() {
-		Order order = getBestOrder();
-		if (order == null) return null;
-		else return order.getPrice();
+		TickEvent<O> orderEvent = getBestOrder();
+		if (orderEvent == null) return null;
+		else return orderEvent.event.getPrice();
 	}
 
 	public Double getLastKnownBestPrice() {

@@ -15,6 +15,7 @@ import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTickerTapeListener;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
@@ -53,7 +54,7 @@ public class DefaultStockExchangeTest {
 				.addStock(oranges, 2000)
 				.build();
 		
-		marketFactory = new ContinuousOrderDrivenMarketFactory();		
+		marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());		
 		world = new SimpleSerialWorld(1000l);		
 	}
 

@@ -12,6 +12,7 @@ import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
+import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.BuyOnlyTrader;
@@ -44,7 +45,7 @@ public class SerialRandomEngineTest {
 			new SimpleSerialWorld(worldDuration);
 		
 		MarketFactory marketFactory =
-			new ContinuousOrderDrivenMarketFactory();
+			new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
 		
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		

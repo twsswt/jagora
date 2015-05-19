@@ -12,6 +12,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
+import uk.ac.glasgow.jagora.pricer.Pricer;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
@@ -22,6 +23,7 @@ public class DefaultStockExchange implements StockExchange{
 
 	private final World world;	
 	private MarketFactory marketFactory;
+	
 	private final Map<Stock,Market> markets;
 	
 	private final StockExchangeObservable stockExchangeObservable;
