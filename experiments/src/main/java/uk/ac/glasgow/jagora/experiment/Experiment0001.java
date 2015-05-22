@@ -20,6 +20,7 @@ import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
+import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;

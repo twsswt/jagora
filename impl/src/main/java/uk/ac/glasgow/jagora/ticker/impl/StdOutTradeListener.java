@@ -1,4 +1,4 @@
-package uk.ac.glasgow.jagora.experiment;
+package uk.ac.glasgow.jagora.ticker.impl;
 
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
