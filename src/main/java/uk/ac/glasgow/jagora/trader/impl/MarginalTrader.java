@@ -6,6 +6,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.util.Random;
 
 /**
@@ -16,7 +17,7 @@ import uk.ac.glasgow.jagora.util.Random;
  * @author tws
  *
  */
-public class MarginalTrader extends AbstractTrader {
+public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 	private Random random;
 

@@ -11,6 +11,7 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.util.Random;
 
 /**
@@ -22,7 +23,7 @@ import uk.ac.glasgow.jagora.util.Random;
  * @author tws
  *
  */
-public class SimpleHistoricTrader extends SafeAbstractTrader implements TradeListener {
+public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Trader, TradeListener {
 	
 	private Collection<TradeExecutionEvent> tradeExecutionEvents;
 

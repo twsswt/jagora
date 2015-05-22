@@ -6,8 +6,9 @@ import java.util.Map;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 
-public class SellOnlyTrader extends SafeAbstractTrader {
+public class SellOnlyTrader extends SafeAbstractTrader implements Level1Trader {
 
 	private Stock stock;
 	private Integer sellQuantity;

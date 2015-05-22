@@ -1,6 +1,5 @@
 package uk.ac.glasgow.jagora;
 
-import uk.ac.glasgow.jagora.pricer.TradePricer;
 import uk.ac.glasgow.jagora.world.World;
 
 public interface MarketFactory {

@@ -8,10 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
-import uk.ac.glasgow.jagora.trader.Level1Trader;
+import uk.ac.glasgow.jagora.trader.Trader;
 
 /**
  * Implements basic trader functionality. Sub-classes implement trader specific
@@ -20,7 +19,7 @@ import uk.ac.glasgow.jagora.trader.Level1Trader;
  * @author tws
  *
  */
-public abstract class AbstractTrader implements Level1Trader {
+public abstract class AbstractTrader implements Trader {
 	
 	/**
 	 * A unique identifier for the trader.
@@ -100,11 +99,5 @@ public abstract class AbstractTrader implements Level1Trader {
 			myBuyTrades.add(trade);
 		}
 	}
-	
-	/**
-	 * @see uk.ac.glasgow.jagora.trader.Trader#speak(uk.ac.gla.jagora.TraderMarketView)
-	 */
-	@Override
-	public abstract void speak (StockExchangeLevel1View traderMarketView);
 	
 }

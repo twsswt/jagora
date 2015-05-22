@@ -1,12 +1,11 @@
 package uk.ac.glasgow.jagora.trader.zip.impl;
 
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.BuyOrderJob;
 import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.OrderJob;
 import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.SellOrderJob;
 
-public abstract class OrderJobSpecification<T extends OrderJob> {
+public abstract class OrderJobSpecification<T extends OrderJob<?>> {
 
 
 	public final Stock stock;

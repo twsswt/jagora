@@ -9,9 +9,10 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
 
-public class StubTrader extends AbstractTrader{
+public class StubTrader extends AbstractTrader implements Level1Trader {
 	
 	private final Queue<Order> orders;
 	

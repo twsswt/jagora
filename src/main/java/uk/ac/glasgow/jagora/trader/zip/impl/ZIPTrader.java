@@ -1,6 +1,7 @@
 package uk.ac.glasgow.jagora.trader.zip.impl;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import static uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.TargetPriceAction.*;
 
 import java.util.LinkedList;
@@ -26,9 +27,9 @@ import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 
 public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, TradeListener, OrderListener {
 
-	protected enum TargetPriceAction {REDUCE, INCREASE, NOTHING }
+	protected enum TargetPriceAction {REDUCE, INCREASE, NOTHING}
 	
-	public abstract class OrderJob<T extends Order> {
+	protected abstract class OrderJob<T extends Order> {
 		
 		public final Stock stock;
 		
@@ -51,13 +52,9 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			this.highLimit = highLimit;
 			this.stock = stock;
 			
-			targetPrice = getConstrainedRandomPrice();			
+			targetPrice =  random.nextDouble() * (highLimit - lowLimit) + lowLimit;	
 			managedOrder = createNewOrder(targetPrice);
 			
-		}
-
-		private double getConstrainedRandomPrice() {
-			return random.nextDouble() * (highLimit - lowLimit) + lowLimit;
 		}
 		
 		protected void updateOrder (StockExchangeLevel1View level1View){
@@ -68,6 +65,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			placeOrder(newOrder, level1View);
 			managedOrder = newOrder;
 		}
+		
 		private Double getNextOrderPrice() {
 			
 			Double lastOrderPrice = managedOrder.getPrice();
@@ -92,7 +90,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			updateTargetPrice();
 		}
 		
-		protected void updateTargetPrice (){
+		private void updateTargetPrice (){
 
 			TargetPriceAction targetPriceAction = getTargetPriceAction ();
 
@@ -116,9 +114,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 				
 				basePrice = targetPrice;				
 				relativeChange = 0.0;
-				absoluteChange = 0.0;
-				//absoluteChange = ( random.nextDouble() * 2 - 1.0 ) * maximumAbsoluteChange;
-				
+				absoluteChange = 0.0;				
 			}
 
 			targetPrice = basePrice * (1.0 + relativeChange) + absoluteChange;
@@ -126,23 +122,22 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 				
 		protected abstract TargetPriceAction getTargetPriceAction ();
 
-		public Boolean isFilled() {
+		protected Boolean isFilled() {
 			return managedOrder.isFilled();
 		}
 		
 		@Override
 		public String toString (){
 			String template = 
-				"%s[managing=%s,target=%.2f]";
+				"[managing=%s,target=%.2f]";
 			
-			return String.format(
-				template,
-				ZIPTrader.this.toString(), managedOrder.toString(), targetPrice);
+			return format(
+				template, managedOrder, targetPrice);
 		}
 		
 	}
 	
-	public class BuyOrderJob extends OrderJob<BuyOrder> {
+	protected class BuyOrderJob extends OrderJob<BuyOrder> {
 		
 		public BuyOrderJob(Stock stock, Double floorPrice, Double limitPrice) {
 			super(stock, floorPrice, limitPrice);
@@ -158,16 +153,11 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 				
 				if (priceIsCompetitive)
 					return REDUCE;
-				else {
-					if (lastQuoteWasOffer())
-						return INCREASE;
-				}
-					
-			} else {
-				if (lastQuoteWasBid() && !priceIsCompetitive){
+				else if (lastQuoteWasOffer())
 					return INCREASE;
-				}
-			}
+					
+			} else if (lastQuoteWasBid() && !priceIsCompetitive)
+				return INCREASE;
 			
 			return NOTHING;
 		}
@@ -214,7 +204,6 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 				return REDUCE;
 			
 			return NOTHING;
-			
 		}
 
 		@Override
@@ -222,7 +211,6 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			if (managedOrder != null)
 				level1View.cancelSellOrder(managedOrder);			
 			level1View.placeSellOrder(order);
-			
 		}
 
 	}
@@ -246,9 +234,11 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		Double maximumAbsoluteChange, 
 		Double learningRate,
 		List<OrderJobSpecification<?>> orderJobs) {
+
 		super(name, cash, inventory);
-		this.random = random;
 		
+		this.random = random;
+
 		this.maximumRelativeChange = maximumRelativeChange;
 		this.maximumAbsoluteChange = maximumAbsoluteChange;
 		this.learningRate = learningRate;
@@ -257,11 +247,6 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			new LinkedList<OrderJobSpecification<?>>(orderJobs);
 		
 		updateCurrentOrderJob();
-	}
-
-	@Override
-	public void speak(StockExchangeLevel1View level1View) {
-			
 	}
 
 	@Override
@@ -275,7 +260,9 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	}
 		
 	private void updateCurrentOrderJob() {
-		while (currentOrderJobIsFinished() && !orderJobsSpecifications.isEmpty()){
+		while (
+			currentOrderJobIsFinished() && 
+			!orderJobsSpecifications.isEmpty()){
 			currentOrderJob = orderJobsSpecifications.poll().createOrderJob(this);
 		}
 	}
@@ -303,4 +290,5 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			currentOrderJob.stock.equals(tradeExecutionEvent.stock))
 			currentOrderJob.updateMarketInformationFollowingTrade();
 	}
+
 }

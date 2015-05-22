@@ -1,7 +1,7 @@
 package uk.ac.glasgow.jagora.trader.zip.test;
 
 import static org.hamcrest.Matchers.closeTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +15,9 @@ import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.experiment.StdOutTradeListener;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
-import uk.ac.glasgow.jagora.test.stub.StubTrader;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.StdOutOrderListener;
 import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;

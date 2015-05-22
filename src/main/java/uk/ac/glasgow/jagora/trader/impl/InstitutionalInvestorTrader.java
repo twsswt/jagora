@@ -11,8 +11,9 @@ import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.trader.Level1Trader;
 
-public class InstitutionalInvestorTrader extends SafeAbstractTrader {
+public class InstitutionalInvestorTrader extends SafeAbstractTrader implements Level1Trader {
 	
 	private PriorityQueue<ScheduledLimitBuyOrder> scheduledOrders;	
 	
