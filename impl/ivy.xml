@@ -1,0 +1,6 @@
+<ivy-module version="2.0">
+	<info organisation="uk.ac.gla.socs" module="jagora.api"/>
+	<dependencies>
+	
+	</dependencies>
+</ivy-module>
