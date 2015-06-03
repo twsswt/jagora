@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.trader.test;
 
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
@@ -118,7 +119,7 @@ public class SimpleHistoricTraderTest {
 		List<TickEvent<Trade>> aliceSellTrades = 
 			executedTrades.stream()
 			.filter(executedTrade -> executedTrade.event.getSeller().equals(alice))
-			.collect(Collectors.toList());
+			.collect(toList());
 		
 		List<TickEvent<Trade>> aliceBuyTrades = 
 				executedTrades.stream()

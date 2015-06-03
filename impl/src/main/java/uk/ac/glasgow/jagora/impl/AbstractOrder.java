@@ -78,8 +78,8 @@ public abstract class AbstractOrder implements Order {
 
 	@Override
 	public boolean equals(Object obj) {
+
 		Double price = getPrice();
-		
 		if (this == obj)
 			return true;
 		if (obj == null)

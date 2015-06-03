@@ -1,12 +1,11 @@
-package uk.ac.glasgow.jagora.trader.zip.impl;
+package uk.ac.glasgow.jagora.trader.impl;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.BuyOrderJob;
-import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.OrderJob;
-import uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.SellOrderJob;
+import uk.ac.glasgow.jagora.trader.impl.ZIPTrader.BuyOrderJob;
+import uk.ac.glasgow.jagora.trader.impl.ZIPTrader.OrderJob;
+import uk.ac.glasgow.jagora.trader.impl.ZIPTrader.SellOrderJob;
 
 public abstract class OrderJobSpecification<T extends OrderJob<?>> {
-
 
 	public final Stock stock;
 	public final Double limitPrice;
@@ -38,14 +37,14 @@ public abstract class OrderJobSpecification<T extends OrderJob<?>> {
 
 		public final Double floorPrice;
 		
-		public BuyOrderJobSpecification(Stock stock, Double limitPrice, Double floorPrice) {
+		public BuyOrderJobSpecification(Stock stock, Double floorPrice,  Double limitPrice) {
 			super(stock, limitPrice);
 			this.floorPrice = floorPrice;
 		}
 
 		@Override
 		public BuyOrderJob createOrderJob(ZIPTrader zipTrader) {
-			return zipTrader.new BuyOrderJob(stock, limitPrice, floorPrice);
+			return zipTrader.new BuyOrderJob(stock, floorPrice, limitPrice);
 		}
 
 	}

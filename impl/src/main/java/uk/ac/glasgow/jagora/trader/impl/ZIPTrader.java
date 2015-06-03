@@ -1,14 +1,16 @@
-package uk.ac.glasgow.jagora.trader.zip.impl;
+package uk.ac.glasgow.jagora.trader.impl;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
-import static uk.ac.glasgow.jagora.trader.zip.impl.ZIPTrader.TargetPriceAction.*;
+import static uk.ac.glasgow.jagora.trader.impl.ZIPTrader.TargetPriceAction.*;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Order;
@@ -23,7 +25,6 @@ import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
-import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 
 public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, TradeListener, OrderListener {
 
@@ -60,7 +61,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		protected void updateOrder (StockExchangeLevel1View level1View){
 			
 			Double constrainedPrice = getNextOrderPrice();
-			
+
 			T newOrder = createNewOrder(constrainedPrice);
 			placeOrder(newOrder, level1View);
 			managedOrder = newOrder;
@@ -225,6 +226,8 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	
 	private Queue<OrderJobSpecification<?>> orderJobsSpecifications;
 
+	private Set<StockExchangeLevel2View> registered;
+
 	public ZIPTrader(
 		String name,
 		Double cash,
@@ -246,19 +249,27 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		this.orderJobsSpecifications =
 			new LinkedList<OrderJobSpecification<?>>(orderJobs);
 		
+		registered = new HashSet<StockExchangeLevel2View>();
+		
 		updateCurrentOrderJob();
 	}
 
 	@Override
 	public void speak(StockExchangeLevel2View level2View) {
-		level2View.registerOrderListener(this);
-		level2View.registerTradeListener(this);
+		if (!registered.contains(level2View)) register (level2View);
+		
 		updateCurrentOrderJob ();
 		if (!currentOrderJobIsFinished())
 			currentOrderJob.updateOrder(level2View);
 		
 	}
 		
+	private void register(StockExchangeLevel2View level2View) {
+		level2View.registerOrderListener(this);
+		level2View.registerTradeListener(this);
+		registered.add(level2View);
+	}
+
 	private void updateCurrentOrderJob() {
 		while (
 			currentOrderJobIsFinished() && 

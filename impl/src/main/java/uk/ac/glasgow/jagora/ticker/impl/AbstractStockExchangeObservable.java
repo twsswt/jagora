@@ -61,6 +61,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		TradeExecutionEvent tradeExecutedEvent = 
 			new TradeExecutionEvent(
 				executedTrade.event.getStock(),
+				executedTrade.event.getBuyer(),
+				executedTrade.event.getSeller(),
 				executedTrade.tick,
 				executedTrade.event.getPrice(),
 				executedTrade.event.getQuantity());

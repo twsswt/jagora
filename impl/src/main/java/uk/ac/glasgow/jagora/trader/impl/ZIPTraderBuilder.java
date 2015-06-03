@@ -1,4 +1,4 @@
-package uk.ac.glasgow.jagora.trader.zip.impl;
+package uk.ac.glasgow.jagora.trader.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Random;
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.trader.zip.impl.OrderJobSpecification.BuyOrderJobSpecification;
-import uk.ac.glasgow.jagora.trader.zip.impl.OrderJobSpecification.SellOrderJobSpecification;
+import uk.ac.glasgow.jagora.trader.impl.OrderJobSpecification.BuyOrderJobSpecification;
+import uk.ac.glasgow.jagora.trader.impl.OrderJobSpecification.SellOrderJobSpecification;
 
 public class ZIPTraderBuilder {
 
@@ -57,13 +57,13 @@ public class ZIPTraderBuilder {
 		return this;
 	}
 
-	public ZIPTraderBuilder addSellOrderJob(Stock stock, Double price, Double ceilPrice) {
-		orderJobs.add(new SellOrderJobSpecification(stock, price, ceilPrice));
+	public ZIPTraderBuilder addSellOrderJob(Stock stock, Double limitPrice, Double ceilPrice) {
+		orderJobs.add(new SellOrderJobSpecification(stock, limitPrice, ceilPrice));
 		return this;
 	}
 	
-	public ZIPTraderBuilder addBuyOrderJob(Stock stock, Double price, Double floorPrice) {
-		orderJobs.add(new BuyOrderJobSpecification(stock, price, floorPrice));
+	public ZIPTraderBuilder addBuyOrderJob(Stock stock, Double floorPrice, Double limitPrice) {
+		orderJobs.add(new BuyOrderJobSpecification(stock, floorPrice, limitPrice));
 		return this;
 	}
 
