@@ -22,7 +22,7 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 	private Random random;
 
 	protected MarginalTrader(
-		String name, Double cash, Map<Stock, Integer> inventory, Random random) {
+		String name, Long cash, Map<Stock, Integer> inventory, Random random) {
 	
 		super(name, cash, inventory);
 		this.random = random;
@@ -41,10 +41,10 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 		Stock randomStock = random.chooseElement(inventory.keySet());
 
-		Double bestBidPrice = 
+		Long bestBidPrice = 
 			traderMarketView.getBestBidPrice(randomStock);
 
-		Double price = bestBidPrice - Double.MIN_NORMAL;
+		Long price = bestBidPrice - 1l;
 
 		Integer quantity = random.nextInt(inventory.get(randomStock));
 
@@ -58,10 +58,10 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 		
 		Stock randomStock = random.chooseElement(inventory.keySet());
 
-		Double bestOfferPrice = 
+		Long bestOfferPrice = 
 			traderMarketView.getBestOfferPrice(randomStock);
 
-		Double buyPrice = bestOfferPrice + Double.MIN_NORMAL;
+		Long buyPrice = bestOfferPrice + 1l;
 
 		Integer quantity = (int) (getCash() / buyPrice);
 

@@ -34,52 +34,53 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		
 		public final Stock stock;
 		
-		private final Double lowLimit;
-		private final Double highLimit;
+		private final Long lowLimit;
+		private final Long highLimit;
 						
-		protected Double lastPriceReportedOnTheMarket;
+		protected Long lastPriceReportedOnTheMarket;
 		protected Boolean lastQuoteWasAccepted;
 		
 		private Boolean lastQuoteWasOffer;
 		protected Boolean lastQuoteWasOffer (){return lastQuoteWasOffer;}
 		protected Boolean lastQuoteWasBid (){return !lastQuoteWasOffer;}
 		
-		private Double targetPrice;
+		private Long targetPrice;
 		
 		protected T managedOrder;
 		
-		public OrderJob (Stock stock, Double lowLimit, Double highLimit){
+		public OrderJob (Stock stock, Long lowLimit, Long highLimit){
 			this.lowLimit = lowLimit;
 			this.highLimit = highLimit;
 			this.stock = stock;
-			
-			targetPrice =  random.nextDouble() * (highLimit - lowLimit) + lowLimit;	
+
+			targetPrice =  (long)(random.nextDouble() * (highLimit - lowLimit)) + lowLimit;	
+
 			managedOrder = createNewOrder(targetPrice);
 			
 		}
 		
 		protected void updateOrder (StockExchangeLevel1View level1View){
 			
-			Double constrainedPrice = getNextOrderPrice();
+			Long constrainedPrice = getNextOrderPrice();
 
 			T newOrder = createNewOrder(constrainedPrice);
 			placeOrder(newOrder, level1View);
 			managedOrder = newOrder;
 		}
 		
-		private Double getNextOrderPrice() {
+		private Long getNextOrderPrice() {
 			
-			Double lastOrderPrice = managedOrder.getPrice();
-			Double unconstrainedPrice = (1 - learningRate) * lastOrderPrice + learningRate * targetPrice;
-			Double constrainedPrice = max (lowLimit,  min (unconstrainedPrice, highLimit));
+			Long lastOrderPrice = managedOrder.getPrice();
+			Long unconstrainedPrice = (long)((1 - learningRate) * lastOrderPrice + learningRate * targetPrice);
+			Long constrainedPrice = max (lowLimit,  min (unconstrainedPrice, highLimit));
 			return constrainedPrice;
 		}
 		
-		protected abstract T createNewOrder (Double price);
+		protected abstract T createNewOrder (Long price);
 		
 		protected abstract void placeOrder (T order, StockExchangeLevel1View level1View);
 		
-		protected void updateMarketInformationFollowingOrder(Double price, Boolean isOffer) {
+		protected void updateMarketInformationFollowingOrder(Long price, Boolean isOffer) {
 			lastPriceReportedOnTheMarket = price;
 			lastQuoteWasOffer = isOffer;
 			lastQuoteWasAccepted = false;
@@ -96,29 +97,29 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			TargetPriceAction targetPriceAction = getTargetPriceAction ();
 
 			Double relativeChange = null;
-			Double absoluteChange = null;
-			Double basePrice = null;
+			Long absoluteChange = null;
+			Long basePrice = null;
 			
 			if (targetPriceAction.equals(REDUCE)){
 		
 				basePrice = lastPriceReportedOnTheMarket;
 				relativeChange = random.nextDouble() * -maximumRelativeChange;
-				absoluteChange = random.nextDouble() * -maximumAbsoluteChange;
+				absoluteChange = (long)(random.nextDouble() * -maximumAbsoluteChange);
 				
 			} else if (targetPriceAction.equals(INCREASE)){
 
 				basePrice = lastPriceReportedOnTheMarket;
 				relativeChange = random.nextDouble() * maximumRelativeChange;
-				absoluteChange = random.nextDouble() * maximumAbsoluteChange;
+				absoluteChange = (long) (random.nextDouble() * maximumAbsoluteChange);
 				
 			} else if (targetPriceAction.equals(NOTHING)){
 				
 				basePrice = targetPrice;				
 				relativeChange = 0.0;
-				absoluteChange = 0.0;				
+				absoluteChange = 0l;				
 			}
 
-			targetPrice = basePrice * (1.0 + relativeChange) + absoluteChange;
+			targetPrice = (long)(basePrice * (1.0 + relativeChange)) + absoluteChange;
 		}
 				
 		protected abstract TargetPriceAction getTargetPriceAction ();
@@ -140,7 +141,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	
 	protected class BuyOrderJob extends OrderJob<BuyOrder> {
 		
-		public BuyOrderJob(Stock stock, Double floorPrice, Double limitPrice) {
+		public BuyOrderJob(Stock stock, Long floorPrice, Long limitPrice) {
 			super(stock, floorPrice, limitPrice);
 		}
 
@@ -164,7 +165,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		}
 
 		@Override
-		protected BuyOrder createNewOrder(Double price) {
+		protected BuyOrder createNewOrder(Long price) {
 			return new LimitBuyOrder(ZIPTrader.this, stock, 1, price);			
 		}
 
@@ -179,12 +180,12 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	
 	public class SellOrderJob extends OrderJob<SellOrder> {
 
-		public SellOrderJob(Stock stock, Double limitPrice, Double ceilPrice) {
+		public SellOrderJob(Stock stock, Long limitPrice, Long ceilPrice) {
 			super(stock, limitPrice, ceilPrice);
 		}
 
 		@Override
-		protected SellOrder createNewOrder(Double price) {
+		protected SellOrder createNewOrder(Long price) {
 			return new LimitSellOrder(ZIPTrader.this, stock, 1, price);
 		}
 
@@ -219,7 +220,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	private Random random;
 	
 	private Double maximumRelativeChange;
-	private Double maximumAbsoluteChange;
+	private Long maximumAbsoluteChange;
 	private Double learningRate;
 	
 	private OrderJob<?> currentOrderJob;
@@ -230,11 +231,11 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 
 	public ZIPTrader(
 		String name,
-		Double cash,
+		Long cash,
 		Map<Stock, Integer> inventory,
 		Random random,
 		Double maximumRelativeChange,
-		Double maximumAbsoluteChange, 
+		Long maximumAbsoluteChange, 
 		Double learningRate,
 		List<OrderJobSpecification<?>> orderJobs) {
 

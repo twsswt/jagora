@@ -8,9 +8,9 @@ import uk.ac.glasgow.jagora.trader.impl.ZIPTrader.SellOrderJob;
 public abstract class OrderJobSpecification<T extends OrderJob<?>> {
 
 	public final Stock stock;
-	public final Double limitPrice;
+	public final Long limitPrice;
 	
-	public OrderJobSpecification (Stock stock, Double limitPrice){
+	public OrderJobSpecification (Stock stock, Long limitPrice){
 		this.stock = stock;
 		this.limitPrice = limitPrice;
 	}
@@ -19,9 +19,9 @@ public abstract class OrderJobSpecification<T extends OrderJob<?>> {
 
 	public static class SellOrderJobSpecification extends OrderJobSpecification<SellOrderJob> {
 
-		private final Double ceilPrice;
+		private final Long ceilPrice;
 		
-		public SellOrderJobSpecification(Stock stock, Double limitPrice, Double ceilPrice) {
+		public SellOrderJobSpecification(Stock stock, Long limitPrice, Long ceilPrice) {
 			super(stock, limitPrice);
 			this.ceilPrice = ceilPrice;
 		}
@@ -35,9 +35,9 @@ public abstract class OrderJobSpecification<T extends OrderJob<?>> {
 
 	public static class BuyOrderJobSpecification extends OrderJobSpecification<BuyOrderJob> {
 
-		public final Double floorPrice;
+		public final Long floorPrice;
 		
-		public BuyOrderJobSpecification(Stock stock, Double floorPrice,  Double limitPrice) {
+		public BuyOrderJobSpecification(Stock stock, Long floorPrice,  Long limitPrice) {
 			super(stock, limitPrice);
 			this.floorPrice = floorPrice;
 		}

@@ -19,7 +19,7 @@ public class InstitutionalInvestorTrader extends SafeAbstractTrader implements L
 	
 	private Collection<Order> placedOrders = new ArrayList<Order>();
 	
-	public InstitutionalInvestorTrader(String name, Double cash, Map<Stock, Integer> inventory,
+	public InstitutionalInvestorTrader(String name, Long cash, Map<Stock, Integer> inventory,
 			List<ScheduledLimitBuyOrder> scheduledOrders) {
 		super(name, cash, inventory);
 		this.scheduledOrders = new PriorityQueue<ScheduledLimitBuyOrder>(scheduledOrders);		

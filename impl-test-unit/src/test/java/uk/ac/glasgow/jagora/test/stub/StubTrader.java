@@ -16,7 +16,7 @@ public class StubTrader extends AbstractTrader implements Level1Trader {
 	
 	private final Queue<Order> orders;
 	
-	public StubTrader(String name, Double cash, Map<Stock, Integer> inventory) {
+	public StubTrader(String name, Long cash, Map<Stock, Integer> inventory) {
 		super(name, cash, inventory);
 		this.orders = new LinkedList<Order>();
 	}

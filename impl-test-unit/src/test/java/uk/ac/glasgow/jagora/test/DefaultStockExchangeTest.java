@@ -43,13 +43,13 @@ public class DefaultStockExchangeTest {
 	public void setUp() throws Exception {
 	
 		bob   = 
-			new StubTraderBuilder("bob", 500.00)
+			new StubTraderBuilder("bob", 50000l)
 				.addStock(lemons, 200)
 				.addStock(oranges,400)
 				.build();
 		
 		alice = 
-			new StubTraderBuilder("alice", 10000.00)
+			new StubTraderBuilder("alice", 1000000l)
 				.addStock(lemons, 100)
 				.addStock(oranges, 2000)
 				.build();
@@ -69,11 +69,11 @@ public class DefaultStockExchangeTest {
 		DefaultStockExchange defaultStockExchange = 
 			new DefaultStockExchange(world,	tickerTapeObserver,	marketFactory);
 		
-		SellOrder sellOrder1 = new LimitSellOrder(bob, lemons, 50, 55.0);
+		SellOrder sellOrder1 = new LimitSellOrder(bob, lemons, 50, 550l);
 		bob.supplyOrder(sellOrder1);
 		bob.speak(defaultStockExchange.createLevel1View());
 
-		BuyOrder buyOrder1 = new LimitBuyOrder(alice, lemons, 25, 45.0);
+		BuyOrder buyOrder1 = new LimitBuyOrder(alice, lemons, 25, 450l);
 		alice.supplyOrder(buyOrder1);
 		alice.speak(defaultStockExchange.createLevel1View());
 
@@ -81,13 +81,13 @@ public class DefaultStockExchangeTest {
 		
 		//No satisfying trades at this stage.
 		
-		assertEquals("", 500.0, bob.getCash(), 0.0);
+		assertEquals("", 50000, bob.getCash().longValue());
 		
-		SellOrder sellOrder2 = new LimitSellOrder(bob, lemons, 10, 55.9);
+		SellOrder sellOrder2 = new LimitSellOrder(bob, lemons, 10, 559l);
 		bob.supplyOrder(sellOrder2);
 		bob.speak(defaultStockExchange.createLevel1View());
 		
-		BuyOrder buyOrder2 = new LimitBuyOrder(alice, lemons, 60, 56.0);
+		BuyOrder buyOrder2 = new LimitBuyOrder(alice, lemons, 60, 560l);
 		alice.supplyOrder(buyOrder2);
 		alice.speak(defaultStockExchange.createLevel1View());
 		
@@ -95,21 +95,21 @@ public class DefaultStockExchangeTest {
 		
 		//sellOrder 1 and 2, and buyOrder 2 should now be fully executed.
 		
-		Double trade1Cost = 50 * 55.0 + 10 * 55.9;
+		Long trade1Cost = 50 * 550l + 10 * 559l;
 		
-		assertEquals("", 500.0 + trade1Cost, bob.getCash(), 0.0);
-		assertEquals("", 10000.0 - trade1Cost, alice.getCash(), 0.0);
+		assertEquals("", 50000l + trade1Cost, bob.getCash().longValue());
+		assertEquals("", 1000000l - trade1Cost, alice.getCash().longValue());
 		
-		SellOrder sellOrder3 = new LimitSellOrder(alice, oranges, 20, 26.5);
+		SellOrder sellOrder3 = new LimitSellOrder(alice, oranges, 20, 265l);
 		alice.supplyOrder(sellOrder3);
 		alice.speak(defaultStockExchange.createLevel1View());
 		
-		SellOrder sellOrder4 = new LimitSellOrder(alice, oranges, 20, 25.0);
+		SellOrder sellOrder4 = new LimitSellOrder(alice, oranges, 20, 250l);
 		alice.supplyOrder(sellOrder4);
 		alice.speak(defaultStockExchange.createLevel1View());
 
 		
-		BuyOrder buyOrder3 = new LimitBuyOrder(bob, oranges, 30, 27.0);
+		BuyOrder buyOrder3 = new LimitBuyOrder(bob, oranges, 30, 270l);
 		bob.supplyOrder(buyOrder3);
 		bob.speak(defaultStockExchange.createLevel1View());
 		
@@ -117,20 +117,20 @@ public class DefaultStockExchangeTest {
 		
 		//Sell order 3, buy order 3 and partially sell order 4 should be executed.
 		
-		Double trade2Cost = 20 * 25 + 10 * 26.5;
+		Long trade2Cost = 20 * 250l + 10 * 265l;
 
-		assertEquals("", 500.0 + trade1Cost - trade2Cost, bob.getCash(), 0.0);
-		assertEquals("", 10000.0 - trade1Cost + trade2Cost, alice.getCash(), 0.0);
+		assertEquals("", 50000l + trade1Cost - trade2Cost, bob.getCash().longValue());
+		assertEquals("", 1000000 - trade1Cost + trade2Cost, alice.getCash().longValue());
 
 		List<TickEvent<Trade>> tradeHistory = tickerTapeObserver.getTradeHistory(oranges);
 		assertEquals ("", 2, tradeHistory.size());
 		
 		Trade firstOrangeTrade = tradeHistory.get(0).event;
-		assertEquals("", 25.0, firstOrangeTrade.getPrice(), 0.0);
+		assertEquals("", 250, firstOrangeTrade.getPrice(), 0.0);
 		assertEquals("", 20, firstOrangeTrade.getQuantity()+0);
 		
 		Trade secondOrangeTrade = tradeHistory.get(1).event;
-		assertEquals("", 26.5, secondOrangeTrade.getPrice(), 0.0);
+		assertEquals("", 265, secondOrangeTrade.getPrice(), 0.0);
 		assertEquals("", 10, secondOrangeTrade.getQuantity()+0);
 
 		List<SellOrder> orangeSellOrders = 
@@ -143,8 +143,6 @@ public class DefaultStockExchangeTest {
 		assertEquals("", 0, orangeBuyOrders.size());
 		
 		assertEquals("", 10, orangeSellOrders.get(0).getRemainingQuantity().intValue());
-		
-		//fail("Not yet implemented");
 	}
 	
 	/**
@@ -162,19 +160,18 @@ public class DefaultStockExchangeTest {
 		StockExchangeObservable stockExchangeObservable = new ThreadedTickerTapeObserver ();
 
 		DefaultStockExchange defaultStockExchange = 
-			new DefaultStockExchange(world,	stockExchangeObservable,	marketFactory);
-
+			new DefaultStockExchange(world,	stockExchangeObservable, marketFactory);
 		
 		StubTickerTapeListener stubTickerTapeListener = 
 			new StubTickerTapeListener();
 		
 		defaultStockExchange.createLevel1View().registerTradeListener(stubTickerTapeListener);
 		
-		SellOrder limitSellOrder = new LimitSellOrder(bob, lemons, 10, 10.0);
+		SellOrder limitSellOrder = new LimitSellOrder(bob, lemons, 10, 1000l);
 		bob.supplyOrder(limitSellOrder);
 		bob.speak(defaultStockExchange.createLevel1View());
 		
-		BuyOrder limitBuyOrder = new LimitBuyOrder(alice, lemons, 10, 11.0);
+		BuyOrder limitBuyOrder = new LimitBuyOrder(alice, lemons, 10, 1100l);
 		alice.supplyOrder(limitBuyOrder);
 		alice.speak(defaultStockExchange.createLevel1View());
 		
@@ -188,10 +185,11 @@ public class DefaultStockExchangeTest {
 			lastTradeExecutionEvent = 
 				stubTickerTapeListener.getLastTradeExecutionEvent();
 		}
-		assertEquals ("", 10.0, lastTradeExecutionEvent.price, 0.0);
-		assertEquals ("", 10, lastTradeExecutionEvent.quantity.intValue());
-		assertEquals ("", 2, lastTradeExecutionEvent.tick.longValue());
-
+		
+		TradeExecutionEvent expected = 
+			new TradeExecutionEvent(lemons, alice, bob, 2l, 1000l, 10);
+		
+		assertEquals ("", expected, lastTradeExecutionEvent);
 	}
 
 }

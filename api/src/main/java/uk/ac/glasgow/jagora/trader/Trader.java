@@ -17,7 +17,7 @@ public interface Trader {
 	/**
 	 * @return the cash currently held by this trader.
 	 */
-	public abstract Double getCash();
+	public abstract Long getCash();
 	
 	/**
 	 * @param stock

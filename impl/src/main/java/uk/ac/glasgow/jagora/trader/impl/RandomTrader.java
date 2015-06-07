@@ -20,10 +20,10 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 	protected static class RangeData {
 		
 		public final Stock stock;
-		public final Double low, high;
+		public final Long low, high;
 		public final Integer minQuantity, maxQuantity;
 		
-		public RangeData(Stock stock, Double lowPrice, Double highPrice, Integer minQuantity, Integer maxQuantity){
+		public RangeData(Stock stock, Long lowPrice, Long highPrice, Integer minQuantity, Integer maxQuantity){
 			this.stock = stock;
 			this.low = lowPrice;
 			this.high = highPrice;
@@ -40,7 +40,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 	
 	
 	public RandomTrader(
-		String name, Double cash, Map<Stock, Integer> inventory,
+		String name, Long cash, Map<Stock, Integer> inventory,
 		Random random, Map<Stock,RangeData> sellRangeDatas, Map<Stock,RangeData> buyRangeDatas) {
 		
 		super(name, cash, inventory);
@@ -70,14 +70,14 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 		
 		if (quantity > 0){
 			
-			Double offerPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);
+			Long offerPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);
 			
 			if (offerPrice == null) return;
-			Double price = createRandomPrice(stock, offerPrice, rangeData);
+			Long price = createRandomPrice(stock, offerPrice, rangeData);
 
 			SellOrder sellOrder =
 				new LimitSellOrder(this, stock, quantity, price);
-
+						
 			placeSafeSellOrder(stockExchangeLevel1View, sellOrder);
 			
 		} else {
@@ -90,20 +90,19 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 	private void performRandomBuyAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
-		Double bestBidPrice = stockExchangeLevel1View.getLastKnownBestBidPrice(stock);
+		Long bestBidPrice = stockExchangeLevel1View.getLastKnownBestBidPrice(stock);
 		if (bestBidPrice == null) return;
 		RangeData rangeData = buyRangeData.get(stock);
-		Double price = createRandomPrice(stock, bestBidPrice, rangeData);
+		Long price = createRandomPrice(stock, bestBidPrice, rangeData);
 
-		Double availableCash = getAvailableCash();
+		Long availableCash = getAvailableCash();
 		
 		Integer quantity = createRandomQuantity(stock, (int)(availableCash/price), rangeData);
-		
 		if (quantity > 0){
 			
 			BuyOrder buyOrder =
 				new LimitBuyOrder(this, stock, quantity, price);
-			
+
 			placeSafeBuyOrder(stockExchangeLevel1View, buyOrder);
 			
 		} else {
@@ -113,13 +112,13 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 		}
 	}
 
-	private Double createRandomPrice(Stock stock, Double midPoint, RangeData rangeData) {
+	private Long createRandomPrice(Stock stock, Long midPoint, RangeData rangeData) {
 		
-		Double relativePriceRange = rangeData.high - rangeData.low;
-		Double randomPrice = 
-				random.nextDouble() *  relativePriceRange + rangeData.low + midPoint;
+		Long relativePriceRange = rangeData.high - rangeData.low;
+		Long randomPrice = 
+			(long)(random.nextDouble() *  relativePriceRange) + rangeData.low + midPoint;
 		
-		return max(randomPrice, 0.0);
+		return max(randomPrice, 0l);
 	}
 	
 	private Integer createRandomQuantity(Stock stock, Integer ceiling, RangeData rangeData) {

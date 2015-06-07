@@ -29,7 +29,7 @@ public class ScheduledLimitBuyOrder implements Comparable<ScheduledLimitBuyOrder
 		return delay;
 	}
 
-	public Order createBuyOrder(Trader trader, Double availableCash) {
+	public Order createBuyOrder(Trader trader, Long availableCash) {
 		return new LimitBuyOrder(trader, stock, quantity, availableCash/quantity);
 	}
 

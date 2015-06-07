@@ -10,13 +10,13 @@ import uk.ac.glasgow.jagora.util.Random;
 public class MarginalTraderBuilder  {
 
 	private String name;
-	private Double cash;
+	private Long cash;
 	
 	private Map<Stock, Integer> inventory;
 	
 	private Integer seed;
 	
-	public MarginalTraderBuilder(String name, Double cash, Integer seed){
+	public MarginalTraderBuilder(String name, Long cash, Integer seed){
 		this.name = name;
 		this.cash = cash;
 		this.inventory = new HashMap<Stock,Integer>();
@@ -33,7 +33,7 @@ public class MarginalTraderBuilder  {
 		return this;
 	}
 	
-	public MarginalTraderBuilder setCash(Double cash){
+	public MarginalTraderBuilder setCash(Long cash){
 		this.cash = cash;
 		return this;
 	}

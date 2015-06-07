@@ -39,21 +39,21 @@ public class StubStockExchange implements StockExchange {
 		
 	protected class StubLevel1View implements StockExchangeLevel1View {
 		@Override
-		public Double getBestOfferPrice(Stock stock) {
+		public Long getBestOfferPrice(Stock stock) {
 			return getSellOrders(stock)
 				.stream()
-				.mapToDouble(sellOrder -> sellOrder.getPrice())
+				.mapToLong(sellOrder -> sellOrder.getPrice())
 				.min()
-				.getAsDouble();
+				.getAsLong();
 		}
 
 		@Override
-		public Double getBestBidPrice(Stock stock) {
+		public Long getBestBidPrice(Stock stock) {
 			return getBuyOrders(stock)
 				.stream()
-				.mapToDouble(buyOrder -> buyOrder.getPrice())
+				.mapToLong(buyOrder -> buyOrder.getPrice())
 				.max()
-				.getAsDouble();
+				.getAsLong();
 		}
 
 		@Override
@@ -78,12 +78,12 @@ public class StubStockExchange implements StockExchange {
 		}
 
 		@Override
-		public Double getLastKnownBestOfferPrice(Stock stock) {
+		public Long getLastKnownBestOfferPrice(Stock stock) {
 			return getBestOfferPrice(stock);
 		}
 
 		@Override
-		public Double getLastKnownBestBidPrice(Stock stock) {
+		public Long getLastKnownBestBidPrice(Stock stock) {
 			return getBestBidPrice(stock);
 		}
 

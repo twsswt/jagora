@@ -25,8 +25,8 @@ public class SerialRandomEngineTest {
 	private static final Integer seed = 1;
 	private static final Long worldDuration = 30l;
 	private static final Integer initialStock = 10;
-	private static final Double initialCash = 10.0;
-	private static final Double stockPrice = 1.0;
+	private static final Long initialCash = 1000l;
+	private static final Long stockPrice = 100l;
 	private static final Integer orderQuantity = 1;
 
 	private TradingEngine engine;

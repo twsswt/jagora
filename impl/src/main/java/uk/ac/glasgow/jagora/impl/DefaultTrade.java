@@ -14,12 +14,12 @@ public class DefaultTrade implements Trade {
 
 	private final Stock stock;
 	private final Integer quantity;
-	private final Double price;
+	private final Long price;
 	
 	private final SellOrder sellOrder;
 	private final BuyOrder buyOrder;
 	
-	public DefaultTrade(Stock stock, Integer quantity, Double price, SellOrder sellOrder, BuyOrder buyOrder) {
+	public DefaultTrade(Stock stock, Integer quantity, Long price, SellOrder sellOrder, BuyOrder buyOrder) {
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;
@@ -52,7 +52,7 @@ public class DefaultTrade implements Trade {
 
 	@Override
 	public String toString() {
-		return format("%s->(%s:%d:$%.2f)->%s", getSeller(), getStock(), getQuantity(), getPrice(), getBuyer());
+		return format("%s->(%s:%d:%d)->%s", getSeller(), getStock(), getQuantity(), getPrice(), getBuyer());
 	}
 
 	public Stock getStock() {
@@ -63,7 +63,7 @@ public class DefaultTrade implements Trade {
 		return quantity;
 	}
 
-	public Double getPrice() {
+	public Long getPrice() {
 		return price;
 	} 
 }

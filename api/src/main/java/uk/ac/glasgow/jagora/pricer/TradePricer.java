@@ -6,5 +6,5 @@ import uk.ac.glasgow.jagora.world.TickEvent;
 
 public interface TradePricer {
 	
-	Double priceTrade(TickEvent<BuyOrder> highestBid, TickEvent<SellOrder> lowestSell);
+	Long priceTrade(TickEvent<BuyOrder> highestBid, TickEvent<SellOrder> lowestSell);
 }

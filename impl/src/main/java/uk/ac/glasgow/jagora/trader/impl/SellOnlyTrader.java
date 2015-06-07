@@ -12,10 +12,10 @@ public class SellOnlyTrader extends SafeAbstractTrader implements Level1Trader {
 
 	private Stock stock;
 	private Integer sellQuantity;
-	private Double price;
+	private Long price;
 
-	public SellOnlyTrader(String name, Integer quantity, Stock stock, Double price, Integer sellQuantity) {
-		super(name, 0.0, createStockMap(quantity, stock));
+	public SellOnlyTrader(String name, Integer quantity, Stock stock, Long price, Integer sellQuantity) {
+		super(name, 0l, createStockMap(quantity, stock));
 		this.stock = stock;
 		this.price = price;
 		this.sellQuantity = sellQuantity;

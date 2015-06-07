@@ -15,7 +15,7 @@ public class PriceTimeLoggerTickerTapeListener implements TradeListener {
 
 	@Override
 	public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
-		this.printStream.println(String.format("%d %.2f",
+		this.printStream.println(String.format("%d %d",
 			tradeExecutionEvent.tick, tradeExecutionEvent.price));
 
 	}

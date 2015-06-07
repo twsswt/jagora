@@ -8,11 +8,11 @@ import uk.ac.glasgow.jagora.Stock;
 public class StubTraderBuilder {
 	
 	private String name;
-	private Double cash;
+	private Long cash;
 	
 	private Map<Stock, Integer> inventory;
 		
-	public StubTraderBuilder(String name, Double cash){
+	public StubTraderBuilder(String name, Long cash){
 		this.name = name;
 		this.cash = cash;
 		this.inventory = new HashMap<Stock,Integer>();
@@ -28,7 +28,7 @@ public class StubTraderBuilder {
 		return this;
 	}
 	
-	public StubTraderBuilder setCash(Double cash){
+	public StubTraderBuilder setCash(Long cash){
 		this.cash = cash;
 		return this;
 	}

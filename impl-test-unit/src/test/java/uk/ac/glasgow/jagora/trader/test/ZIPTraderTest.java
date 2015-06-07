@@ -35,11 +35,10 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		lemons = new Stock("lemons");
 		
-		
 		traderBuilder = new ZIPTraderBuilder("test")
-			.setCash(1000.0)
+			.setCash(10000l)
 			.setSeed(1)
-			.setMaximumAbsoluteChange(1.0)
+			.setMaximumAbsoluteChange(10l)
 			.setMaximumRelativeChange(0.1)
 			.setLearningRate(0.1);
 	}
@@ -47,8 +46,8 @@ public class ZIPTraderTest extends EasyMockSupport {
 	@Test 
 	public void testBuyingStrategy(){
 		
-		Double limitPrice = 25.0;
-		Double floorPrice = 0.0;
+		Long limitPrice = 2500l;
+		Long floorPrice = 0l;
 				
 		ZIPTrader trader = traderBuilder
 			.addBuyOrderJob(lemons, floorPrice, limitPrice)
@@ -59,8 +58,8 @@ public class ZIPTraderTest extends EasyMockSupport {
 	@Test
 	public void testSellingStrategy (){
 		
-		Double limitPrice = 20.0;	
-		Double ceilPrice = 50.0;
+		Long limitPrice = 2000l;	
+		Long ceilPrice = 5000l;
 		
 		ZIPTrader trader = traderBuilder
 			.addStock(lemons, 1)
@@ -69,12 +68,12 @@ public class ZIPTraderTest extends EasyMockSupport {
 				
 		mockExchange.registerOrderListener(trader);
 		mockExchange.registerTradeListener(trader);
-		mockExchange.cancelSellOrder(new LimitSellOrder(trader, lemons, 1, 41.92634572109873));
-		mockExchange.placeSellOrder(new LimitSellOrder(trader, lemons, 1, 39.63092350255944));
+		mockExchange.cancelSellOrder(new LimitSellOrder(trader, lemons, 1, 4192l));
+		mockExchange.placeSellOrder(new LimitSellOrder(trader, lemons, 1, 3964l));
 		
 		replayAll();
 		
-		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, limitPrice, true));		
+		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, true));		
 		trader.speak(mockExchange);
 
 		verifyAll();

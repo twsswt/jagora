@@ -20,30 +20,40 @@ public class SellOrderTest {
 	public void setUp() throws Exception {
 		sellOrders = new SellOrder[3];
 		
-		sellOrders[0] = new LimitSellOrder(null, lemons, 10, 50.0);
-		sellOrders[1] = new LimitSellOrder(null, lemons, 10, 50.0);
-		sellOrders[2] = new LimitSellOrder(null, lemons, 10, 55.0);
+		sellOrders[0] = new LimitSellOrder(null, lemons, 10, 500l);
+		sellOrders[1] = new LimitSellOrder(null, lemons, 10, 500l);
+		sellOrders[2] = new LimitSellOrder(null, lemons, 10, 550l);
 	}
 
 	@Test
-	public void testEquals() {
-		
+	public void testEquals() {		
 		assertTrue(sellOrders[0].equals(sellOrders[1]));
-		
+	}
+
+	@Test
+	public void testNotEqualsWhenLessThan() {
 		assertFalse(sellOrders[0].equals(sellOrders[2]));
-		
+	}
+
+	@Test
+	public void testNotEqualsWhenGreaterThan() {		
 		assertFalse(sellOrders[2].equals(sellOrders[0]));
+	}
+
+	
+	@Test
+	public void testCompareToWhenEqual() {
+		assertThat(sellOrders[0].compareTo(sellOrders[1]), equalTo(0));
+	}
+
+	@Test
+	public void testCompareToWhenLessThan() {
+		assertThat(sellOrders[0].compareTo(sellOrders[2]), lessThan(0));
 	}
 	
 	@Test
-	public void testCompareTo() {
-
-		assertEquals(0, sellOrders[0].compareTo(sellOrders[1]));
-		
-		assertThat(sellOrders[0].compareTo(sellOrders[2]), lessThan(0));
-		
+	public void testCompareToWhenGreaterThan() {		
 		assertThat(sellOrders[2].compareTo(sellOrders[0]), greaterThan(0));
-
 	}
 
 

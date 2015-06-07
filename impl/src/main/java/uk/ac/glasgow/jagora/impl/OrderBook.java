@@ -38,7 +38,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 
 	private PriorityQueue<TickEvent<O>> receivedOrders;
 	private World world;
-	private Double lastKnownBestPrice;
+	private Long lastKnownBestPrice;
 	
 	public OrderBook (World world){
 		this.world = world;
@@ -53,7 +53,6 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 	}
 	
 	public void cancelOrder(O order) {
-		
 		TickEvent<O> toRemove = null;
 				
 		for (TickEvent<O> receivedOrder : receivedOrders)
@@ -97,18 +96,18 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		return result;
 	}
 
-	public Double getBestPrice() {
+	public Long getBestPrice() {
 		TickEvent<O> orderEvent = getBestOrder();
 		if (orderEvent == null) return null;
 		else return orderEvent.event.getPrice();
 	}
 
-	public Double getLastKnownBestPrice() {
+	public Long getLastKnownBestPrice() {
 		return lastKnownBestPrice;
 	}
 	
 	private void updateLastKnownBestPrice() {
-		Double currentBestPrice = getBestPrice();
+		Long currentBestPrice = getBestPrice();
 		if (currentBestPrice != null)
 			lastKnownBestPrice = currentBestPrice;
 	}

@@ -2,12 +2,15 @@ package uk.ac.glasgow.jagora.experiment;
 
 import static java.lang.String.format;
 import static java.util.stream.IntStream.range;
-import static org.hamcrest.Matchers.closeTo;
-import static org.junit.Assert.assertThat;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+
+import uk.ac.glasgow.jagora.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,26 +31,63 @@ import uk.ac.glasgow.jagora.trader.impl.ZIPTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
+/**
+ * Reproduce's Cliff (1997)'s experimental results for Zero Intelligence Traders.
+ * @author Tim
+ *
+ */
 public class Experiment0003 {
 	
-	private Random random = new Random(1);
-
+	private Long maxTickCount = 5000l;
+	private Integer numberOfBuyers = 50000;
+	private Integer numberOfSellers = 50000;
+	private Integer seed =  1;
+	
+	private Double maximumRelativeChange = 0.1;
+	private Long maximumAbsoluteChange = 1l;
+	
+	private Double learningRate = 0.1;
+	
+	
+	private Random random;
+	
 	private Stock lemons;
+	
 	private StockExchange stockExchange;
 	
 	private StubTradeListener stubTradeListener;
-	private int numberOfBuyers = 50;
-	private int numberOfSellers = 50;
 	
 	private List<ZIPTrader> traders;
 	private SerialTickerTapeObserver tickerTapeObserver;
+	private World world;
 	
 	@Before
 	public void setUp() throws Exception {
 		
+		random = new Random(seed);
+		
 		lemons = new Stock("lemons");
 		
-		World world = new SimpleSerialWorld(5000l);
+		stockExchange = createStockExchange();
+		
+		traders = new ArrayList<ZIPTrader>();
+		
+		int [] buyerSeeds = range(0,numberOfBuyers).toArray();
+				
+		for (Integer seed : buyerSeeds)
+			configureBuyerZIPTrader(seed, 0l, 5000l);
+		
+		int [] sellerSeeds = range(0,numberOfSellers).toArray();
+		
+		for(Integer seed: sellerSeeds)
+			configureSellerZIPTrader(seed, 0l, 5000l);
+		
+		Collections.shuffle(traders);
+
+	}
+
+	private StockExchange createStockExchange() throws FileNotFoundException {
+		world = new SimpleSerialWorld(maxTickCount);
 		
 		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestOrderPricer ());
 		
@@ -61,34 +101,13 @@ public class Experiment0003 {
 				
 		tickerTapeObserver.registerTradeListener(new StdOutTradeListener());
 		
-		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
+		PrintStream printStream = new PrintStream(new FileOutputStream("prices.txt"));
 		
-		traders = new ArrayList<ZIPTrader>();
-		
-		int [] buyerSeeds = range(0,numberOfBuyers).toArray();
-				
-		for (int seed : buyerSeeds)
-			configureBuyerZIPTrader(seed, 5.0, 50.0);
-		
-		int [] sellerSeeds = range(0,numberOfSellers).toArray();
-		
-		for(int seed: sellerSeeds)
-			configureSellerZIPTrader(seed, 5.0, 50.0);
-		
-		
-	
-	}
+		tickerTapeObserver.registerTradeListener(
+			new PriceTimeLoggerTickerTapeListener(printStream));
 
-	@Test
-	public void testAveragePrice() {
-				
-		while (stubTradeListener.getTradeCount() < numberOfBuyers)
-			for (ZIPTrader zipTrader : traders) {
-				zipTrader.speak(stockExchange.createLevel2View());
-				stockExchange.doClearing();
-			}
-
-		assertThat(stubTradeListener.getAverageTradePrice(), closeTo(22.6, 0.1));
+		
+		return new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
 	}
 	
 	private void registerFilteredStdOutOrderListener(Boolean isOffer) {
@@ -97,24 +116,26 @@ public class Experiment0003 {
 		tickerTapeObserver.registerOrderListener(filteredOrderListener);
 	}
 
-	private void configureBuyerZIPTrader(int seed,	Double floorPrice, Double ceilPrice) {
+	private void configureBuyerZIPTrader(int seed, Long floorPrice, Long ceilPrice) {
 				
-		Double limitPrice = (random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
+		Long limitPrice = (long)(random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
 				
 		ZIPTrader trader = configureBasicZIPTraderBuilder("buyer",seed)
 			.addBuyOrderJob(lemons, floorPrice, limitPrice)
 			.build();
+		
 		registerZIPTrader(trader);
 	}
 
-	private void configureSellerZIPTrader(int seed,	Double floorPrice, Double ceilPrice) {
+	private void configureSellerZIPTrader(int seed,	Long floorPrice, Long ceilPrice) {
 		
-		Double limitPrice = random.nextDouble() * (ceilPrice - floorPrice) + floorPrice;	
+		Long limitPrice = (long)(random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
 				
 		ZIPTrader trader = configureBasicZIPTraderBuilder("seller",seed)
 			.addStock(lemons, 1)
 			.addSellOrderJob(lemons, limitPrice, ceilPrice)
 			.build();
+		
 		registerZIPTrader(trader);
 	}
 	
@@ -123,17 +144,29 @@ public class Experiment0003 {
 		String name = format("%s_%d",namePrefix,seed);
 		
 		return new ZIPTraderBuilder(name)
-			.setCash(1000.0)
+			.setCash(1000000l)
 			.setSeed(seed)
-			.setMaximumAbsoluteChange(1.0)
-			.setMaximumRelativeChange(0.1)
-			.setLearningRate(0.1);
+			.setMaximumAbsoluteChange(maximumAbsoluteChange)
+			.setMaximumRelativeChange(maximumRelativeChange)
+			.setLearningRate(learningRate);
 	}
 	
 	private void registerZIPTrader(ZIPTrader trader) {
 		traders.add(trader);
 		stockExchange.createLevel2View().registerOrderListener(trader);
 		stockExchange.createLevel1View().registerTradeListener(trader);
+	}
+	
+	@Test
+	public void testAveragePrice() {
+				
+		while (world.isAlive()){	
+			ZIPTrader zipTrader = random.chooseElement(traders);
+			zipTrader.speak(stockExchange.createLevel2View());
+			stockExchange.doClearing();
+		}
+
+		//assertThat(stubTradeListener.getAverageTradePrice(), closeTo(22.6, 0.1));
 	}
 
 }

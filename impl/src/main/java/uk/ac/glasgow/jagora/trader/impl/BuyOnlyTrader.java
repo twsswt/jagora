@@ -11,9 +11,9 @@ public class BuyOnlyTrader extends SafeAbstractTrader implements Level1Trader{
 
 	private Stock stock;
 	private Integer quantity;
-	private Double price;
+	private Long price;
 
-	public BuyOnlyTrader(String name, Double cash,	Stock stock, Double price, Integer quantity) {
+	public BuyOnlyTrader(String name, Long cash,	Stock stock, Long price, Integer quantity) {
 		super(name, cash, new HashMap<Stock,Integer>());
 		this.stock = stock;
 		this.price = price;

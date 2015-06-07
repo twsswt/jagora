@@ -8,17 +8,12 @@ import uk.ac.glasgow.jagora.Stock;
 public abstract class AbstractTraderBuilder {
 
 	private String name;
-	private Double cash;
+	private Long cash;
 	
 	private Map<Stock, Integer> inventory;
-	
-	private Integer seed;
-	
-	public AbstractTraderBuilder(String name, Double cash, Integer seed) {
-		this.name = name;
-		this.cash = cash;
+		
+	public AbstractTraderBuilder() {	
 		this.inventory = new HashMap<Stock,Integer>();
-		this.seed = seed;
 	}
 
 	public AbstractTraderBuilder setName(String name) {
@@ -30,16 +25,12 @@ public abstract class AbstractTraderBuilder {
 		return name;
 	}
 	
-	public Integer getSeed (){
-		return seed;
-	}
-	
-	public AbstractTraderBuilder setCash(Double cash){
+	public AbstractTraderBuilder setCash(Long cash){
 		this.cash = cash;
 		return this;
 	}
 	
-	public Double getCash (){
+	public Long getCash (){
 		return cash;
 	}
 	

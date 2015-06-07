@@ -26,13 +26,13 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	private final String name;
 
-	private Double cash; 
+	private Long cash; 
 	protected final Map<Stock,Integer> inventory;
 	
 	private List<Trade> mySellTrades;
 	private List<Trade> myBuyTrades;
 
-	public AbstractTrader(String name, Double cash, Map<Stock,Integer> inventory) {
+	public AbstractTrader(String name, Long cash, Map<Stock,Integer> inventory) {
 		this.name = name;
 		this.cash = cash;
 		this.inventory = new HashMap<Stock,Integer>(inventory);
@@ -48,7 +48,7 @@ public abstract class AbstractTrader implements Trader {
 	 * @see uk.ac.glasgow.jagora.trader.Trader#getCash()
 	 */
 	@Override
-	public Double getCash (){
+	public Long getCash (){
 		return cash;
 	}
 	
@@ -73,7 +73,7 @@ public abstract class AbstractTrader implements Trader {
 	public void sellStock(Trade trade) throws TradeExecutionException {
 		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0);
 		if (currentQuantity < trade.getQuantity()){ 
-			String message = format("Seller [%s] cannot satisfy trade [%s].", name, trade);
+			String message = format("Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].", name, trade, currentQuantity);
 			throw new TradeExecutionException (message, trade, this);
 		} else {
 			inventory.put(trade.getStock(), currentQuantity - trade.getQuantity());
@@ -87,10 +87,10 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void buyStock(Trade trade) throws TradeExecutionException {
-		Double totalPrice = trade.getPrice() * trade.getQuantity();
+		Long totalPrice = trade.getPrice() * trade.getQuantity();
 		
 		if (totalPrice > cash){
-			String message = format("Buyer [%s] cannot satisfy trade [%s].", name, trade);
+			String message = format("Buyer [%s] cannot satisfy trade [%s] with remaining cash [%d].", name, trade, getCash());
 			throw new TradeExecutionException (message, trade, this);		
 		} else {
 			cash -= totalPrice;

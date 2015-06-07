@@ -48,7 +48,7 @@ public abstract class AbstractOrder implements Order {
 
 	@Override
 	public String toString (){
-		return format("[trader=%s, stock=%s, quantity=%d, price=%.2f]", 
+		return format("[trader=%s, stock=%s, quantity=%d, price=%d]", 
 			trader.getName(), stock.name, getRemainingQuantity(), getPrice());
 	}
 	
@@ -64,11 +64,11 @@ public abstract class AbstractOrder implements Order {
 	public abstract void rollBackTrade (TickEvent<Trade> trade) throws TradeExecutionException;
 	
 	@Override
-	public abstract Double getPrice();
+	public abstract Long getPrice();
 
 	@Override
 	public int hashCode() {
-		Double price = getPrice();
+		Long price = getPrice();
 		
 		final int prime = 31;
 		int result = 1;
@@ -79,7 +79,7 @@ public abstract class AbstractOrder implements Order {
 	@Override
 	public boolean equals(Object obj) {
 
-		Double price = getPrice();
+		Long price = getPrice();
 		if (this == obj)
 			return true;
 		if (obj == null)

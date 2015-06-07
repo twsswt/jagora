@@ -8,7 +8,7 @@ import uk.ac.glasgow.jagora.world.TickEvent;
 public class SellOrderPricer implements TradePricer {
 
 	@Override
-	public Double priceTrade(
+	public Long priceTrade(
 		TickEvent<BuyOrder> highestBid, TickEvent<SellOrder> lowestSell) {
 		return lowestSell.event.getPrice();
 	}

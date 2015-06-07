@@ -31,39 +31,64 @@ public class TradeTest {
 	
 	private DefaultTrade trade;
 
+	private TickEvent<Trade> executedTrade;
+
 	@Before
 	public void setUp() throws Exception {
-		alice = new StubTraderBuilder("alice", 1000000.00)
+		alice = new StubTraderBuilder("alice", 100000000l)
 			.addStock(lemons, 10000)
 			.build();
 		
-		bob = new StubTraderBuilder("alice", 1000000.00)
+		bob = new StubTraderBuilder("alice", 100000000l)
 			.addStock(lemons, 10000)
 			.build();
 	
 		
-		limitBuyOrder = new LimitBuyOrder(alice, lemons, 500, 50.0);
-		limitSellOrder = new LimitSellOrder(bob, lemons, 1000, 45.0);
+		limitBuyOrder = new LimitBuyOrder(alice, lemons, 500, 500l);
+		limitSellOrder = new LimitSellOrder(bob, lemons, 1000, 450l);
 		
-		trade = new DefaultTrade(lemons, 500, 45.0, limitSellOrder, limitBuyOrder);
+		trade = new DefaultTrade(lemons, 500, 450l, limitSellOrder, limitBuyOrder);
 		
 		world = new ManualTickWorld();
 		world.setTickForEvent(0l, trade);
+		
+		executedTrade = trade.execute(world);
 	}
 
 	@Test
-	public void test() throws Exception {
-		TickEvent<Trade> executedTrade = trade.execute(world);
-		
+	public void testThatExecutedTradeHasCorrectTick() throws Exception {		
 		assertEquals("", 0l, executedTrade.tick.longValue());
-		assertEquals("", 1000000.0-45*500, alice.getCash(), 0.0);
-		
-		assertEquals("", 1000000.0+45*500, bob.getCash(), 0.0);
-		
+	}
+
+	@Test
+	public void testThatAliceWasDebited() throws Exception {
+		assertEquals("", 100000000l-450*500, alice.getCash(), 0.0);
+	}
+
+	@Test
+	public void testThatBobWasCredited() throws Exception {
+
+		assertEquals("", 100000000l+450*500, bob.getCash(), 0.0);
+
+	}
+
+	@Test
+	public void testThatAliceBoughtLemons() throws Exception {
 		assertEquals("", 10500, alice.getInventory(lemons).intValue());
+	}
+
+	@Test
+	public void testThatBobSoldLemons() throws Exception {
 		assertEquals("",  9500, bob.getInventory(lemons).intValue());
-		
+	}
+
+	@Test
+	public void testThatAlicesOrderWasReduced() throws Exception {
 		assertEquals("", valueOf(0), limitBuyOrder.getRemainingQuantity());
+	}
+
+	@Test
+	public void testThatBobsOrderWasReduced() throws Exception {
 		assertEquals("", valueOf(500), limitSellOrder.getRemainingQuantity());
 	}
 

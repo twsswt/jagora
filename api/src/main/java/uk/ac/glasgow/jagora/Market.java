@@ -25,11 +25,11 @@ public interface Market {
 
 	public List<SellOrder> getSellOrders();
 
-	public Double getBestBidPrice();
+	public Long getBestBidPrice();
 	
-	public Double getBestOfferPrice();
+	public Long getBestOfferPrice();
 	
-	public Double getLastKnownBestBidPrice();
+	public Long getLastKnownBestBidPrice();
 	
-	public Double getLastKnownBestOfferPrice();
+	public Long getLastKnownBestOfferPrice();
 }

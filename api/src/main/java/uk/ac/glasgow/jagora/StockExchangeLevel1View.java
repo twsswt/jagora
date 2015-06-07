@@ -4,13 +4,13 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 public interface StockExchangeLevel1View {
 	
-	public Double getBestOfferPrice(Stock stock);
+	public Long getBestOfferPrice(Stock stock);
 	
-	public Double getBestBidPrice(Stock stock);
+	public Long getBestBidPrice(Stock stock);
 	
-	public Double getLastKnownBestOfferPrice(Stock stock);
+	public Long getLastKnownBestOfferPrice(Stock stock);
 
-	public Double getLastKnownBestBidPrice(Stock stock);
+	public Long getLastKnownBestBidPrice(Stock stock);
 	
 	public void placeBuyOrder (BuyOrder buyOrder);
 	

@@ -13,10 +13,10 @@ import uk.ac.glasgow.jagora.trader.impl.OrderJobSpecification.SellOrderJobSpecif
 public class ZIPTraderBuilder {
 
 	private String name;
-	private Double cash;
+	private Long cash;
 	private Integer seed;
 	private Map<Stock,Integer> inventory;
-	private Double maximumAbsoluteChange;
+	private Long maximumAbsoluteChange;
 	private Double maximumRelativeChange;
 	private Double learningRate;
 	private List<OrderJobSpecification<?>> orderJobs;
@@ -27,7 +27,7 @@ public class ZIPTraderBuilder {
 		this.orderJobs = new ArrayList<OrderJobSpecification<?>>();
 	}
 
-	public ZIPTraderBuilder setCash(Double cash) {
+	public ZIPTraderBuilder setCash(Long cash) {
 		this.cash = cash;
 		return this;
 	}
@@ -42,7 +42,7 @@ public class ZIPTraderBuilder {
 		return this;
 	}
 
-	public ZIPTraderBuilder setMaximumAbsoluteChange(Double maximumAbsoluteChange) {
+	public ZIPTraderBuilder setMaximumAbsoluteChange(Long maximumAbsoluteChange) {
 		this.maximumAbsoluteChange = maximumAbsoluteChange;
 		return this;
 	}
@@ -57,12 +57,12 @@ public class ZIPTraderBuilder {
 		return this;
 	}
 
-	public ZIPTraderBuilder addSellOrderJob(Stock stock, Double limitPrice, Double ceilPrice) {
+	public ZIPTraderBuilder addSellOrderJob(Stock stock, Long limitPrice, Long ceilPrice) {
 		orderJobs.add(new SellOrderJobSpecification(stock, limitPrice, ceilPrice));
 		return this;
 	}
 	
-	public ZIPTraderBuilder addBuyOrderJob(Stock stock, Double floorPrice, Double limitPrice) {
+	public ZIPTraderBuilder addBuyOrderJob(Stock stock, Long floorPrice, Long limitPrice) {
 		orderJobs.add(new BuyOrderJobSpecification(stock, floorPrice, limitPrice));
 		return this;
 	}

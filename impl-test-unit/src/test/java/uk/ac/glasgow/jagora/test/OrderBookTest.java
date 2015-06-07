@@ -38,8 +38,8 @@ public class OrderBookTest {
 	@Before
 	public void setUp() throws Exception {
 	
-		alice = new StubTraderBuilder("alice", 1000000.00).addStock(lemons, 10000).build();
-		bob   = new StubTraderBuilder("bob", 50000.00).addStock(lemons, 200).build();
+		alice = new StubTraderBuilder("alice", 100000000l).addStock(lemons, 10000).build();
+		bob   = new StubTraderBuilder("bob", 5000000l).addStock(lemons, 200).build();
 		
 		manualTickWorld = new ManualTickWorld();
 				
@@ -52,11 +52,11 @@ public class OrderBookTest {
 		
 		List<LimitSellOrder> limitSellOrders =
 			Arrays.asList(
-				createSellOrder(alice, lemons, 500,  50.00, 4l), 
-				createSellOrder(bob,   lemons,  15, 110.00, 1l),
-				createSellOrder(alice, lemons,  10, 110.00, 2l),
-				createSellOrder(alice, lemons,   5, 200.00, 3l),
-				createSellOrder(bob,   lemons,  10, 250.00, 0l)
+				createSellOrder(alice, lemons, 500,  50l, 4l), 
+				createSellOrder(bob,   lemons,  15, 110l, 1l),
+				createSellOrder(alice, lemons,  10, 110l, 2l),
+				createSellOrder(alice, lemons,   5, 200l, 3l),
+				createSellOrder(bob,   lemons,  10, 250l, 0l)
 			);
 		
 		List<LimitSellOrder> randomisedSellOrders =
@@ -80,7 +80,7 @@ public class OrderBookTest {
 		}		
 	}
 
-	private LimitSellOrder createSellOrder(AbstractTrader trader, Stock stock, Integer quantity, Double price, Long tick) {
+	private LimitSellOrder createSellOrder(AbstractTrader trader, Stock stock, Integer quantity, Long price, Long tick) {
 		LimitSellOrder limitSellOrder = new LimitSellOrder(trader, stock, quantity, price);
 		manualTickWorld.setTickForEvent(tick, limitSellOrder);
 		return limitSellOrder;
@@ -91,11 +91,11 @@ public class OrderBookTest {
 		
 		List<LimitBuyOrder> limitBuyOrders =
 			Arrays.asList(
-				createBuyOrder(alice, lemons, 500, 900.00, 4l),
-				createBuyOrder(alice, lemons,  10, 220.00, 2l),
-				createBuyOrder(alice, lemons,  15, 220.00, 3l),
-				createBuyOrder(alice, lemons,   5, 150.00, 0l),
-				createBuyOrder(bob,   lemons,  10, 110.00, 1l)
+				createBuyOrder(alice, lemons, 500, 90000l, 4l),
+				createBuyOrder(alice, lemons,  10, 22000l, 2l),
+				createBuyOrder(alice, lemons,  15, 22000l, 3l),
+				createBuyOrder(alice, lemons,   5, 15000l, 0l),
+				createBuyOrder(bob,   lemons,  10, 11000l, 1l)
 			);
 
 		
@@ -126,7 +126,7 @@ public class OrderBookTest {
 	}
 	
 	private LimitBuyOrder createBuyOrder(
-		AbstractTrader trader, Stock stock, Integer quantity, Double price, Long tick) {
+		AbstractTrader trader, Stock stock, Integer quantity, Long price, Long tick) {
 		
 		LimitBuyOrder limitBuyOrder = new LimitBuyOrder(trader, stock, quantity, price);
 		manualTickWorld.setTickForEvent(tick, limitBuyOrder);

@@ -72,14 +72,13 @@ public class ContinuousOrderDrivenMarket implements Market {
 		while (aTradeCanBeExecuted(lowestSellEvent, highestBuyEvent)){
 			SellOrder lowestSell = lowestSellEvent.event;
 			BuyOrder highestBid = highestBuyEvent.event;
-			
 			Integer quantity = 
 				Math.min(
 					lowestSell.getRemainingQuantity(), 
 					highestBid.getRemainingQuantity()
 				);
 			
-			Double price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);	
+			Long price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);	
 			
 			Trade trade = 
 				new DefaultTrade (stock, quantity, price, lowestSell, highestBid);
@@ -90,14 +89,16 @@ public class ContinuousOrderDrivenMarket implements Market {
 											
 			} catch (TradeExecutionException e) {
 				Trader culprit = e.getCulprit();
-								
-				if (culprit.equals(lowestSell.getTrader()))
+				if (culprit.equals(lowestSell.getTrader())){
 					sellBook.cancelOrder(lowestSell);
+				}
 				else if (culprit.equals(highestBid.getTrader()))
 					buyBook.cancelOrder(highestBid);
 				
 				//TODO Penalise the trader that caused the trade to fail.
 				e.printStackTrace();
+				System.out.println("Failed order " + highestBid);
+				System.exit(0);	
 			}
 			
 			lowestSellEvent = sellBook.getBestOrder();
@@ -126,26 +127,26 @@ public class ContinuousOrderDrivenMarket implements Market {
 
 	@Override
 	public String toString() {
-		return String.format("bids%s:asks%s", buyBook, sellBook);
+		return String.format("best bid: %d, best offer: %d", getBestBidPrice(), getBestOfferPrice());
 	}
 
 	@Override
-	public Double getBestBidPrice() {
+	public Long getBestBidPrice() {
 		return buyBook.getBestPrice();
 	}
 
 	@Override
-	public Double getBestOfferPrice() {
+	public Long getBestOfferPrice() {
 		return sellBook.getBestPrice();
 	}
 
 	@Override
-	public Double getLastKnownBestBidPrice() {
+	public Long getLastKnownBestBidPrice() {
 		return buyBook.getLastKnownBestPrice();
 	}
 
 	@Override
-	public Double getLastKnownBestOfferPrice() {
+	public Long getLastKnownBestOfferPrice() {
 		return sellBook.getLastKnownBestPrice();
 	}
 }

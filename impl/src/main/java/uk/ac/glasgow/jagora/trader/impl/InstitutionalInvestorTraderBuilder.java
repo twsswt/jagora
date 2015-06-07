@@ -9,9 +9,9 @@ import uk.ac.glasgow.jagora.world.World;
 public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
 
 	private List<ScheduledLimitBuyOrder> scheduledOrders = new ArrayList<ScheduledLimitBuyOrder>();
-	
-	public InstitutionalInvestorTraderBuilder(String name, Double cash,	Integer seed) {
-		super(name, cash, seed);
+		
+	public InstitutionalInvestorTraderBuilder() {
+		super();
 	}
 
 	public InstitutionalInvestorTrader build() {
@@ -25,7 +25,7 @@ public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
 	}
 
 	@Override
-	public InstitutionalInvestorTraderBuilder setCash(Double cash) {
+	public InstitutionalInvestorTraderBuilder setCash(Long cash) {
 		super.setCash(cash);
 		return this;
 	}

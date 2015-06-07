@@ -9,7 +9,7 @@ import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTraderBuilder {
 	private String name;
-	private Double cash;
+	private Long cash;
 	
 	private Map<Stock, Integer> inventory;
 	
@@ -17,11 +17,8 @@ public class RandomTraderBuilder {
 	private Map<Stock, RangeData> sellRangeData;
 	private Map<Stock, RangeData> buyRangeData;
 	
-	public RandomTraderBuilder(String name, Double cash, Integer seed){
-		this.name = name;
-		this.cash = cash;
+	public RandomTraderBuilder(){
 		this.inventory = new HashMap<Stock,Integer>();
-		this.seed = seed;
 		sellRangeData = new HashMap<Stock,RangeData>();
 		buyRangeData = new HashMap<Stock,RangeData>();
 
@@ -34,7 +31,7 @@ public class RandomTraderBuilder {
 	
 	public RandomTraderBuilder setTradeRange(
 		Stock stock, Integer minQuantity, Integer maxQuantity,
-		Double sellLow, Double sellHigh, Double buyLow, Double buyHigh){
+		Long sellLow, Long sellHigh, Long buyLow, Long buyHigh){
 		
 		sellRangeData.put(stock, new RangeData(stock, sellLow, sellHigh, minQuantity, maxQuantity));
 		buyRangeData.put(stock, new RangeData(stock, buyLow, buyHigh, minQuantity, maxQuantity));
@@ -46,12 +43,17 @@ public class RandomTraderBuilder {
 		return this;
 	}
 	
-	public RandomTraderBuilder setCash(Double cash){
+	public RandomTraderBuilder setCash(Long cash){
 		this.cash = cash;
 		return this;
 	}
 	
 	public RandomTrader build(){
 		return new RandomTrader(name, cash, inventory, new Random(seed), sellRangeData, buyRangeData);
+	}
+
+	public RandomTraderBuilder setSeed(Integer seed) {
+		this.seed = seed;
+		return this;
 	}
 }

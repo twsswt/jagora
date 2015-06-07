@@ -39,7 +39,7 @@ public class Experiment0001 {
 	private Long numberOfTraderActions = 10l;
 	private Integer seed = 1;
 	private int numberOfTraders = 1000;
-	private Double initialTraderCash = 1000000.0;
+	private Long initialTraderCash = 10000000l;
 	private TradingEngine engine;
 	
 	@Before
@@ -59,8 +59,8 @@ public class Experiment0001 {
 			.addStock(lemons, 10).build();
 		
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
-		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, 10.01));
-		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 5, 9.99));
+		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, 1001l));
+		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 5, 999l));
 		
 		Set<Level1Trader> traders = new HashSet<Level1Trader>();
 		

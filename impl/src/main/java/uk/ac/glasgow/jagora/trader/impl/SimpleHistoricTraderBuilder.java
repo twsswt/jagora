@@ -12,13 +12,13 @@ import uk.ac.glasgow.jagora.util.Random;
 public class SimpleHistoricTraderBuilder {
 	
 	private String name;
-	private Double cash;
+	private Long cash;
 	private Integer seed;
 	
 	private Map<Stock, Integer> inventory;
 	private Set<StockExchange> stockExchanges;
 		
-	public SimpleHistoricTraderBuilder(String name, Double cash, Integer seed){
+	public SimpleHistoricTraderBuilder(String name, Long cash, Integer seed){
 		this.name = name;
 		this.cash = cash;
 		this.seed = seed;
@@ -36,7 +36,7 @@ public class SimpleHistoricTraderBuilder {
 		return this;
 	}
 	
-	public SimpleHistoricTraderBuilder setCash(Double cash){
+	public SimpleHistoricTraderBuilder setCash(Long cash){
 		this.cash = cash;
 		return this;
 	}

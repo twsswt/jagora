@@ -9,8 +9,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.util.Random;
 
@@ -30,7 +30,7 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 	private Random random;
 	
 	public SimpleHistoricTrader(
-		String name, Double cash, Map<Stock, Integer> inventory, Random random) {
+		String name, Long cash, Map<Stock, Integer> inventory, Random random) {
 		
 		super(name, cash, inventory);
 		this.random = random;
@@ -48,14 +48,14 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 	public void speak(StockExchangeLevel1View traderMarketView) {
 		Stock randomStock = random.chooseElement(inventory.keySet());
 		
-		Double averageTradePrice = 
+		Long averageTradePrice = 
 			computeAverageTradePrice(randomStock);
 		if (averageTradePrice == null) return;
 		
-		Double bestBidPrice =
+		Long bestBidPrice =
 			traderMarketView.getBestBidPrice(randomStock);
 		
-		Double bestOfferPrice = 
+		Long bestOfferPrice = 
 			traderMarketView.getBestOfferPrice(randomStock);
 				
 		if (bestOfferPrice != null && bestOfferPrice < averageTradePrice)
@@ -65,7 +65,7 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 	}
 
 	private void placeBuyOrder(
-		StockExchangeLevel1View traderMarketView, Stock randomStock, Double bestOfferPrice) {
+		StockExchangeLevel1View traderMarketView, Stock randomStock, Long bestOfferPrice) {
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		
@@ -75,7 +75,7 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 	}
 
 	private void placeSellOrder(
-		StockExchangeLevel1View traderMarketView, Stock randomStock, Double bestOfferPrice) {
+		StockExchangeLevel1View traderMarketView, Stock randomStock, Long bestOfferPrice) {
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		
@@ -85,7 +85,7 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 	}
 
 	
-	private Double computeAverageTradePrice(Stock randomStock) {
+	private Long computeAverageTradePrice(Stock randomStock) {
 		// TODO Recalculating the average like this each time isn't very efficient.  
 		// It would be better to maintain a running average.
 		
@@ -93,9 +93,9 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 			OptionalDouble average = 
 				tradeExecutionEvents.stream()
 				.filter(tradeExecutionEvent -> tradeExecutionEvent.stock == randomStock)
-				.mapToDouble(tradeExecutionEvent -> tradeExecutionEvent.price)
+				.mapToLong(tradeExecutionEvent -> tradeExecutionEvent.price)
 				.average();
-			return average.isPresent()? average.getAsDouble() : null;
+			return (average.isPresent()? (long)average.getAsDouble() : null);
 		}
 	}
 	

@@ -24,8 +24,8 @@ public class StubTradeListener implements TradeListener {
 		return tradeExecutionEvents.get(tradeExecutionEvents.size()-1);
 	}
 	
-	public Double getAverageTradePrice (){
-		return tradeExecutionEvents.stream().mapToDouble(event -> event.price).average().getAsDouble();
+	public Long getAverageTradePrice (){
+		return (long)tradeExecutionEvents.stream().mapToLong(event -> event.price).average().getAsDouble();
 	}
 
 	public Integer getTradeCount() {

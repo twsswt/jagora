@@ -103,6 +103,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				orderEvent.tick,
 				event.getTrader(), 
 				event.getStock(), 
+				event.getRemainingQuantity(),
 				event.getPrice(), 
 				event instanceof SellOrder);
 		

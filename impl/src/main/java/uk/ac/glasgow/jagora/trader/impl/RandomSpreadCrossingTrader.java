@@ -20,9 +20,9 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 	protected static class TradeRange {
 		public final Integer minQuantity;
 		public final Integer maxQuantity;
-		public final Double price;
+		public final Long price;
 		
-		public TradeRange(Integer minQuantity, Integer maxQuantity, Double price){
+		public TradeRange(Integer minQuantity, Integer maxQuantity, Long price){
 			this.minQuantity = minQuantity;
 			this.maxQuantity = maxQuantity;
 			this.price = price;
@@ -33,7 +33,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 	private final Random random;
 	
 	public RandomSpreadCrossingTrader(
-		String name, Double cash, Map<Stock, Integer> inventory,
+		String name, Long cash, Map<Stock, Integer> inventory,
 		Random random, Map<Stock,TradeRange> tradeRanges) {
 		
 		super(name, cash, inventory);
@@ -54,7 +54,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 	private void performRandomSellAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
-		Double bestBidPrice = stockExchangeLevel1View.getBestBidPrice(stock);
+		Long bestBidPrice = stockExchangeLevel1View.getBestBidPrice(stock);
 		if (bestBidPrice == null) return;
 		
 		Integer uncommittedQuantity = 
@@ -65,7 +65,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 
 		if (quantity > 0){
 			
-			Double price = createRandomPrice(stock, bestBidPrice, true);
+			Long price = createRandomPrice(stock, bestBidPrice, true);
 
 			SellOrder sellOrder =
 				new LimitSellOrder(this, stock, quantity, price);
@@ -83,12 +83,12 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 	private void performRandomBuyAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
-		Double bestOfferPrice = stockExchangeLevel1View.getBestOfferPrice(stock);
+		Long bestOfferPrice = stockExchangeLevel1View.getBestOfferPrice(stock);
 		if (bestOfferPrice == null) return;
 
-		Double price = createRandomPrice(stock, bestOfferPrice, false);
+		Long price = createRandomPrice(stock, bestOfferPrice, false);
 
-		Double availableCash = getAvailableCash();
+		Long availableCash = getAvailableCash();
 		
 		Integer quantity = createRandomQuantity(stock, (int)(availableCash/price));
 		
@@ -107,13 +107,13 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 		
 	}
 
-	private Double createRandomPrice(Stock stock, Double basePrice, boolean isSell) {
+	private Long createRandomPrice(Stock stock, Long basePrice, boolean isSell) {
 				
 		TradeRange tradeRange = tradeRanges.get(stock);
-		Double randomPrice = 
-			(isSell?-1:1) * random.nextDouble() *  tradeRange.price + basePrice;
+		Long randomPrice = 
+			(isSell?-1:1) * (long)(random.nextDouble() *  tradeRange.price) + basePrice;
 		
-		return max(randomPrice, 0.0);
+		return max(randomPrice, 0l);
 	}
 	
 	private Integer createRandomQuantity(Stock stock, Integer ceiling) {

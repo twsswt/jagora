@@ -19,31 +19,41 @@ public class BuyOrderTest {
 	@Before
 	public void setUp() throws Exception {
 		limitBuyOrders = new AbstractBuyOrder[3];
-		
-		limitBuyOrders[0] = new LimitBuyOrder(null, lemons, 10, 50.0);
-		limitBuyOrders[1] = new LimitBuyOrder(null, lemons, 10, 50.0);
-		limitBuyOrders[2] = new LimitBuyOrder(null, lemons, 10, 45.0);
+
+		limitBuyOrders[0] = new LimitBuyOrder(null, lemons, 10, 5000l);
+		limitBuyOrders[1] = new LimitBuyOrder(null, lemons, 10, 5000l);
+		limitBuyOrders[2] = new LimitBuyOrder(null, lemons, 10, 4500l);
 	}
 
 	@Test
-	public void testEquals() {
-		
+	public void testEquals() {		
 		assertTrue(limitBuyOrders[0].equals(limitBuyOrders[1]));
-		
+	}
+
+	@Test
+	public void testNotEqualsWhenLessThan() {
 		assertFalse(limitBuyOrders[0].equals(limitBuyOrders[2]));
-		
+	}
+
+	@Test
+	public void testNotEqualsWhenGreaterThan() {		
 		assertFalse(limitBuyOrders[2].equals(limitBuyOrders[0]));
+	}
+
+	
+	@Test
+	public void testCompareToWhenEqual() {
+		assertThat(limitBuyOrders[0].compareTo(limitBuyOrders[1]), equalTo(0));
+	}
+
+	@Test
+	public void testCompareToWhenLessThan() {
+		assertThat(limitBuyOrders[0].compareTo(limitBuyOrders[2]), lessThan(0));
 	}
 	
 	@Test
-	public void testCompareTo() {
-
-		assertEquals(0, limitBuyOrders[0].compareTo(limitBuyOrders[1]));
-		
-		assertThat(limitBuyOrders[0].compareTo(limitBuyOrders[2]), lessThan(0));
-		
+	public void testCompareToWhenGreaterThan() {		
 		assertThat(limitBuyOrders[2].compareTo(limitBuyOrders[0]), greaterThan(0));
-
 	}
 
 

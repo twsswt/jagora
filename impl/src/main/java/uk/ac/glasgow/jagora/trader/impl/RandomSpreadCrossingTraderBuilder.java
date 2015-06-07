@@ -11,13 +11,33 @@ public class RandomSpreadCrossingTraderBuilder extends AbstractTraderBuilder {
 
 	private Map<Stock, TradeRange> tradeRanges;
 	
-	public RandomSpreadCrossingTraderBuilder(String name, Double cash, Integer seed){
-		super (name, cash, seed);
+	private Integer seed;
+	
+	public RandomSpreadCrossingTraderBuilder(){
+		super ();
 		tradeRanges = new HashMap<Stock,TradeRange>();
 	}
 	
+	@Override
+	public RandomSpreadCrossingTraderBuilder setName(String name){
+		super.setName(name);
+		return this;
+	}
+	
+	@Override
+	public RandomSpreadCrossingTraderBuilder setCash(Long cash){
+		super.setCash(cash);
+		return this;
+	}
+	
+	public RandomSpreadCrossingTraderBuilder setSeed(Integer seed) {
+		this.seed = seed;
+		return this;
+	}
+
+	
 	public RandomSpreadCrossingTraderBuilder addTradeRange(
-		Stock stock, Integer minQuantity, int maxQuantity, Double price){
+		Stock stock, Integer minQuantity, Integer maxQuantity, Long price){
 		
 		tradeRanges.put(stock, new TradeRange(minQuantity, maxQuantity, price));
 		return this;
@@ -25,7 +45,7 @@ public class RandomSpreadCrossingTraderBuilder extends AbstractTraderBuilder {
 		
 	public RandomSpreadCrossingTrader build(){
 		return new RandomSpreadCrossingTrader(
-			getName(), getCash(), getInventory(), new Random(getSeed()), tradeRanges);
+			getName(), getCash(), getInventory(), new Random(seed), tradeRanges);
 	}
 	
 	@Override

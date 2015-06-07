@@ -67,22 +67,22 @@ public class DefaultStockExchange implements StockExchange{
 	private class DefaultLevel1View implements StockExchangeLevel1View {
 
 		@Override
-		public Double getBestOfferPrice(Stock stock) {			
+		public Long getBestOfferPrice(Stock stock) {			
 			return getMarket(stock).getBestOfferPrice();
 		}
 
 		@Override
-		public Double getBestBidPrice(Stock stock) {
+		public Long getBestBidPrice(Stock stock) {
 			return getMarket(stock).getBestBidPrice();
 		}
 		
 		@Override
-		public Double getLastKnownBestOfferPrice(Stock stock) {
+		public Long getLastKnownBestOfferPrice(Stock stock) {
 			return getMarket(stock).getLastKnownBestOfferPrice();
 		}
 
 		@Override
-		public Double getLastKnownBestBidPrice(Stock stock) {
+		public Long getLastKnownBestBidPrice(Stock stock) {
 			return getMarket(stock).getLastKnownBestBidPrice();
 		}	
 

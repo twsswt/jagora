@@ -6,15 +6,15 @@ import uk.ac.glasgow.jagora.trader.Trader;
 
 public class LimitSellOrder extends AbstractSellOrder {
 
-	private final Double price;
+	private final Long price;
 	
-	public LimitSellOrder(Trader trader, Stock stock, Integer quantity, Double price) {
+	public LimitSellOrder(Trader trader, Stock stock, Integer quantity, Long price) {
 		super(trader, stock, quantity);
 		this.price = price;
 	}
 
 	@Override
-	public Double getPrice() {
+	public Long getPrice() {
 		return price;
 	}
 

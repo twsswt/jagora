@@ -9,7 +9,7 @@ public class TimeListenerTickerTapeListener implements TradeListener {
 
 	private Long maxTicks;
 		
-	private Double nextPercentage = 1.0;
+	private  Double nextPercentage = 1.0;
 
 	public TimeListenerTickerTapeListener(Long maxTicks) {
 		this.maxTicks = maxTicks;
