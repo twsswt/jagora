@@ -9,6 +9,7 @@ import java.util.Random;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.OrderJobSpecification.BuyOrderJobSpecification;
 import uk.ac.glasgow.jagora.trader.impl.OrderJobSpecification.SellOrderJobSpecification;
+import uk.ac.glasgow.jagora.trader.impl.ZIPTrader.OrderJob;
 
 public class ZIPTraderBuilder {
 
@@ -19,12 +20,12 @@ public class ZIPTraderBuilder {
 	private Long maximumAbsoluteChange;
 	private Double maximumRelativeChange;
 	private Double learningRate;
-	private List<OrderJobSpecification<?>> orderJobs;
+	private List<OrderJobSpecification<? extends OrderJob<?>>> orderJobSpecifications;
 
 	public ZIPTraderBuilder(String name) {
 		this.name = name;
 		this.inventory = new HashMap<Stock,Integer>();
-		this.orderJobs = new ArrayList<OrderJobSpecification<?>>();
+		this.orderJobSpecifications = new ArrayList<OrderJobSpecification<? extends OrderJob<?>>>();
 	}
 
 	public ZIPTraderBuilder setCash(Long cash) {
@@ -57,13 +58,13 @@ public class ZIPTraderBuilder {
 		return this;
 	}
 
-	public ZIPTraderBuilder addSellOrderJob(Stock stock, Long limitPrice, Long ceilPrice) {
-		orderJobs.add(new SellOrderJobSpecification(stock, limitPrice, ceilPrice));
+	public ZIPTraderBuilder addSellOrderJobSpecification(Stock stock, Long limitPrice, Long ceilPrice) {
+		orderJobSpecifications.add(new SellOrderJobSpecification(stock, limitPrice, ceilPrice));
 		return this;
 	}
 	
-	public ZIPTraderBuilder addBuyOrderJob(Stock stock, Long floorPrice, Long limitPrice) {
-		orderJobs.add(new BuyOrderJobSpecification(stock, floorPrice, limitPrice));
+	public ZIPTraderBuilder addBuyOrderJobSpecification(Stock stock, Long floorPrice, Long limitPrice) {
+		orderJobSpecifications.add(new BuyOrderJobSpecification(stock, floorPrice, limitPrice));
 		return this;
 	}
 
@@ -72,7 +73,7 @@ public class ZIPTraderBuilder {
 			name, cash, inventory, 
 			new Random(seed),
 			maximumRelativeChange, maximumAbsoluteChange, learningRate,
-			orderJobs);
+			orderJobSpecifications);
 	}
 
 }
