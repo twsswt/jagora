@@ -9,24 +9,25 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.trader.Trader;
-import uk.ac.glasgow.jagora.trader.impl.ZIPTrader;
-import uk.ac.glasgow.jagora.trader.impl.ZIPTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
+import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
 
 public class ZIPTraderTest extends EasyMockSupport {
 	
 	@Rule
-    public EasyMockRule rule = new EasyMockRule(this);
-	
+	public EasyMockRule rule = new EasyMockRule(this);
+
 	private Stock lemons;
-	
+
 	private ZIPTraderBuilder traderBuilder;
-	
+
 	@Mock
 	private StockExchangeLevel2View mockExchange;
-	
+
 	@Mock
 	private Trader mockTrader;
 	
@@ -40,9 +41,13 @@ public class ZIPTraderTest extends EasyMockSupport {
 			.setSeed(1)
 			.setMaximumAbsoluteChange(10l)
 			.setMaximumRelativeChange(0.1)
-			.setLearningRate(0.1);
+			.setLearningRate(0.1)
+			.setMomentum(0.0);
 	}
 	
+	/**
+	 * A regression test.  Fundamentally the placed price should be higher than the cancelled price.
+	 */
 	@Test 
 	public void testBuyingStrategy(){
 		
@@ -53,7 +58,23 @@ public class ZIPTraderTest extends EasyMockSupport {
 			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
 			.build();
 		
+		mockExchange.registerOrderListener(trader);
+		mockExchange.registerTradeListener(trader);
+		mockExchange.cancelBuyOrder(new LimitBuyOrder(trader, lemons, 1, 1827l));
+		mockExchange.placeBuyOrder(new LimitBuyOrder(trader, lemons, 1, 1904l));
+		
+		replayAll();
+		
+		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, false));		
+		trader.speak(mockExchange);
+
+		verifyAll();
+		
 	}
+
+	/**
+	 * A regression test.  Fundamentally the placed price should be lower than the cancelled price.
+	 */
 
 	@Test
 	public void testSellingStrategy (){

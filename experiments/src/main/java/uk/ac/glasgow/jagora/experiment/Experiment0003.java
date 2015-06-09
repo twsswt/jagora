@@ -18,6 +18,7 @@ import org.junit.Test;
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
+import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
@@ -26,8 +27,8 @@ import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
-import uk.ac.glasgow.jagora.trader.impl.ZIPTrader;
-import uk.ac.glasgow.jagora.trader.impl.ZIPTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
+import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
@@ -38,16 +39,29 @@ import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
  */
 public class Experiment0003 {
 	
-	private Long maxTickCount = 5000000l;
-	private Integer numberOfBuyers = 50;
-	private Integer numberOfSellers = 50;
-	private Integer seed =  1;
+	private final Integer seed = 1;
 	
-	private Double maximumRelativeChange = 0.1;
-	private Long maximumAbsoluteChange = 1l;
+	private final Long maxTickCount = 5000000l;
+	private final Integer numberOfBuyers = 100;
+	private final Integer numberOfSellers = 50;
 	
-	private Double learningRate = 0.1;
+	private final Double maximumRelativeChange = 0.05;
+	private final Long maximumAbsoluteChange = 5l;
 	
+	private final Double learningRate = 0.3;
+	
+	private final Double momentum = 0.9;
+	
+	private final Long buyerTraderCash = 10000000l;
+	private final Integer jobQuantity = 500;
+	
+	private final Long maxPrice = 5000l;
+	private final Long minPrice = 0l;
+	
+	private final Long sellerMinLimitPrice = 0l;
+	private final Long buyerMaxBidPrice = 5000l;
+
+	//
 	
 	private Random random;
 	
@@ -75,12 +89,12 @@ public class Experiment0003 {
 		int [] buyerSeeds = range(0,numberOfBuyers).toArray();
 				
 		for (Integer seed : buyerSeeds)
-			configureBuyerZIPTrader(seed, 0l, 5000l);
+			configureBuyerZIPTrader(seed, sellerMinLimitPrice, maxPrice);
 		
 		int [] sellerSeeds = range(0,numberOfSellers).toArray();
 		
 		for(Integer seed: sellerSeeds)
-			configureSellerZIPTrader(seed, 0l, 5000l);
+			configureSellerZIPTrader(seed, minPrice, buyerMaxBidPrice);
 		
 		Collections.shuffle(traders);
 
@@ -121,34 +135,9 @@ public class Experiment0003 {
 		Long limitPrice = (long)(random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
 				
 		ZIPTrader trader = configureBasicZIPTraderBuilder("buyer",seed)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
-			.build();
+			.setCash(buyerTraderCash)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice, jobQuantity)
+						.build();
 		
 		registerZIPTrader(trader);
 	}
@@ -158,41 +147,8 @@ public class Experiment0003 {
 		Long limitPrice = (long)(random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
 				
 		ZIPTrader trader = configureBasicZIPTraderBuilder("seller",seed)
-			.addStock(lemons, 100)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
-			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addStock(lemons, jobQuantity)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice, jobQuantity)
 			.build();
 		
 		registerZIPTrader(trader);
@@ -203,29 +159,29 @@ public class Experiment0003 {
 		String name = format("%s_%d",namePrefix,seed);
 		
 		return new ZIPTraderBuilder(name)
-			.setCash(1000000l)
 			.setSeed(seed)
 			.setMaximumAbsoluteChange(maximumAbsoluteChange)
 			.setMaximumRelativeChange(maximumRelativeChange)
-			.setLearningRate(learningRate);
+			.setLearningRate(learningRate)
+			.setMomentum(momentum);
 	}
 	
 	private void registerZIPTrader(ZIPTrader trader) {
 		traders.add(trader);
-		stockExchange.createLevel2View().registerOrderListener(trader);
-		stockExchange.createLevel1View().registerTradeListener(trader);
+		StockExchangeLevel2View level2View = stockExchange.createLevel2View();
+		level2View.registerOrderListener(trader);
+		level2View.registerTradeListener(trader);
 	}
 	
 	@Test
-	public void testAveragePrice() {
+	public void runExperiment() {
 				
 		while (world.isAlive()){	
 			ZIPTrader zipTrader = random.chooseElement(traders);
 			zipTrader.speak(stockExchange.createLevel2View());
 			stockExchange.doClearing();
+			//System.out.println(stockExchange.createLevel1View());
 		}
-
-		//assertThat(stubTradeListener.getAverageTradePrice(), closeTo(22.6, 0.1));
 	}
 
 }

@@ -115,6 +115,11 @@ public class DefaultStockExchange implements StockExchange{
 			stockExchangeObservable.registerTradeListener(tradeListener);
 		}
 		
+		@Override
+		public String toString (){
+			return DefaultStockExchange.this.toString();
+		}
+		
 	}
 
 	@Override
@@ -129,6 +134,11 @@ public class DefaultStockExchange implements StockExchange{
 			stockExchangeObservable.registerOrderListener(orderListener);
 		}
 
+	}
+	
+	@Override
+	public String toString (){
+		return markets.toString();
 	}
 
 }
