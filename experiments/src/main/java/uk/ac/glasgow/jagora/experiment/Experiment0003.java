@@ -38,9 +38,9 @@ import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
  */
 public class Experiment0003 {
 	
-	private Long maxTickCount = 5000l;
-	private Integer numberOfBuyers = 50000;
-	private Integer numberOfSellers = 50000;
+	private Long maxTickCount = 5000000l;
+	private Integer numberOfBuyers = 50;
+	private Integer numberOfSellers = 50;
 	private Integer seed =  1;
 	
 	private Double maximumRelativeChange = 0.1;
@@ -121,7 +121,33 @@ public class Experiment0003 {
 		Long limitPrice = (long)(random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
 				
 		ZIPTrader trader = configureBasicZIPTraderBuilder("buyer",seed)
-			.addBuyOrderJob(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
 			.build();
 		
 		registerZIPTrader(trader);
@@ -132,8 +158,41 @@ public class Experiment0003 {
 		Long limitPrice = (long)(random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
 				
 		ZIPTrader trader = configureBasicZIPTraderBuilder("seller",seed)
-			.addStock(lemons, 1)
-			.addSellOrderJob(lemons, limitPrice, ceilPrice)
+			.addStock(lemons, 100)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
 			.build();
 		
 		registerZIPTrader(trader);

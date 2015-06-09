@@ -50,7 +50,7 @@ public class ZIPTraderTest extends EasyMockSupport {
 		Long floorPrice = 0l;
 				
 		ZIPTrader trader = traderBuilder
-			.addBuyOrderJob(lemons, floorPrice, limitPrice)
+			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice)
 			.build();
 		
 	}
@@ -63,7 +63,7 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		ZIPTrader trader = traderBuilder
 			.addStock(lemons, 1)
-			.addSellOrderJob(lemons, limitPrice, ceilPrice)
+			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice)
 			.build();
 				
 		mockExchange.registerOrderListener(trader);
