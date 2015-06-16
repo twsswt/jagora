@@ -11,6 +11,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
+import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
@@ -31,7 +32,11 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	private final Double learningRate;
 	private final Double momentum;
 	
-	private ZIPOrderJob<?> currentOrderJob;
+	private final Double minInitialProfit;
+	private final Double maxInitialProfit;
+
+	
+	private ZIPOrderJob<? extends Order> currentOrderJob;
 	
 	private Queue<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>> zIPOrderJobSpecifications;
 
@@ -48,6 +53,8 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		Long maximumAbsoluteChange, 
 		Double learningRate,
 		Double momentum,
+		Double minInitialProfit,
+		Double maxInitialProfit,
 		List<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>> orderJobSpecifications) {
 
 		super(name, cash, inventory);
@@ -59,6 +66,9 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		
 		this.learningRate = learningRate;
 		this.momentum = momentum;
+		
+		this.minInitialProfit = minInitialProfit;
+		this.maxInitialProfit = maxInitialProfit;
 		
 		this.zIPOrderJobSpecifications =
 			new LinkedList<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>>(orderJobSpecifications);
@@ -97,12 +107,17 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			
 			MarketDatum marketDatum = getMarketDatum(nextSpecification.stock);
 			
-			if (currentOrderJob != null)			
+			if (currentOrderJob != null){
+				// Bug - assumes only one stock type.  Should track target price in marketdatum.
+				Long targetPrice = currentOrderJob.getTargetPrice();
 				currentOrderJob = 
-					nextSpecification.createOrderJob(this, marketDatum, currentOrderJob.getTargetPrice());
-			else 
+					nextSpecification.createOrderJob(this, marketDatum, targetPrice);
+
+			} else {				
+				Double scale = random.nextDouble() * (maxInitialProfit-minInitialProfit) + minInitialProfit;
 				currentOrderJob =
-					nextSpecification.createOrderJob(this, marketDatum, random.nextDouble());
+					nextSpecification.createOrderJob(this, marketDatum, scale);
+			}
 		}
 	}
 

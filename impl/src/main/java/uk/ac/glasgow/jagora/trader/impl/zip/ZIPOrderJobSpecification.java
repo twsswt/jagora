@@ -17,17 +17,10 @@ public abstract class ZIPOrderJobSpecification<T extends ZIPOrderJob<?>> {
 		this.highLimit = highLimit;
 	}
 	
-	public T createOrderJob(ZIPTrader zipTrader, MarketDatum marketDatum, Double scale){
+	public abstract T createOrderJob(ZIPTrader zipTrader, MarketDatum marketDatum, Double scale);
 		
-		Long initialTargetPrice =
-			(long)((highLimit - lowLimit) * scale) + lowLimit;
-		
-		return createOrderJob (zipTrader, marketDatum, initialTargetPrice);
-	}
-
 	public abstract T createOrderJob(ZIPTrader zipTrader, MarketDatum marketDatum, Long lastTargetPrice);
-
-
+	
 	public static class SellOrderJobSpecification extends ZIPOrderJobSpecification<ZIPSellOrderJob> {
 		
 		public SellOrderJobSpecification(Stock stock, Long limitPrice, Long ceilPrice) {
@@ -37,6 +30,14 @@ public abstract class ZIPOrderJobSpecification<T extends ZIPOrderJob<?>> {
 		@Override
 		public ZIPSellOrderJob createOrderJob(ZIPTrader zipTrader, MarketDatum marketDatum, Long initialTargetPrice) {
 			return new ZIPSellOrderJob(zipTrader, marketDatum, lowLimit, highLimit, initialTargetPrice);
+		}
+
+		@Override
+		public ZIPSellOrderJob createOrderJob(ZIPTrader zipTrader, MarketDatum marketDatum,	Double scale) {
+			Long initialTargetPrice =
+				(long)((highLimit - lowLimit) * scale) + lowLimit;
+			
+			return createOrderJob (zipTrader, marketDatum, initialTargetPrice);
 		}
 		
 	}
@@ -51,6 +52,15 @@ public abstract class ZIPOrderJobSpecification<T extends ZIPOrderJob<?>> {
 		public ZIPBuyOrderJob createOrderJob(ZIPTrader zipTrader, MarketDatum marketDatum, Long initialTargetPrice) {
 			return new ZIPBuyOrderJob(zipTrader, marketDatum, lowLimit, highLimit, initialTargetPrice);
 		}
+		
+		@Override
+		public ZIPBuyOrderJob createOrderJob(ZIPTrader zipTrader, MarketDatum marketDatum,	Double scale) {
+			Long initialTargetPrice =
+				(long)((highLimit - lowLimit) *( 1 - scale)) + lowLimit;
+			
+			return createOrderJob (zipTrader, marketDatum, initialTargetPrice);
+		}
+
 
 	}
 

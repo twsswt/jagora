@@ -24,6 +24,8 @@ public class ZIPTraderBuilder {
 	
 	private Double learningRate;
 	private Double momentum;
+	private Double minInitialProfit;
+	private Double maxInitialProfit;
 	
 	private List<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>> zIPOrderJobSpecifications;
 
@@ -102,8 +104,19 @@ public class ZIPTraderBuilder {
 		return new ZIPTrader(
 			name, cash, inventory, 
 			new Random(seed),
-			maximumRelativeChange, maximumAbsoluteChange, learningRate, momentum,
+			maximumRelativeChange, maximumAbsoluteChange,
+			learningRate, momentum, minInitialProfit, maxInitialProfit,
 			zIPOrderJobSpecifications);
+	}
+
+	public ZIPTraderBuilder setMinInitialProfit(Double minInitialProfit) {
+		this.minInitialProfit = minInitialProfit;
+		return this;
+	}
+	
+	public ZIPTraderBuilder setMaxInitialProfit(Double maxInitialProfit) {
+		this.maxInitialProfit = maxInitialProfit;
+		return this;
 	}
 
 	
