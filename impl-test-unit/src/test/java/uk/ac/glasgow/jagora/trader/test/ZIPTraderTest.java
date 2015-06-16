@@ -42,7 +42,9 @@ public class ZIPTraderTest extends EasyMockSupport {
 			.setMaximumAbsoluteChange(10l)
 			.setMaximumRelativeChange(0.1)
 			.setLearningRate(0.1)
-			.setMomentum(0.0);
+			.setMomentum(0.0)
+			.setMaxInitialProfit(1.0)
+			.setMinInitialProfit(0.0);
 	}
 	
 	/**
@@ -60,8 +62,8 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		mockExchange.registerOrderListener(trader);
 		mockExchange.registerTradeListener(trader);
-		mockExchange.cancelBuyOrder(new LimitBuyOrder(trader, lemons, 1, 1827l));
-		mockExchange.placeBuyOrder(new LimitBuyOrder(trader, lemons, 1, 1904l));
+		mockExchange.cancelBuyOrder(new LimitBuyOrder(trader, lemons, 1, 672l));
+		mockExchange.placeBuyOrder(new LimitBuyOrder(trader, lemons, 1, 865l));
 		
 		replayAll();
 		
