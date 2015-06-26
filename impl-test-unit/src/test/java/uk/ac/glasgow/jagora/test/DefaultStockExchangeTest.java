@@ -156,7 +156,7 @@ public class DefaultStockExchangeTest {
 	 */
 	@Test(timeout=20000)
 	public void testTickerTapeNotification () throws Exception {
-		
+
 		StockExchangeObservable stockExchangeObservable = new ThreadedTickerTapeObserver ();
 
 		DefaultStockExchange defaultStockExchange = 

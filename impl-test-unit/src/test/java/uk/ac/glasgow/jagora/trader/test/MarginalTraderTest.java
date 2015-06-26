@@ -13,6 +13,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
+import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
+import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.MarginalTraderBuilder;
 
 public class MarginalTraderTest extends EasyMockSupport {
@@ -44,13 +46,14 @@ public class MarginalTraderTest extends EasyMockSupport {
 		mockExchange.placeBuyOrder(new LimitBuyOrder(alice, lemons, 5, 2l));
 		
 		replayAll();
-		
+		https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html
 		alice.speak(mockExchange);
 		
 		verifyAll();
 		
 
 	}
-	
+
+
 
 }
