@@ -15,9 +15,7 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
  */
 public class ThreadedTickerTapeObserver extends AbstractStockExchangeObservable {
 
-	public ThreadedTickerTapeObserver() {
-		super();
-	}
+
 	
 	protected void notifyTradeListenerOfTrade(
 		TradeExecutionEvent tradeExecutedEvent, TradeListener tradeListener) {

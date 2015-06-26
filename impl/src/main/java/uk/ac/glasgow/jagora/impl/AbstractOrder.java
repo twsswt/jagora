@@ -11,7 +11,7 @@ import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
-
+//TODO implement other types of orders
 public abstract class AbstractOrder implements Order {
 	
 	private final Trader trader;
@@ -19,13 +19,12 @@ public abstract class AbstractOrder implements Order {
 			
 	private final Integer initialQuantity;
 	
-	protected final List<TickEvent<Trade>> tradeHistory;
+	protected final List<TickEvent<Trade>> tradeHistory = new ArrayList<TickEvent<Trade>>();
 	
 	public AbstractOrder(Trader trader, Stock stock, Integer quantity) {
 		this.trader = trader;
 		this.stock = stock;
 		this.initialQuantity = quantity;
-		this.tradeHistory = new ArrayList<TickEvent<Trade>>();
 	}
 	
 	@Override
@@ -41,7 +40,9 @@ public abstract class AbstractOrder implements Order {
 	@Override
 	public Integer getRemainingQuantity (){
 		Integer tradeQuantity = 
-			tradeHistory.stream().mapToInt(executedTrade -> executedTrade.event.getQuantity()).sum();
+			tradeHistory.stream()
+					.mapToInt(executedTrade -> executedTrade.event.getQuantity())
+					.sum();
 		
 		return initialQuantity - tradeQuantity;
 	}

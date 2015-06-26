@@ -26,15 +26,16 @@ public class DefaultTrade implements Trade {
 		this.sellOrder = sellOrder;
 		this.buyOrder = buyOrder;
 	}
-	
+
+	@Override
 	public Trader getBuyer (){
 		return buyOrder.getTrader();
 	}
-	
+	@Override
 	public Trader getSeller (){
 		return sellOrder.getTrader();
 	}
-	
+	@Override
 	public TickEvent<Trade> execute (World world) throws TradeExecutionException {
 		
 		TickEvent<Trade> executedTrade = world.getTick(this);
@@ -54,15 +55,15 @@ public class DefaultTrade implements Trade {
 	public String toString() {
 		return format("%s->(%s:%d:%d)->%s", getSeller(), getStock(), getQuantity(), getPrice(), getBuyer());
 	}
-
+	@Override
 	public Stock getStock() {
 		return stock;
 	}
-
+	@Override
 	public Integer getQuantity() {
 		return quantity;
 	}
-
+	@Override
 	public Long getPrice() {
 		return price;
 	} 

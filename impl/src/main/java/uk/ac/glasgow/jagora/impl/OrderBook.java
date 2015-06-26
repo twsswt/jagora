@@ -67,9 +67,13 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		}
 	}
 
+    /**
+     *
+     * @return Best order is the one with most favourable price,which still has quantity to be executed
+     */
 	public TickEvent<O> getBestOrder() {
 		TickEvent<O> receivedOrder = receivedOrders.peek();
-		
+
 		while (receivedOrder != null && receivedOrder.event.getRemainingQuantity() <= 0){
 			receivedOrders.poll();
 			receivedOrder = receivedOrders.peek();
@@ -85,6 +89,10 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		return receivedOrders.toString();
 	}
 
+	/**
+	 *
+	 * @return List with all received orders
+	 */
 	public List<O> getOpenOrders() {
 		
 		List<O> result = new ArrayList<O>();

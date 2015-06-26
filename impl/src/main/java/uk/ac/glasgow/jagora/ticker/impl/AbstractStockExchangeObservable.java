@@ -68,19 +68,25 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				executedTrade.event.getQuantity());
 		
 		List<TradeListener> randomisedTickerTapeListeners =
-			getRandomisedTicketTapeListeners(executedTrade.event.getStock());
+			getRandomisedTicketTapeListeners();
 		
 		for (TradeListener tradeListener: randomisedTickerTapeListeners)
 			notifyTradeListenerOfTrade(tradeExecutedEvent, tradeListener);
-	}	
+	}
 
+	/**
+	 * Left for implementation in child classes.
+	 * @param tradeExecutedEvent
+	 * @param tradeListener
+	 */
 	protected abstract void notifyTradeListenerOfTrade(
 		TradeExecutionEvent tradeExecutedEvent, TradeListener tradeListener);
-	
-	private List<TradeListener> getRandomisedTicketTapeListeners(Stock stock) {
-		List<TradeListener> randomisedTickerTapeListeners = 
+
+
+	private List<TradeListener> getRandomisedTicketTapeListeners() {
+		List<TradeListener> randomisedTickerTapeListeners =
 			new ArrayList<TradeListener>(tradeListeners);
-		
+
 		Collections.shuffle(randomisedTickerTapeListeners);
 		return randomisedTickerTapeListeners;
 	}
@@ -95,7 +101,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		List<OrderListener> randomisedOrderListeners = 
 			new ArrayList<OrderListener>(orderListeners);
 		
-		Collections.shuffle(randomisedOrderListeners);
+		Collections.shuffle(randomisedOrderListeners);//why don't you just call getRandomisedTicketTapeListeners?
 		
 		Order event = orderEvent.event;
 		OrderEntryEvent orderEntryEvent = 
@@ -111,6 +117,11 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 			notifyOrderListenerOfOrder(orderEntryEvent, orderListener);
 	}
 
+    /**
+     * Left for implementation in child classes.
+     * @param orderEntryEvent
+     * @param orderListener
+     */
 	public abstract void notifyOrderListenerOfOrder(
 		OrderEntryEvent orderEntryEvent, OrderListener orderListener);
 	

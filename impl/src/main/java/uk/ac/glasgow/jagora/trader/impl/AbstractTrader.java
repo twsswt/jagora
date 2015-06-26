@@ -32,6 +32,12 @@ public abstract class AbstractTrader implements Trader {
 	private List<Trade> mySellTrades;
 	private List<Trade> myBuyTrades;
 
+	/**
+	 *
+	 * @param name
+	 * @param cash
+	 * @param inventory - can it not be just a list?
+	 */
 	public AbstractTrader(String name, Long cash, Map<Stock,Integer> inventory) {
 		this.name = name;
 		this.cash = cash;
@@ -71,7 +77,7 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void sellStock(Trade trade) throws TradeExecutionException {
-		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0);
+		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0); //
 		if (currentQuantity < trade.getQuantity()){ 
 			String message = format("Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].", name, trade, currentQuantity);
 			throw new TradeExecutionException (message, trade, this);

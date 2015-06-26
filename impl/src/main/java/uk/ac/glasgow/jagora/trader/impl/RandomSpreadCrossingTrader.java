@@ -51,6 +51,12 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 			performRandomBuyAction(randomStock, traderMarketView);
 	}
 
+    /**
+     * Either sells a random quantity of stock at random price
+     * or it cancels an open sell order
+     * @param stock
+     * @param stockExchangeLevel1View
+     */
 	private void performRandomSellAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
@@ -80,6 +86,12 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 		}
 	}
 
+    /**
+     * Either buys a random quantity of stock at random price
+     * or cancels a SafeBuyOrder
+     * @param stock
+     * @param stockExchangeLevel1View
+     */
 	private void performRandomBuyAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
@@ -107,20 +119,33 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 		
 	}
 
+    /**
+     *
+     * @param stock
+     * @param basePrice
+     * @param isSell
+     * @return returns random price for stock lower the best bid (for sell) or higher than lowest ask (for buy)
+     */
 	private Long createRandomPrice(Stock stock, Long basePrice, boolean isSell) {
-				
+	//possible to get a very bad deal? (what if nextDouble returns a 1?)
 		TradeRange tradeRange = tradeRanges.get(stock);
 		Long randomPrice = 
 			(isSell?-1:1) * (long)(random.nextDouble() *  tradeRange.price) + basePrice;
 		
 		return max(randomPrice, 0l);
 	}
-	
+
+    /**
+     *
+     * @param stock
+     * @param ceiling maximum available quantity in the stock
+     * @return random quantity of stock, which is in its tradeRange for the particular trader
+     */
 	private Integer createRandomQuantity(Stock stock, Integer ceiling) {
 		TradeRange stockData = tradeRanges.get(stock);
 		
 		Integer tradeQuantityRange = stockData.maxQuantity - stockData.minQuantity;
-		
+
 		return min(random.nextInt(tradeQuantityRange) + stockData.minQuantity, ceiling);
 	}
 }

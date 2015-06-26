@@ -9,9 +9,9 @@ import uk.ac.glasgow.jagora.trader.Level1Trader;
 
 public class BuyOnlyTrader extends SafeAbstractTrader implements Level1Trader{
 
-	private Stock stock;
+	private Stock stock; //can only do one stock?
 	private Integer quantity;
-	private Long price;
+	private Long price; //what's the point of these?
 
 	public BuyOnlyTrader(String name, Long cash,	Stock stock, Long price, Integer quantity) {
 		super(name, cash, new HashMap<Stock,Integer>());

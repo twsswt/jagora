@@ -36,6 +36,11 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 			performMarginalSellOrder(traderMarketView);
 	}
 
+	/**
+	 * Finds the best bid price (on a random stock) and places a limit sell order for a unit(1) less than price.
+     * Quantity sold is a random amount.
+	 * @param traderMarketView
+	 */
 	private void performMarginalSellOrder(
 		StockExchangeLevel1View traderMarketView) {
 
@@ -53,6 +58,11 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 	}
 
+    /**
+     * Finds the best sell price and then places a limit buy order for a unit (1) more than it.
+     * Maximum quantity of the stock is bought.
+     * @param traderMarketView
+     */
 	private void performMarginalBuyOrder(
 			StockExchangeLevel1View traderMarketView) {
 		

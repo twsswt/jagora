@@ -27,13 +27,21 @@ public class DefaultStockExchange implements StockExchange{
 	
 	private final StockExchangeObservable stockExchangeObservable;
 		
-	public DefaultStockExchange (World world, StockExchangeObservable stockExchangeObservable, MarketFactory marketFactory){	
+	public DefaultStockExchange (World world, StockExchangeObservable stockExchangeObservable,
+								 MarketFactory marketFactory){
 		this.world = world;
 		this.marketFactory = marketFactory;
 		this.stockExchangeObservable = stockExchangeObservable;
 		markets = new HashMap<Stock,Market>();
 	}
-	
+
+    /**
+     * Find the market of a stock,
+     * if it doesn't yet exist it creates one
+     * and saves it to the Exchange
+     * @param stock
+     * @return
+     */
 	private Market getMarket(Stock stock) {
 		Market market = markets.get(stock);
 		
@@ -63,7 +71,7 @@ public class DefaultStockExchange implements StockExchange{
 	public StockExchangeLevel1View createLevel1View() {
 		return new DefaultLevel1View ();
 	}
-	
+	//can't this be static?
 	private class DefaultLevel1View implements StockExchangeLevel1View {
 
 		@Override
@@ -99,7 +107,7 @@ public class DefaultStockExchange implements StockExchange{
 				getMarket(sellOrder.getStock()).recordSellOrder(sellOrder);	
 			stockExchangeObservable.notifyOrderListeners(orderEvent);
 		}
-
+        //Important if we want to implement the hypothetical crash
 		@Override
 		public void cancelBuyOrder(BuyOrder buyOrder) {
 			getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);			

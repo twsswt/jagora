@@ -16,7 +16,14 @@ public class SerialRandomEngine implements TradingEngine {
 	private final Set<Level1Trader> traders;
 	private final World world;
 	private final Random random;
-	
+
+	/**
+	 *
+	 * @param world - set up the world
+	 * @param exchanges - pass a set of exchanges
+	 * @param traders - a fixed? set of traders?
+	 * @param random -
+	 */
 	public SerialRandomEngine (World world, Set<StockExchange> exchanges, Set<Level1Trader> traders, Random random){
 		this.world = world;
 		this.exchanges = new HashSet<StockExchange>(exchanges);

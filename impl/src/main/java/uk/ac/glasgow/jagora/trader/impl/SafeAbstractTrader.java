@@ -19,11 +19,11 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		this.openBuyOrders = new ArrayList<BuyOrder>();
 		this.openSellOrders = new ArrayList<SellOrder>();
 	}
-	
+	// no signal if the trade is not executed?
 	protected void placeSafeBuyOrder(StockExchangeLevel1View traderView, BuyOrder buyOrder) {
-		
+		//if you have enough money, you can place the order(that's safe)
 		if (buyOrder.getPrice() * buyOrder.getRemainingQuantity() <= getAvailableCash()){
-			traderView.placeBuyOrder(buyOrder);
+			traderView.placeBuyOrder(buyOrder); //put it in the exchange book as order
 			openBuyOrders.add(buyOrder);
 		}
 	}
@@ -39,12 +39,12 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	protected void cancelSafeSellOrder(	StockExchangeLevel1View stockExchangeLevel1View, SellOrder sellOrder) {
 		
 		stockExchangeLevel1View.cancelSellOrder(sellOrder);			
-		
+		//isn't there an easier way to do this?
 		Integer indexToCancel = null;
 		for (int i = 0 ; i < openSellOrders.size(); i++)
 			if (openSellOrders.get(i) == sellOrder)
 				indexToCancel = i;
-		
+
 		if (indexToCancel != null)
 			openSellOrders.remove(indexToCancel);
 	}
@@ -62,6 +62,10 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 			openBuyOrders.remove(indexToCancel);
 	}
 
+	/**
+	 *
+	 * @return Available cash after cash committed for openBuyOrders is taken out
+	 */
 	protected Long getAvailableCash() {
 		Long committedCash =
 			openBuyOrders.stream()
@@ -72,7 +76,7 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	}
 
 	protected Integer getAvailableQuantity(Stock stock) {
-		
+		//bug?? just works if you have one stock only?
 		Integer committedQuantity = 
 			openSellOrders.stream()
 			.mapToInt(sellOrder -> sellOrder.getRemainingQuantity())

@@ -58,7 +58,10 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 		
 	/**
-	 * @see uk.Market.ac.glasgow.jagora.OrderDrivenMarket#doClearing()
+	 * The operation executes trades,
+	 * if the lowest offer is lower than the highest bid.
+     * There is a possibility of failed offer if one of the sides
+     * cancels its order.
 	 */
 	@Override
 	public List<TickEvent<Trade>> doClearing (){

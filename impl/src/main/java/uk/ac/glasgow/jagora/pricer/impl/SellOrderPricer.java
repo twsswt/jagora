@@ -5,6 +5,7 @@ import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.pricer.TradePricer;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
+//TODO implement market order pricer
 public class SellOrderPricer implements TradePricer {
 
 	@Override
