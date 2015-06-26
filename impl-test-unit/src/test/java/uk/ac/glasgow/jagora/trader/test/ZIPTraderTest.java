@@ -1,5 +1,8 @@
 package uk.ac.glasgow.jagora.trader.test;
 
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
@@ -67,7 +70,7 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, false));		
+		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, BUY));		
 		trader.speak(mockExchange);
 
 		verifyAll();
@@ -96,7 +99,7 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, true));		
+		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, SELL));		
 		trader.speak(mockExchange);
 
 		verifyAll();

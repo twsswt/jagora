@@ -12,10 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-
-import uk.ac.glasgow.jagora.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,12 +27,14 @@ import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
-import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
+import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
+import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
@@ -51,7 +51,7 @@ public class Experiment0003 {
 	private final Integer seed = 1;
 	private final Integer permittedError = 100;
 
-	private final Long maxTickCount = 500000l;
+	private final Long maxTickCount = 50000l;
 	private final Double priceAveragingPortion = 0.5;
 	
 	private final Double maximumRelativePriceChange = 0.05;
@@ -64,7 +64,7 @@ public class Experiment0003 {
 	private final Double minMomentum = 0.2;
 	
 	private final Long buyerTraderCash = 100000000l;
-	private final Integer jobQuantity = 1000;
+	private final Integer jobQuantity = 100;
 	
 	private final Long maxPrice = 5000l;
 	private final Long minPrice = 0l;
@@ -72,11 +72,12 @@ public class Experiment0003 {
 	private final Long minOfferLimit = 0l;
 	private final Long maxBidLimit = 5000l;
 	
-	private final String datFilePath = "reports/jagora/prices.dat";
+	private final String pricesDatFilePath = "reports/jagora/prices.dat";
+	private final String zipTradersDatFilePath = "reports/jagora/zip-targets.dat";
 	
 	// Experimental parameters.
 	
-	private final Integer numberOfBuyers = 100;
+	private final Integer numberOfBuyers = 50;
 	private final Integer numberOfSellers = 50;
 	
 	// Experimental fixture
@@ -100,10 +101,12 @@ public class Experiment0003 {
 		
 		lemons = new Stock("lemons");
 		
+		createTraders();
+		
 		createStockExchange();
 		
-		createTraders();
-
+		traders.stream().forEach(trader -> registerZIPTrader(trader));
+		
 	}
 
 	private void createTraders() {
@@ -136,39 +139,51 @@ public class Experiment0003 {
 		stubTradeListener = new StubTradeListener();
 		tickerTapeObserver.registerTradeListener(stubTradeListener);
 
-		registerFilteredStdOutOrderListener(false);
-		registerFilteredStdOutOrderListener(true);
+		//registerFilteredStdOutOrderListener(OrderDirection.BUY);
+		//registerFilteredStdOutOrderListener(OrderDirection.SELL);
 				
 		tickerTapeObserver.registerTradeListener(new StdOutTradeListener());
 		
-		File datFile = new File(datFilePath);
-		datFile.getParentFile().mkdirs();
+		PrintStream pricesDatFileStream = createPrintStreamToFile(pricesDatFilePath);
 		
-		PrintStream printStream = new PrintStream(new FileOutputStream(datFile));
-		
-		PriceTimeLoggerTickerTapeListener priceTimeLogger = 
-			new PriceTimeLoggerTickerTapeListener(printStream);
-		
+		GnuPlotPriceDATLogger priceTimeLogger = 
+			new GnuPlotPriceDATLogger(pricesDatFileStream);
 		tickerTapeObserver.registerTradeListener(priceTimeLogger);
 		tickerTapeObserver.registerOrderListener(priceTimeLogger);
+		
+		PrintStream zipTradersDatFileStream = createPrintStreamToFile(zipTradersDatFilePath);
+		
+		ZIPTraderTargetPriceGnuPlotDATLogger zipTraderTargetPriceGnuPlotDATLogger =
+			new ZIPTraderTargetPriceGnuPlotDATLogger(
+				zipTradersDatFileStream, new HashSet<ZIPTrader>(traders));
+		
+		tickerTapeObserver.registerOrderListener(zipTraderTargetPriceGnuPlotDATLogger);
+	}
+
+	private PrintStream createPrintStreamToFile(String filePath) throws FileNotFoundException {
+		File pricesDatFile = new File(filePath);
+		pricesDatFile.getParentFile().mkdirs();		
+		PrintStream printStream = new PrintStream(new FileOutputStream(pricesDatFile));
+		return printStream;
 	}
 	
-	private void registerFilteredStdOutOrderListener(Boolean isOffer) {
+	private void registerFilteredStdOutOrderListener(OrderDirection orderDirection) {
 		FilterOnDirectionOrderListener filteredOrderListener =
-			new FilterOnDirectionOrderListener(new OutputStreamOrderListener(System.out), isOffer);
+			new FilterOnDirectionOrderListener(new OutputStreamOrderListener(System.out), orderDirection);
 		tickerTapeObserver.registerOrderListener(filteredOrderListener);
 	}
 
 	private void configureBuyerZIPTrader(int seed, Long floorPrice, Long ceilPrice) {
 				
 		Long limitPrice = (long)(random.nextDouble() * (ceilPrice - floorPrice)) + floorPrice;	
-				
+
 		ZIPTrader trader = configureBasicZIPTraderBuilder("buyer",seed)
 			.setCash(buyerTraderCash)
 			.addBuyOrderJobSpecification(lemons, floorPrice, limitPrice, jobQuantity)
 			.build();
 		
-		registerZIPTrader(trader);
+		traders.add(trader);
+		
 	}
 
 	private void configureSellerZIPTrader(int seed,	Long floorPrice, Long ceilPrice) {
@@ -180,7 +195,7 @@ public class Experiment0003 {
 			.addSellOrderJobSpecification(lemons, limitPrice, ceilPrice, jobQuantity)
 			.build();
 		
-		registerZIPTrader(trader);
+		traders.add(trader);
 	}
 	
 	private ZIPTraderBuilder configureBasicZIPTraderBuilder(String namePrefix, int seed) {
@@ -205,7 +220,6 @@ public class Experiment0003 {
 	}
 	
 	private void registerZIPTrader(ZIPTrader trader) {
-		traders.add(trader);
 		StockExchangeLevel2View level2View = stockExchange.createLevel2View();
 		level2View.registerOrderListener(trader);
 		level2View.registerTradeListener(trader);
@@ -225,14 +239,16 @@ public class Experiment0003 {
 		
 		List<TickEvent<Trade>> tradeEvents = tickerTapeObserver.getTradeHistory(lemons);
 		
+		Long lastTradeTick = tradeEvents.get(tradeEvents.size() - 1).tick;
+		
 		Double averagePrice = 
 			tradeEvents
 				.stream()
-				.filter(tradeEvent -> tradeEvent.tick > maxTickCount * priceAveragingPortion)
+				.filter(tradeEvent -> tradeEvent.tick >= lastTradeTick * priceAveragingPortion)
 				.mapToLong(tradeEvent -> tradeEvent.event.getPrice())
 				.average()
-				.orElse(0.0);
-		
+				.getAsDouble();
+				
 		assertThat (averagePrice, closeTo(expectedEquilibriumPrice, permittedError));		
 	}
 

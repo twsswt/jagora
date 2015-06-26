@@ -4,7 +4,7 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 public interface Order {
-	
+		
 	public Trader getTrader ();
 	
 	public Stock getStock();

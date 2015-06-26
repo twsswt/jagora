@@ -1,5 +1,8 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,6 +14,7 @@ import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
@@ -98,6 +102,9 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		Collections.shuffle(randomisedOrderListeners);
 		
 		Order event = orderEvent.event;
+		
+		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
+		
 		OrderEntryEvent orderEntryEvent = 
 			new OrderEntryEvent(
 				orderEvent.tick,
@@ -105,7 +112,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				event.getStock(), 
 				event.getRemainingQuantity(),
 				event.getPrice(), 
-				event instanceof SellOrder);
+				direction);
 		
 		for (OrderListener orderListener : randomisedOrderListeners)
 			notifyOrderListenerOfOrder(orderEntryEvent, orderListener);

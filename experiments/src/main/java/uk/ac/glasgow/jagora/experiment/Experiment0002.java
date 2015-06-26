@@ -25,6 +25,7 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
@@ -79,10 +80,6 @@ public class Experiment0002 {
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		
 		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
-		
-		//registerFilteredStdOutOrderListener(false);
-		//registerFilteredStdOutOrderListener(true);
-
 
 		Set<Level1Trader> traders = new HashSet<Level1Trader>();
 		
@@ -157,7 +154,7 @@ public class Experiment0002 {
 		PrintStream printStream = new PrintStream(new FileOutputStream("prices.txt"));
 		
 		tickerTapeObserver.registerTradeListener(
-			new PriceTimeLoggerTickerTapeListener(printStream));
+			new GnuPlotPriceDATLogger(printStream));
 		
 		tickerTapeObserver.registerTradeListener(
 			new TimeListenerTickerTapeListener( durationInMilliSeconds));
@@ -173,9 +170,9 @@ public class Experiment0002 {
 			.build();
 	}
 
-	private void registerFilteredStdOutOrderListener(Boolean isOffer) {
+	private void registerFilteredStdOutOrderListener(OrderDirection orderDirection) {
 		FilterOnDirectionOrderListener filteredOrderListener =
-			new FilterOnDirectionOrderListener(new OutputStreamOrderListener(System.out), isOffer);
+			new FilterOnDirectionOrderListener(new OutputStreamOrderListener(System.out), orderDirection);
 		tickerTapeObserver.registerOrderListener(filteredOrderListener);
 	}
 
