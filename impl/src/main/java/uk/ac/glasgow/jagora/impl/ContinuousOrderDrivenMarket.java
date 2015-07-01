@@ -1,5 +1,7 @@
 package uk.ac.glasgow.jagora.impl;
 
+import static java.lang.Math.min;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,9 +59,6 @@ public class ContinuousOrderDrivenMarket implements Market {
 		sellBook.cancelOrder(order);
 	}
 		
-	/**
-	 * @see uk.Market.ac.glasgow.jagora.OrderDrivenMarket#doClearing()
-	 */
 	@Override
 	public List<TickEvent<Trade>> doClearing (){
 		
@@ -73,7 +72,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 			SellOrder lowestSell = lowestSellEvent.event;
 			BuyOrder highestBid = highestBuyEvent.event;
 			Integer quantity = 
-				Math.min(
+				min(
 					lowestSell.getRemainingQuantity(), 
 					highestBid.getRemainingQuantity()
 				);
@@ -97,8 +96,6 @@ public class ContinuousOrderDrivenMarket implements Market {
 				
 				//TODO Penalise the trader that caused the trade to fail.
 				e.printStackTrace();
-				System.out.println("Failed order " + highestBid);
-				System.exit(0);	
 			}
 			
 			lowestSellEvent = sellBook.getBestOrder();

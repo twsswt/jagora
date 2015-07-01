@@ -51,7 +51,7 @@ public class Experiment0003 {
 	private final Integer seed = 1;
 	private final Integer permittedError = 100;
 
-	private final Long maxTickCount = 50000l;
+	private final Long maxTickCount = 500000l;
 	private final Double priceAveragingPortion = 0.5;
 	
 	private final Double maximumRelativePriceChange = 0.05;
@@ -64,7 +64,7 @@ public class Experiment0003 {
 	private final Double minMomentum = 0.2;
 	
 	private final Long buyerTraderCash = 100000000l;
-	private final Integer jobQuantity = 100;
+	private final Integer jobQuantity = 1;
 	
 	private final Long maxPrice = 5000l;
 	private final Long minPrice = 0l;
@@ -77,8 +77,8 @@ public class Experiment0003 {
 	
 	// Experimental parameters.
 	
-	private final Integer numberOfBuyers = 50;
-	private final Integer numberOfSellers = 50;
+	private final Integer numberOfBuyers = 50000;
+	private final Integer numberOfSellers = 50000;
 	
 	// Experimental fixture
 	

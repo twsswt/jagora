@@ -55,7 +55,6 @@ public class Experiment0002 {
 
 	private Long initialTraderCash = 100000l;
 	private Integer initialTraderStock = 100;
-
 	
 	private World world;
 	private Stock lemons;
