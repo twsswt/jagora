@@ -15,9 +15,8 @@ public class SimpleHistoricTraderBuilder extends AbstractTraderBuilder {
 
 	private Set<StockExchange> stockExchanges;
 		
-	public SimpleHistoricTraderBuilder(Integer seed){
+	public SimpleHistoricTraderBuilder(){
 		super();
-		this.seed = seed;
 		this.stockExchanges = new HashSet<StockExchange>();
 	}
 	@Override

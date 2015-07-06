@@ -62,7 +62,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 		managedOrder = newOrder;
 	}
 	
-	protected Long getTargetPrice() {
+	public Long getTargetPrice() {
 		return targetPrice;
 	}
 		
@@ -72,14 +72,12 @@ public abstract class ZIPOrderJob<T extends Order> {
 			
 	protected void updateTargetPrice (){
 
-		TargetPriceAction targetPriceAction = getTargetPriceAction ();
+		TargetPriceAction targetPriceAction = getTargetPriceAction ();			
 		
-		Long basePrice = marketDatum.lastPriceReportedOnTheMarket;
-			
-		
-		if (targetPriceAction.equals(NOTHING)) return;
+		if (targetPriceAction == NOTHING) return;
 		else {
 			lastTargetPrice = targetPrice;
+			Long basePrice = marketDatum.lastPriceReportedOnTheMarket;
 			targetPrice = zipTrader.computeTargetPrice (basePrice, targetPriceAction);
 		}
 	}
@@ -99,7 +97,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 			template, managedOrder, targetPrice);
 	}
 
-	static class ZIPBuyOrderJob extends ZIPOrderJob<BuyOrder> {
+	public static class ZIPBuyOrderJob extends ZIPOrderJob<BuyOrder> {
 
 		protected ZIPBuyOrderJob(
 			ZIPTrader zipTrader, MarketDatum marketDatum, Long floorPrice, Long limitPrice, Long initialTargetPrice) {
@@ -112,7 +110,6 @@ public abstract class ZIPOrderJob<T extends Order> {
 				managedOrder.getPrice() >= marketDatum.lastPriceReportedOnTheMarket;
 						
 			if (marketDatum.lastQuoteWasAccepted){
-				
 				if (priceIsCompetitive)
 					return REDUCE;
 				else if (marketDatum.lastQuoteWasOffer())
@@ -138,7 +135,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 
 	}
 
-	static class ZIPSellOrderJob extends ZIPOrderJob<SellOrder> {
+	public static class ZIPSellOrderJob extends ZIPOrderJob<SellOrder> {
 
 		protected ZIPSellOrderJob(
 			ZIPTrader zipTrader, MarketDatum marketDatum, Long limitPrice, Long ceilPrice, Long initialTargetPrice) {

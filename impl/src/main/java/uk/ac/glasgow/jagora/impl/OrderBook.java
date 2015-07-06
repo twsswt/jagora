@@ -73,11 +73,13 @@ public class OrderBook<O extends Order & Comparable<O>>  {
      */
 	public TickEvent<O> getBestOrder() {
 		TickEvent<O> receivedOrder = receivedOrders.peek();
+	//	if (receivedOrder != null) receivedOrder.event.getPrice();
+
 
 		while (receivedOrder != null && receivedOrder.event.getRemainingQuantity() <= 0){
 			receivedOrders.poll();
 			receivedOrder = receivedOrders.peek();
-			updateLastKnownBestPrice();
+			//updateLastKnownBestPrice();
 		}
 		
 		return receivedOrder;		
@@ -111,7 +113,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 	}
 
 	public Long getLastKnownBestPrice() {
-		return lastKnownBestPrice;
+		return 	lastKnownBestPrice;
 	}
 	
 	private void updateLastKnownBestPrice() {
@@ -119,5 +121,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		if (currentBestPrice != null)
 			lastKnownBestPrice = currentBestPrice;
 	}
+
+
 
 }

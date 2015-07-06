@@ -6,6 +6,7 @@ import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
+
 public interface StockExchangeObservable {
 
 	/**
@@ -24,5 +25,12 @@ public interface StockExchangeObservable {
 	public abstract void registerOrderListener(OrderListener orderListener);
 	
 	public abstract void notifyOrderListeners(TickEvent<? extends Order> orderEvent);
+
+	void registerPriceListener (PriceListener tradePriceListener);
+
+
+
+	//notifyPriceTradeListener is left as a private method to be implemented
+
 
 }

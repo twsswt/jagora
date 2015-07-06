@@ -27,6 +27,8 @@ public class ContinuousOrderDrivenMarket implements Market {
 	private final OrderBook<BuyOrder> buyBook;
 	
 	private final TradePricer tradePricer;
+
+	private Long lastUsedPrice;
 			
 	public ContinuousOrderDrivenMarket (Stock stock, World world, TradePricer tradePricer){
 		this.stock = stock;
@@ -35,6 +37,8 @@ public class ContinuousOrderDrivenMarket implements Market {
 
 		sellBook = new OrderBook<SellOrder>(world);
 		buyBook = new OrderBook<BuyOrder>(world);
+
+		lastUsedPrice = 0l;//very arbitrary
 	}
 	
 	@Override
@@ -56,7 +60,8 @@ public class ContinuousOrderDrivenMarket implements Market {
 	public void cancelSellOrder(SellOrder order) {
 		sellBook.cancelOrder(order);
 	}
-		
+
+
 	/**
 	 * The operation executes trades,
 	 * if the lowest offer is lower than the highest bid.
@@ -81,7 +86,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 					highestBid.getRemainingQuantity()
 				);
 			
-			Long price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);	
+			Long price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);
 			
 			Trade trade = 
 				new DefaultTrade (stock, quantity, price, lowestSell, highestBid);
@@ -89,6 +94,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 			try {
 				TickEvent<Trade> executedTrade = trade.execute(world);
 				executedTrades.add(executedTrade);
+				lastUsedPrice = price; //used to update lastUsedPrice only if trade is executed?
 											
 			} catch (TradeExecutionException e) {
 				Trader culprit = e.getCulprit();
@@ -133,13 +139,23 @@ public class ContinuousOrderDrivenMarket implements Market {
 		return String.format("best bid: %d, best offer: %d", getBestBidPrice(), getBestOfferPrice());
 	}
 
+	//Very clumsy way to deal with this
+	//TODO find a better way to deal with this
 	@Override
 	public Long getBestBidPrice() {
+		if (buyBook.getBestOrder() != null &&
+				buyBook.getBestOrder().event instanceof MarketBuyOrder){
+			return  getLastUsedPrice();
+		}
 		return buyBook.getBestPrice();
 	}
 
 	@Override
 	public Long getBestOfferPrice() {
+		if (sellBook.getBestOrder() != null &&
+				sellBook.getBestOrder().event instanceof MarketSellOrder){
+			return  getLastUsedPrice();
+		}
 		return sellBook.getBestPrice();
 	}
 
@@ -152,4 +168,6 @@ public class ContinuousOrderDrivenMarket implements Market {
 	public Long getLastKnownBestOfferPrice() {
 		return sellBook.getLastKnownBestPrice();
 	}
+
+	public Long getLastUsedPrice() { return lastUsedPrice;}
 }

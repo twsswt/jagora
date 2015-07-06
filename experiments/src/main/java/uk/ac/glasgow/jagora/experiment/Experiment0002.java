@@ -129,7 +129,10 @@ public class Experiment0002 {
 			String name = createTraderName(SimpleHistoricTrader.class, i);
 			
 			Level1Trader trader = 
-				new SimpleHistoricTraderBuilder(name,initialTraderCash, seed)
+				new SimpleHistoricTraderBuilder()
+				.setName(name)
+				.setCash(initialTraderCash)
+				.setSeed(seed)
 				.addStock(lemons, initialTraderStock)
 				.monitorStockExchange(stockExchange)
 				.build();

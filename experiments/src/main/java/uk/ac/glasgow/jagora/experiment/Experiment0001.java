@@ -66,7 +66,10 @@ public class Experiment0001 {
 		
 		for (int i = 0 ; i < numberOfTraders ; i++){
 			SimpleHistoricTrader historicTrader = 
-				new SimpleHistoricTraderBuilder("trader["+i+"]",initialTraderCash, r.nextInt())
+				new SimpleHistoricTraderBuilder()
+					.setName("trader["+i+"]")
+					.setCash(initialTraderCash)
+					.setSeed(r.nextInt())
 					.addStock(lemons, 1000)
 					.build();
 			

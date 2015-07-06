@@ -77,6 +77,9 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void sellStock(Trade trade) throws TradeExecutionException {
+		if (trade.getSeller() != this)
+			throw  new TradeExecutionException("Trader is not the  same", trade, this);
+
 		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0); //
 		if (currentQuantity < trade.getQuantity()){ 
 			String message = format("Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].", name, trade, currentQuantity);
@@ -93,8 +96,11 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void buyStock(Trade trade) throws TradeExecutionException {
+		if(trade.getBuyer() != this)
+			throw  new TradeExecutionException("Trader not the same", trade, this);
+
 		Long totalPrice = trade.getPrice() * trade.getQuantity();
-		
+
 		if (totalPrice > cash){
 			String message = format("Buyer [%s] cannot satisfy trade [%s] with remaining cash [%d].", name, trade, getCash());
 			throw new TradeExecutionException (message, trade, this);		

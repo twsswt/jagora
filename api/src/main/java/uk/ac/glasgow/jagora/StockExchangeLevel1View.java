@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora;
 
+import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 public interface StockExchangeLevel1View {
@@ -21,5 +22,7 @@ public interface StockExchangeLevel1View {
 	public void cancelSellOrder(SellOrder sellOrder);
 	
 	public void registerTradeListener(TradeListener tradeListener);
+
+	public void registerPriceListener (PriceListener tradePriceListener);
 
 }

@@ -5,25 +5,28 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.Trader;
 
 public class OrderEntryEvent {
+	
+	public enum OrderDirection {BUY, SELL}
+	
 	public final Long tick;
 	public final Trader trader;
 	public final Stock stock;
 	public final Integer quantity;
 	public final Long price;
-	public final Boolean isOffer;
+	public final OrderDirection orderDirection;
 	
-	public OrderEntryEvent(Long tick, Trader trader, Stock stock, Integer quantity, Long price, Boolean isOffer) {
+	public OrderEntryEvent(Long tick, Trader trader, Stock stock, Integer quantity, Long price, OrderDirection orderDirection) {
 		this.tick = tick;
 		this.trader = trader;
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;
-		this.isOffer = isOffer;
+		this.orderDirection = orderDirection;
 	}
 	
 	@Override
 	public String toString (){
 		String template = "[tick=%d,trader=%s,stock=%s,direction=%s,quantity=%d,price=%d]";
-		return format(template, tick, trader, stock, isOffer?"S":"B", quantity, price);
+		return format(template, tick, trader, stock, orderDirection, quantity, price);
 	}
 }

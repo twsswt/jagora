@@ -12,6 +12,7 @@ import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 public class StubStockExchange implements StockExchange {
@@ -92,7 +93,10 @@ public class StubStockExchange implements StockExchange {
 			// Does nothing as no trades are executed.
 			
 		}
-			
+		@Override
+		public void registerPriceListener (PriceListener tradePriceListener){
+
+		}
 	}
 
 

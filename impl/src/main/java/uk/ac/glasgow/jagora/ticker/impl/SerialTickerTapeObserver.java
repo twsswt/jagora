@@ -10,7 +10,7 @@ public class SerialTickerTapeObserver extends AbstractStockExchangeObservable {
 	@Override
 	protected void notifyTradeListenerOfTrade(
 			TradeExecutionEvent tradeExecutionEvent, TradeListener tradeListener) {
-		tradeListener.tradeExecuted(tradeExecutionEvent);
+			tradeListener.tradeExecuted(tradeExecutionEvent);
 		
 	}
 

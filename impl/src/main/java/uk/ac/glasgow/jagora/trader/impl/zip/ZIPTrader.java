@@ -15,6 +15,7 @@ import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -156,7 +157,10 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	@Override
 	public void orderEntered(OrderEntryEvent orderEntryEvent) {
 		MarketDatum marketDatum = getMarketDatum(orderEntryEvent.stock);
-		marketDatum.updateMarketInformationFollowingOrder(orderEntryEvent.price, orderEntryEvent.isOffer);
+		
+		Boolean wasOffer = orderEntryEvent.orderDirection == OrderDirection.SELL;
+		
+		marketDatum.updateMarketInformationFollowingOrder(orderEntryEvent.price, wasOffer);
 	}
 
 	@Override
@@ -171,4 +175,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		return marketDatum;
 	}
 	
+	public ZIPOrderJob<? extends Order> getCurrentOrderJob() {
+		return this.currentOrderJob;
+	}
 }

@@ -10,6 +10,8 @@ public class MarketBuyOrder extends AbstractBuyOrder {
 
     private  StockExchangeLevel1View market;
 
+    private Boolean haveBeenInitialised = false;
+
     public MarketBuyOrder (Trader trader,Stock stock,Integer quantity,StockExchangeLevel1View market){
         super(trader, stock, quantity);
         this.market =  market;
@@ -17,8 +19,14 @@ public class MarketBuyOrder extends AbstractBuyOrder {
 
     @Override
     public Long getPrice () {
+        //used to keep marketOrders at top of the OrderBook
+        if (!haveBeenInitialised) {
+            haveBeenInitialised =true;
+            return Long.MAX_VALUE;
+        }
+
         Long price = market.getBestOfferPrice(this.getStock());
-        if (price == null) return null;
+        if (price == null) return Long.MAX_VALUE;
         return price;
     }
 }

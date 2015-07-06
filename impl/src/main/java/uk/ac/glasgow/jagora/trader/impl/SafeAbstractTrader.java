@@ -22,12 +22,13 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	// no signal if the trade is not executed?
 	protected void placeSafeBuyOrder(StockExchangeLevel1View traderView, BuyOrder buyOrder) {
 		//if you have enough money, you can place the order(that's safe)
+
 		if (buyOrder.getPrice() * buyOrder.getRemainingQuantity() <= getAvailableCash()){
 			traderView.placeBuyOrder(buyOrder); //put it in the exchange book as order
 			openBuyOrders.add(buyOrder);
 		}
 	}
-	
+
 	protected void placeSafeSellOrder(StockExchangeLevel1View traderView, SellOrder sellOrder) {
 		if (sellOrder.getRemainingQuantity() <= getAvailableQuantity(sellOrder.getStock())){
 			openSellOrders.add(sellOrder);

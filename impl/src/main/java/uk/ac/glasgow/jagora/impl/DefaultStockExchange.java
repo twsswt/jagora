@@ -13,6 +13,7 @@ import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.world.TickEvent;
@@ -121,6 +122,12 @@ public class DefaultStockExchange implements StockExchange{
 		@Override
 		public void registerTradeListener(TradeListener tradeListener) {
 			stockExchangeObservable.registerTradeListener(tradeListener);
+		}
+
+
+		@Override
+		public void registerPriceListener (PriceListener tradePriceListener){
+			stockExchangeObservable.registerPriceListener(tradePriceListener);
 		}
 		
 		@Override

@@ -40,7 +40,8 @@ public class SimpleHistoricTraderTest extends EasyMockSupport {
 
 		lemons = new Stock("lemons");
 				
-		alice = new SimpleHistoricTraderBuilder(22)
+		alice = new SimpleHistoricTraderBuilder()
+				.setSeed(22)
 				.setName("alice")
 				.setCash(100l)
 			    .addStock(lemons, 10)
