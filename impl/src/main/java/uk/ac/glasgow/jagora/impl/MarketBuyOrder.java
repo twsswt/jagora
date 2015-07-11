@@ -2,15 +2,14 @@ package uk.ac.glasgow.jagora.impl;
 
 
 import uk.ac.glasgow.jagora.Market;
+import uk.ac.glasgow.jagora.MarketOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.trader.Trader;
 
-public class MarketBuyOrder extends AbstractBuyOrder {
+public class MarketBuyOrder extends AbstractBuyOrder implements MarketOrder {
 
     private  StockExchangeLevel1View market;
-
-    private Boolean haveBeenInitialised = false;
 
     public MarketBuyOrder (Trader trader,Stock stock,Integer quantity,StockExchangeLevel1View market){
         super(trader, stock, quantity);
@@ -19,14 +18,8 @@ public class MarketBuyOrder extends AbstractBuyOrder {
 
     @Override
     public Long getPrice () {
-        //used to keep marketOrders at top of the OrderBook
-        if (!haveBeenInitialised) {
-            haveBeenInitialised =true;
-            return Long.MAX_VALUE;
-        }
 
         Long price = market.getBestOfferPrice(this.getStock());
-        if (price == null) return Long.MAX_VALUE;
         return price;
     }
 }

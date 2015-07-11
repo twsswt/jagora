@@ -11,7 +11,7 @@ import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
-//TODO implement other types of orders
+
 public abstract class AbstractOrder implements Order {
 	
 	private final Trader trader;

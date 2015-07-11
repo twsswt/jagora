@@ -47,6 +47,7 @@ public class DefaultStockExchange implements StockExchange{
 		Market market = markets.get(stock);
 		
 		if (market == null){
+			//TODO fix that bug
 			market = marketFactory.createOrderDrivenMarket(stock, world);
 			markets.put(stock, market);
 		}

@@ -51,7 +51,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		updateLastKnownBestPrice();
 		return event;
 	}
-	
+	//silently cancels??
 	public void cancelOrder(O order) {
 		TickEvent<O> toRemove = null;
 				
@@ -113,7 +113,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 	}
 
 	public Long getLastKnownBestPrice() {
-		return 	lastKnownBestPrice;
+		return lastKnownBestPrice;
 	}
 	
 	private void updateLastKnownBestPrice() {

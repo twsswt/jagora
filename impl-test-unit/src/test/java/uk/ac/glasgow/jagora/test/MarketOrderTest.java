@@ -131,14 +131,15 @@ public class MarketOrderTest {
 
         market.doClearing();
 
-        assertEquals("", alice.getCash(),(Long) 50000l); //trade occurs at no price!
-        assertEquals("", alice.getInventory(lemons), (Integer) 100);
+        assertEquals("", alice.getCash(),(Long) 50000l);
+        assertEquals("", alice.getInventory(lemons), (Integer) 0);
+        assertEquals("", bruce.getInventory(lemons), (Integer) 5000); //no trade should occur
 
     }
 
 
     @Test
-    public void testMarketOrderAfterSomeTrades() {
+    public void testMarketOrderWhenBetterPrice() {
         DefaultStockExchange market =
                 new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
 

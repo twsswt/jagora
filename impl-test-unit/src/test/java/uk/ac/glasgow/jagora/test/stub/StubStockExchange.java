@@ -129,7 +129,7 @@ public class StubStockExchange implements StockExchange {
 		@Override
 		public void registerOrderListener(
 			OrderListener orderListener) {
-			// TODO Auto-generated method stub
+
 
 		}
 

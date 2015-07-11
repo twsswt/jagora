@@ -7,6 +7,7 @@ import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
+import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 
@@ -14,6 +15,7 @@ public class SerialRandomEngine implements TradingEngine {
 	
 	private final Set<StockExchange> exchanges;
 	private final Set<Level1Trader> traders;
+	private  Set<Level2Trader> priviliigedTraders;
 	private final World world;
 	private final Random random;
 
@@ -21,10 +23,9 @@ public class SerialRandomEngine implements TradingEngine {
 	 *
 	 * @param world - set up the world
 	 * @param exchanges - pass a set of exchanges
-	 * @param traders - a fixed? set of traders?
-	 * @param random -
-	 */
-	public SerialRandomEngine (World world, Set<StockExchange> exchanges, Set<Level1Trader> traders, Random random){
+	 * @param traders - a fixed set of traders
+	 * @param random - seed
+	 */ SerialRandomEngine(World world, Set<StockExchange> exchanges, Set<Level1Trader> traders, Random random){
 		this.world = world;
 		this.exchanges = new HashSet<StockExchange>(exchanges);
 		this.traders = new HashSet<Level1Trader>(traders);
