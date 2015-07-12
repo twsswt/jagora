@@ -22,6 +22,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	private final Map<Stock, PriorityQueue<SellTradePriceListener>> sellPriceListeners;
 
 	private final List<TickEvent<Trade>> executedTrades;
+	private final List<TickEvent<Order>> submittedOrders;
 
 	public AbstractStockExchangeObservable() {
 		tradeListeners = new HashSet<TradeListener>();
@@ -31,6 +32,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		sellPriceListeners = new HashMap<Stock, PriorityQueue<SellTradePriceListener>>();
 
 		executedTrades = new ArrayList<TickEvent<Trade>>();
+		submittedOrders = new ArrayList<>();
 	}
 	
 	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
@@ -41,6 +43,17 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 			.stream()
 			.filter(executedTrade -> executedTrade.event.getStock().equals(stock))
 			.forEach(executedTrade -> result.add(executedTrade));
+
+		return result;
+	}
+
+	public List<TickEvent<Order>> getOrderHistory(Stock stock){
+		List<TickEvent<Order>> result = new ArrayList<>();
+
+		submittedOrders
+				.stream()
+				.filter(submittedOrder -> submittedOrder.event.getStock().equals(stock))
+				.forEach(submittedOrder -> result.add(submittedOrder));
 
 		return result;
 	}
@@ -161,6 +174,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	
 	@Override
 	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent){
+		//submittedOrders.add(orderEvent);
+
 		List<OrderListener> randomisedOrderListeners = 
 			new ArrayList<OrderListener>(orderListeners);
 		

@@ -14,6 +14,7 @@ public class SerialRandomEngineBuilder {
 	private Set<StockExchange> stockExchanges;
 	private Set<Level1Trader> traders;
 	private Integer seed;
+	private Long standardDelay = 100l;
 
 	public SerialRandomEngineBuilder(World world, Integer seed) {
 		this.world = world;
@@ -37,8 +38,13 @@ public class SerialRandomEngineBuilder {
 		return this;
 	}
 
+	public SerialRandomEngineBuilder setStandartDelay(Long delay){
+		this.standardDelay = delay;
+		return this;
+	}
+
 	public SerialRandomEngine build() {
-		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed));
+		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed),standardDelay);
 	}
 	
 	

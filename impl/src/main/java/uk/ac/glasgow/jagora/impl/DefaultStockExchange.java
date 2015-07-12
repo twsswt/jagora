@@ -4,14 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.Market;
-import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.StockExchangeLevel2View;
+import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -47,8 +40,9 @@ public class DefaultStockExchange implements StockExchange{
 		Market market = markets.get(stock);
 		
 		if (market == null){
-			//TODO fix that bug
-			market = marketFactory.createOrderDrivenMarket(stock, world);
+			//implemented this way to keep old experiments working - market should not fail
+			market = marketFactory.createOrderDrivenMarket(
+					new StockWarehouse(stock,1000), world);
 			markets.put(stock, market);
 		}
 		return market;

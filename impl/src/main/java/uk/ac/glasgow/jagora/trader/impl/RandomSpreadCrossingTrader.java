@@ -51,7 +51,12 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 			performRandomBuyAction(randomStock, traderMarketView);
 	}
 
-    /**
+	@Override
+	public Long getDelayDecrease() {
+		return 0l;
+	}
+
+	/**
      * Either sells a random quantity of stock at random price
      * or it cancels an open sell order
      * @param stock
@@ -148,4 +153,5 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 
 		return min(random.nextInt(tradeQuantityRange) + stockData.minQuantity, ceiling);
 	}
+
 }

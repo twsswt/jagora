@@ -45,20 +45,6 @@ public class ContinuousOrderDrivenMarket implements Market {
 		this.stock = stockWarehouse.getStock();
 	}
 
-	@Override
-	public Integer getStock(Integer quantity) throws Exception{
-		return stockWarehouse.getStock(quantity);
-	}
-
-	@Override
-	public Integer getRemainingStock() {
-		return stockWarehouse.getRemainingStock();
-	}
-
-	@Override
-	public Integer getTotalStockQuantity() {
-		return stockWarehouse.getInitialQuantity();
-	}
 
 	@Override
 	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order) {

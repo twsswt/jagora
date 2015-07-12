@@ -80,4 +80,8 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 	}
 
+	@Override
+	public Long getDelayDecrease() {
+		return 0l;
+	}
 }

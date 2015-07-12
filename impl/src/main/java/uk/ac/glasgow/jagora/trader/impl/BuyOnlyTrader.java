@@ -27,4 +27,8 @@ public class BuyOnlyTrader extends SafeAbstractTrader implements Level1Trader{
 		this.placeSafeBuyOrder(traderView, limitBuyOrder);
 	}
 
+	@Override
+	public Long getDelayDecrease() {
+		return 0l;
+	}
 }

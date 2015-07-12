@@ -33,10 +33,5 @@ public interface Market {
 	
 	public Long getLastKnownBestOfferPrice();
 
-	public Integer getTotalStockQuantity();
-
-	public Integer getStock(Integer quantity) throws Exception;
-
-	public Integer getRemainingStock();
 	
 }

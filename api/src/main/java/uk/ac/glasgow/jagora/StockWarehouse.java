@@ -3,6 +3,8 @@ package uk.ac.glasgow.jagora;
 
 import uk.ac.glasgow.jagora.Stock;
 
+
+
 public class StockWarehouse {
 
     private final Stock stock;
@@ -19,7 +21,8 @@ public class StockWarehouse {
     public Stock getStock() {
         return stock;
     }
-    public int getStock(int quantity) throws Exception{
+
+    public int  getStock(int quantity) throws Exception{
         if (quantity > remainingQuantity)
             throw new Exception("Not enough of the stock left");
 
@@ -27,7 +30,10 @@ public class StockWarehouse {
         return quantity;
     }
 
-    public int getRemainingStock() {
+    public int getRemainingStock() throws Exception{
+        if (remainingQuantity <= 0 )
+            throw new Exception("No stock left");
+
         int toReturn = remainingQuantity;
         remainingQuantity = 0;
         return toReturn;

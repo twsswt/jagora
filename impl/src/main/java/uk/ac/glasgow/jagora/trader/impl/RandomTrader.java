@@ -60,7 +60,12 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 			performRandomBuyAction(randomStock, traderMarketView);
 	}
 
-    /**
+	@Override
+	public Long getDelayDecrease() {
+		return 0l;
+	}
+
+	/**
      * Either sells a random quantity of stock,
      * or cancels a random sell order
      * @param stock

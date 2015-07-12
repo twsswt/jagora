@@ -51,4 +51,9 @@ public class InstitutionalInvestorTrader extends SafeAbstractTrader implements L
 			nextScheduledOrder = scheduledOrders.peek();
 		}
 	}
+
+	@Override
+	public Long getDelayDecrease() {
+		return 0l;
+	}
 }

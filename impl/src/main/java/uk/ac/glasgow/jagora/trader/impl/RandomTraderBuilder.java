@@ -67,4 +67,6 @@ public class RandomTraderBuilder extends AbstractTraderBuilder {
 		this.seed = seed;
 		return this;
 	}
+
+
 }

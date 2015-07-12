@@ -37,7 +37,12 @@ public class StubTrader extends AbstractTrader implements Level1Trader {
 				market.placeBuyOrder((MarketBuyOrder)nextOrder);
 		
 	}
-	
+
+	@Override
+	public Long getDelayDecrease() {
+		return 0l;
+	}
+
 	public void supplyOrder (Order order){
 		orders.offer(order);
 	}

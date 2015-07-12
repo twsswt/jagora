@@ -11,5 +11,10 @@ public interface Level1Trader extends Trader{
 	 * @param traderView
 	 */
 	public abstract void speak(StockExchangeLevel1View traderView);
-	
+
+	/**
+	 *
+	 * @return long value of decrease in delay for the particular trader
+	 */
+	Long getDelayDecrease();
 }
