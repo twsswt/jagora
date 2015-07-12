@@ -61,7 +61,7 @@ public class SerialRandomEngine implements TradingEngine {
 
 			exchange.doClearing();
 
-			world.getTick(new Object());
+			world.getTick(new Object());//used to enable running without Level2Traders
 		}
 	}
 

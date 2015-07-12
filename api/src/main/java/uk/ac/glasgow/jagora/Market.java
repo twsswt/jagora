@@ -33,5 +33,7 @@ public interface Market {
 	
 	public Long getLastKnownBestOfferPrice();
 
+	Integer getTotalQuantityOfStock();
+
 	
 }

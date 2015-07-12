@@ -22,7 +22,7 @@ public class TimedWorld implements World{
 		synchronized(syncObject){
 			try {
 				Thread.sleep(1);//1 sec is a bit too much??
-			} catch (InterruptedException e) {// TODO Auto-generated catch block
+			} catch (InterruptedException e) {
 			}
 			return new TickEvent<T>(event, getCurrentTick());
 		}

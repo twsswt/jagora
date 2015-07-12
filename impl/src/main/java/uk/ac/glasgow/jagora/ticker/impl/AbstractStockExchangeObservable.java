@@ -5,10 +5,7 @@ import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
 
 import java.util.*;
 
-import uk.ac.glasgow.jagora.Order;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.*;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.world.TickEvent;
@@ -22,7 +19,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	private final Map<Stock, PriorityQueue<SellTradePriceListener>> sellPriceListeners;
 
 	private final List<TickEvent<Trade>> executedTrades;
-	private final List<TickEvent<Order>> submittedOrders;
+	private final List<TickEvent<SellOrder>> submittedSellOrders;
+	private final List<TickEvent<BuyOrder>> submittedBuyOrders;
 
 	public AbstractStockExchangeObservable() {
 		tradeListeners = new HashSet<TradeListener>();
@@ -32,7 +30,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		sellPriceListeners = new HashMap<Stock, PriorityQueue<SellTradePriceListener>>();
 
 		executedTrades = new ArrayList<TickEvent<Trade>>();
-		submittedOrders = new ArrayList<>();
+		submittedSellOrders = new ArrayList<>();
+		submittedBuyOrders = new ArrayList<>();
 	}
 	
 	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
@@ -46,11 +45,11 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		return result;
 	}
+	//TODO implement a method for Buy Order history
+	public List<TickEvent<SellOrder>> getSellOrderHistory(Stock stock){
+		List<TickEvent<SellOrder>> result = new ArrayList<>();
 
-	public List<TickEvent<Order>> getOrderHistory(Stock stock){
-		List<TickEvent<Order>> result = new ArrayList<>();
-
-		submittedOrders
+		submittedSellOrders
 				.stream()
 				.filter(submittedOrder -> submittedOrder.event.getStock().equals(stock))
 				.forEach(submittedOrder -> result.add(submittedOrder));
@@ -174,7 +173,11 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	
 	@Override
 	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent){
-		//submittedOrders.add(orderEvent);
+
+		if (orderEvent.event instanceof SellOrder)
+			submittedSellOrders.add((TickEvent<SellOrder>) orderEvent);
+		else
+			submittedBuyOrders.add((TickEvent<BuyOrder>) orderEvent);
 
 		List<OrderListener> randomisedOrderListeners = 
 			new ArrayList<OrderListener>(orderListeners);

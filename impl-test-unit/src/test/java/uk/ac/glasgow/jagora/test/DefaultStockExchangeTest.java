@@ -133,6 +133,11 @@ public class DefaultStockExchangeTest {
 		assertEquals("", 265, secondOrangeTrade.getPrice(), 0.0);
 		assertEquals("", 10, secondOrangeTrade.getQuantity()+0);
 
+		List<TickEvent<SellOrder>> orderHistory = tickerTapeObserver.getSellOrderHistory(oranges);
+		assertEquals("",2,orderHistory.size());
+		assertEquals("", (Long) 265l,orderHistory.get(0).event.getPrice());
+		assertEquals("", (Long) 250l,orderHistory.get(1).event.getPrice());
+
 		List<SellOrder> orangeSellOrders = 
 			defaultStockExchange.getSellOrders(oranges);
 		

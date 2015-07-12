@@ -45,6 +45,10 @@ public class ContinuousOrderDrivenMarket implements Market {
 		this.stock = stockWarehouse.getStock();
 	}
 
+	@Override
+	public Integer getTotalQuantityOfStock() {
+		return stockWarehouse.getInitialQuantity();
+	}
 
 	@Override
 	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order) {
