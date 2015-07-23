@@ -1,6 +1,5 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import com.sun.deploy.trace.TraceListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
