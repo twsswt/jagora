@@ -1,31 +1,32 @@
 package uk.ac.glasgow.jagora.engine.impl;
 
+import java.util.List;
+
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
+//TODO make order executors comparable - this may mean not using lamda expressions.
 
-public class DelayedExchangeLevel1View implements StockExchangeLevel1View,Comparable<DelayedExchangeLevel1View> {
+public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
-    interface ProxyToRealView {
+    interface DelayedOrderExecutor extends Comparable<DelayedOrderExecutor>{
         void execute();
     }
+    
+    public abstract class AbstractDelayedOrderExecutor implements DelayedOrderExecutor {
+    	
+    }
 
-    private ProxyToRealView proxy;
-    private StockExchangeLevel1View realView;
+    private List<DelayedOrderExecutor> orderExecutors;
+    private StockExchangeLevel1View wrappedView;
     private Long delayedTick;
 
 
 
-    public DelayedExchangeLevel1View(StockExchangeLevel1View view, Long delayTicks) {
-        this.realView = view;
+    public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long delayTicks) {
+        this.wrappedView = wrappedView;
         this.delayedTick = delayTicks;
-    }
-
-    public void invoke ()      {
-        if (proxy == null) return;
-
-        proxy.execute();
     }
 
     /**
@@ -48,52 +49,56 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View,Compar
 
     @Override
     public void placeBuyOrder(BuyOrder buyOrder) {
-        this.proxy = () -> realView.placeBuyOrder(buyOrder);
+        this.orderExecutors.add( () -> wrappedView.placeBuyOrder(buyOrder) );
     }
 
     @Override
     public void placeSellOrder(SellOrder sellOrder) {
-        this.proxy = () -> realView.placeSellOrder(sellOrder);
+        this.orderExecutors.add(  () -> wrappedView.placeSellOrder(sellOrder) );
     }
 
     @Override
     public void cancelBuyOrder(BuyOrder buyOrder) {
-        this.proxy = () ->realView.cancelBuyOrder(buyOrder);
+        this.orderExecutors.add( () ->wrappedView.cancelBuyOrder(buyOrder) );        
     }
 
     @Override
     public void cancelSellOrder(SellOrder sellOrder) {
-        this.proxy = () -> realView.cancelSellOrder(sellOrder);
+        this.orderExecutors.add ( () -> wrappedView.cancelSellOrder(sellOrder) );
     }
 
     //TODO for now these are not slowed down at all - should we change this?
     @Override
     public Long getBestOfferPrice(Stock stock) {
-        return realView.getBestOfferPrice(stock);
+        return wrappedView.getBestOfferPrice(stock);
     }
 
     @Override
     public Long getBestBidPrice(Stock stock) {
-        return realView.getBestBidPrice(stock);
+        return wrappedView.getBestBidPrice(stock);
     }
 
     @Override
     public Long getLastKnownBestOfferPrice(Stock stock) {
-        return realView.getLastKnownBestOfferPrice(stock);
+        return wrappedView.getLastKnownBestOfferPrice(stock);
     }
 
     @Override
     public Long getLastKnownBestBidPrice(Stock stock) {
-        return realView.getLastKnownBestBidPrice(stock);
+        return wrappedView.getLastKnownBestBidPrice(stock);
     }
 
     @Override
     public void registerTradeListener(TradeListener tradeListener) {
-        realView.registerTradeListener(tradeListener);
+        wrappedView.registerTradeListener(tradeListener);
     }
 
     @Override
     public void registerPriceListener(PriceListener tradePriceListener) {
-        realView.registerPriceListener(tradePriceListener);
+        wrappedView.registerPriceListener(tradePriceListener);
+    }
+    
+    public List<DelayedOrderExecutor> getOrderExecutors (){
+    	return orderExecutors;
     }
 }

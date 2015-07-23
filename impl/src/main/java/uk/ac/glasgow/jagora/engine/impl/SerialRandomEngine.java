@@ -8,6 +8,7 @@ import java.util.Set;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
+import uk.ac.glasgow.jagora.engine.impl.DelayedExchangeLevel1View.DelayedOrderExecutor;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.util.Random;
@@ -21,7 +22,7 @@ public class SerialRandomEngine implements TradingEngine {
 	private final World world;
 	private final Random random;
 
-	private Queue<DelayedExchangeLevel1View> level1ViewQueue;
+	private Queue<DelayedOrderExecutor> orderExecutors;
 
 	private Long standardDelay;
 
@@ -52,10 +53,10 @@ public class SerialRandomEngine implements TradingEngine {
 
 
 			trader.speak(delayedView);
-			level1ViewQueue.add(delayedView);
+			orderExecutors.add(delayedView.getOrderExecutors());
 
-			while (!level1ViewQueue.isEmpty()
-					&& world.getCurrentTick() >= level1ViewQueue.peek().getDelayedTick()){
+			while (!orderExecutors.isEmpty()
+					&& world.getCurrentTick() >= orderExecutors.peek().getDelayedTick()){
 				level1ViewQueue.poll().invoke();
 			}
 
