@@ -46,6 +46,11 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 
 	@Override
+	public StockWarehouse getStockWarehouse() {
+		return this.stockWarehouse;
+	}
+
+	@Override
 	public Integer getTotalQuantityOfStock() {
 		return stockWarehouse.getInitialQuantity();
 	}
@@ -96,6 +101,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 		List<TickEvent<Trade>> executedTrades =
 			new ArrayList<TickEvent<Trade>>();
 
+		//procedure to find the best orders, giving market orders a priority
 		TickEvent<BuyOrder> highestBuyEvent = null;
 		TickEvent<SellOrder> lowestSellEvent = getBestMarketEvent(marketSellOrders);
 		if (lowestSellEvent == null) {

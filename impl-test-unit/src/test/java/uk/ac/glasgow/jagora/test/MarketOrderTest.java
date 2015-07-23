@@ -164,4 +164,45 @@ public class MarketOrderTest {
         assertEquals("", bruce.getInventory(lemons), (Integer) 4900);
         assertEquals("", alice.getCash(), (Long) 40000l);
     }
+
+
+    //Two market sell orders are supplied and the first one should be executed and only after the second one as well
+    @Test
+    public void testTwoMarketSellOrders(){
+        DefaultStockExchange market =
+                new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
+
+        SellOrder sellOrder1 = new MarketSellOrder(bruce,lemons,100,market.createLevel1View());
+        bruce.supplyOrder(sellOrder1);
+        bruce.speak(market.createLevel1View());
+
+        SellOrder sellOrder2 = new MarketSellOrder(george,lemons,50,market.createLevel1View());
+        george.supplyOrder(sellOrder2);
+        george.speak(market.createLevel1View());
+
+        BuyOrder buyOrder1 = new LimitBuyOrder(alice,lemons,50,50l);
+        alice.supplyOrder(buyOrder1);
+        alice.speak(market.createLevel1View());
+
+        market.doClearing();
+
+        assertEquals("",bruce.getInventory(lemons),(Integer) (5000-50));
+        assertEquals("",bruce.getCash(), (Long) (50000l + 50l*50l));
+
+        BuyOrder buyOrder2 = new LimitBuyOrder(alice,lemons,70,60l);
+        alice.supplyOrder(buyOrder2);
+        alice.speak(market.createLevel1View());
+
+        market.doClearing();
+
+        assertEquals("",bruce.getInventory(lemons),(Integer) (5000-50 - 50));
+        assertEquals("",bruce.getCash(), (Long) (50000l + 50l*50l + 60l*50l));
+
+        assertEquals("",george.getInventory(lemons),(Integer) (5000-20));
+        assertEquals("",george.getCash(), (Long) (50000l + 20l*60l));
+
+
+
+
+    }
 }

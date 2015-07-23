@@ -47,7 +47,26 @@ public class DefaultStockExchange implements StockExchange{
 		}
 		return market;
 	}
-	
+
+	@Override
+	public void createMarket(StockWarehouse stockWarehouse) {
+		Stock stock = stockWarehouse.getStock();
+		Market market = markets.get(stockWarehouse.getStock());
+		//just a check if there already is an exiting market
+		if (market == null){
+			market = marketFactory.createOrderDrivenMarket(
+					stockWarehouse, world);
+			markets.put(stock, market);
+		}
+
+	}
+
+	@Override
+	public StockWarehouse getStockWarehouse(Stock stock) {
+		Market market = getMarket(stock);
+		return market.getStockWarehouse();
+	}
+
 	@Override
 	public void doClearing() {
 		for (Market market: markets.values())
@@ -103,6 +122,7 @@ public class DefaultStockExchange implements StockExchange{
 				getMarket(sellOrder.getStock()).recordSellOrder(sellOrder);	
 			stockExchangeObservable.notifyOrderListeners(orderEvent);
 		}
+
         //Important if we want to implement the hypothetical crash
 		@Override
 		public void cancelBuyOrder(BuyOrder buyOrder) {

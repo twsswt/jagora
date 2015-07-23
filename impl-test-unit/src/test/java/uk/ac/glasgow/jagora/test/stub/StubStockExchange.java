@@ -5,12 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.StockExchangeLevel2View;
+import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -35,9 +30,17 @@ public class StubStockExchange implements StockExchange {
 	public StockExchangeLevel1View createLevel1View() {
 		return new StubLevel1View ();
 	}
-		
-		
-		
+
+	@Override
+	public StockWarehouse getStockWarehouse(Stock stock) {
+		return null;
+	}
+
+	@Override
+	public void createMarket(StockWarehouse stockWarehouse) {
+
+	}
+
 	protected class StubLevel1View implements StockExchangeLevel1View {
 		@Override
 		public Long getBestOfferPrice(Stock stock) {

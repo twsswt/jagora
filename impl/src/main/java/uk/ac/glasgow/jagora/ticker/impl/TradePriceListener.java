@@ -44,4 +44,5 @@ public abstract class TradePriceListener implements PriceListener,Comparable<Tra
     @Override
     public abstract int compareTo(TradePriceListener o);
 
+
 }

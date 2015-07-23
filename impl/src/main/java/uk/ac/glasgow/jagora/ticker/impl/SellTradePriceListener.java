@@ -23,7 +23,5 @@ public class SellTradePriceListener extends TradePriceListener {
     }
 
     @Override
-    public int compareTo(TradePriceListener o) {
-        return this.getPrice().compareTo(o.getPrice());
-    }
+    public int compareTo(TradePriceListener o) {return o.getPrice().compareTo(this.getPrice());}
 }

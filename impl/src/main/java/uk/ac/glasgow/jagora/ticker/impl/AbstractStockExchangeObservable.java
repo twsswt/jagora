@@ -45,11 +45,22 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		return result;
 	}
-	//TODO implement a method for Buy Order history
+
 	public List<TickEvent<SellOrder>> getSellOrderHistory(Stock stock){
 		List<TickEvent<SellOrder>> result = new ArrayList<>();
 
 		submittedSellOrders
+				.stream()
+				.filter(submittedOrder -> submittedOrder.event.getStock().equals(stock))
+				.forEach(submittedOrder -> result.add(submittedOrder));
+
+		return result;
+	}
+
+	public List<TickEvent<BuyOrder>> getBuyOrderHistory(Stock stock){
+		List<TickEvent<BuyOrder>> result = new ArrayList<>();
+
+		submittedBuyOrders
 				.stream()
 				.filter(submittedOrder -> submittedOrder.event.getStock().equals(stock))
 				.forEach(submittedOrder -> result.add(submittedOrder));

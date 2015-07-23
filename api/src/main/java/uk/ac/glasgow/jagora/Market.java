@@ -35,5 +35,7 @@ public interface Market {
 
 	Integer getTotalQuantityOfStock();
 
+	StockWarehouse getStockWarehouse();
+
 	
 }

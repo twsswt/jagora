@@ -26,6 +26,6 @@ public class BuyTradePriceListener extends TradePriceListener {
      */
     @Override
     public int compareTo(TradePriceListener o) {
-        return o.getPrice().compareTo(this.getPrice());
+        return this.getPrice().compareTo(o.getPrice());
     }
 }
