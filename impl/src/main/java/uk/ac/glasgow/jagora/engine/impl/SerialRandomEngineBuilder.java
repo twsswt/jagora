@@ -5,6 +5,7 @@ import java.util.Set;
 
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
+import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 
@@ -15,6 +16,7 @@ public class SerialRandomEngineBuilder {
 	private Set<Level1Trader> traders;
 	private Integer seed;
 	private Long standardDelay = 100l;
+	private Set<Level2Trader> privilegedTraders;
 
 	public SerialRandomEngineBuilder(World world, Integer seed) {
 		this.world = world;
@@ -38,6 +40,16 @@ public class SerialRandomEngineBuilder {
 		return this;
 	}
 
+	public SerialRandomEngineBuilder addPrivilegedTrader(Level2Trader trader){
+		privilegedTraders.add(trader);
+		return this;
+	}
+
+	public SerialRandomEngineBuilder addPrivilegedTraders(Set<Level2Trader> privilegedTraders) {
+		this.privilegedTraders.addAll(privilegedTraders);
+		return this;
+	}
+
 	public SerialRandomEngineBuilder setStandartDelay(Long delay){
 		this.standardDelay = delay;
 		return this;
@@ -45,6 +57,10 @@ public class SerialRandomEngineBuilder {
 
 	public SerialRandomEngine build() {
 		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed),standardDelay);
+	}
+
+	public SerialRandomEngine buildNew() {
+		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed),standardDelay,privilegedTraders);
 	}
 	
 	

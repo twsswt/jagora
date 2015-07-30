@@ -13,11 +13,11 @@ import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJobSpecification.SellOrderJo
 
 public class ZIPTraderBuilder {
 
-	private String name;
-	private Long cash = 0l;
-	private Integer seed;
-	
-	private Map<Stock,Integer> inventory;
+		private String name;
+		private Long cash = 0l;
+		private Integer seed;
+
+		private Map<Stock,Integer> inventory;
 	
 	private Long maximumAbsoluteChange;
 	private Double maximumRelativeChange;

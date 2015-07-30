@@ -1,73 +1,112 @@
 package uk.ac.glasgow.jagora.engine.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
-//TODO make order executors comparable - this may mean not using lamda expressions.
 
 public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
     interface DelayedOrderExecutor extends Comparable<DelayedOrderExecutor>{
         void execute();
-    }
-    
-    public abstract class AbstractDelayedOrderExecutor implements DelayedOrderExecutor {
-    	
+        Long getDelayedTick ();
+
+        @Override
+        default int compareTo(DelayedOrderExecutor delayedOrderExecutor){
+            return this.getDelayedTick().compareTo(delayedOrderExecutor.getDelayedTick());
+        }
     }
 
-    private List<DelayedOrderExecutor> orderExecutors;
+    private final Long delayedTick;
+
+    private List<DelayedOrderExecutor> orderExecutors = new ArrayList<DelayedOrderExecutor>();
     private StockExchangeLevel1View wrappedView;
-    private Long delayedTick;
 
 
-
-    public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long delayTicks) {
+    public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long standartDelay,
+                                     Long currentTick, Long delayDecrease) {
         this.wrappedView = wrappedView;
-        this.delayedTick = delayTicks;
+        this.delayedTick = standartDelay + currentTick - delayDecrease;
     }
 
-    /**
-     *
-     * @param otherView
-     * @return used for prioritising objects according to their delay
-     */
-    @Override
-    public int compareTo(DelayedExchangeLevel1View otherView) {
-        return this.getDelayedTick().compareTo(otherView.getDelayedTick());
+
+    public List<DelayedOrderExecutor> getOrderExecutors (){
+        return orderExecutors;
     }
 
-    /**
-     *
-     * @return Tick at which the view is scheduled to operate
-     */
-    public Long getDelayedTick() {
-        return delayedTick;
-    }
 
     @Override
     public void placeBuyOrder(BuyOrder buyOrder) {
-        this.orderExecutors.add( () -> wrappedView.placeBuyOrder(buyOrder) );
+        this.orderExecutors.add(
+                new DelayedOrderExecutor() {
+                    @Override
+                    public void execute() {
+                        wrappedView.placeBuyOrder(buyOrder);
+                    }
+
+                    @Override
+                    public Long getDelayedTick() {
+                        return delayedTick;
+                    }
+                 }
+        );
     }
 
     @Override
     public void placeSellOrder(SellOrder sellOrder) {
-        this.orderExecutors.add(  () -> wrappedView.placeSellOrder(sellOrder) );
+        this.orderExecutors.add(
+                new DelayedOrderExecutor() {
+                    @Override
+                    public void execute() {
+                        wrappedView.placeSellOrder(sellOrder);
+                    }
+
+                    @Override
+                    public Long getDelayedTick() {
+                        return delayedTick;
+                    }
+                }
+        );
     }
 
     @Override
     public void cancelBuyOrder(BuyOrder buyOrder) {
-        this.orderExecutors.add( () ->wrappedView.cancelBuyOrder(buyOrder) );        
+        this.orderExecutors.add(
+                new DelayedOrderExecutor() {
+                    @Override
+                    public void execute() {
+                        wrappedView.cancelBuyOrder(buyOrder);
+                    }
+
+                    @Override
+                    public Long getDelayedTick() {
+                        return delayedTick;
+                    }
+                }
+        );
     }
 
     @Override
     public void cancelSellOrder(SellOrder sellOrder) {
-        this.orderExecutors.add ( () -> wrappedView.cancelSellOrder(sellOrder) );
+        this.orderExecutors.add (
+                new DelayedOrderExecutor() {
+                    @Override
+                    public void execute() {
+                        wrappedView.cancelSellOrder(sellOrder);
+                    }
+
+                    @Override
+                    public Long getDelayedTick() {
+                        return delayedTick;
+                    }
+                }
+        );
     }
 
-    //TODO for now these are not slowed down at all - should we change this?
+    //Possibility to i
     @Override
     public Long getBestOfferPrice(Stock stock) {
         return wrappedView.getBestOfferPrice(stock);
@@ -97,8 +136,5 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
     public void registerPriceListener(PriceListener tradePriceListener) {
         wrappedView.registerPriceListener(tradePriceListener);
     }
-    
-    public List<DelayedOrderExecutor> getOrderExecutors (){
-    	return orderExecutors;
-    }
+
 }

@@ -1,12 +1,9 @@
-package uk.ac.glasgow.jagora.engine.test;
+package uk.ac.glasgow.jagora.trader.test;
 
 
-import org.junit.*;
+import org.junit.Before;
 import org.junit.Test;
-import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
@@ -19,38 +16,48 @@ import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
+import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
 import uk.ac.glasgow.jagora.trader.impl.RandomTrader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
-import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
-import uk.ac.glasgow.jagora.world.impl.TimedWorld;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class DelayWorldTest {
+public class MarketMakerBasicTest {
+
+    private MarketMakerBasic marketMaker;
+
+    private Float marketShare = 0.05f;
+    private Long spread = 5l;
+
+
     private World world;
     private Stock lemons;
+    private StockWarehouse lemonsWarehouse;
     private StockExchange stockExchange;
 
     private SerialTickerTapeObserver tickerTapeObserver;
 
     private Long numberOfTraderActions = 50l;
     private Integer seed = 1;
-    private int numberOfTraders = 10;
+    private Integer numberOfTraders = 10;
     private Long initialTraderCash = 10000000l;
     private TradingEngine engine;
+    private Integer lemonsQuantity = 100000;
 
-    private Long durationInMilliSeconds = 120000l;
+
+
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp () throws  Exception{
+
         world = new SimpleSerialWorld(numberOfTraderActions);
         lemons = new Stock("lemons");
+        lemonsWarehouse = new StockWarehouse(lemons, lemonsQuantity);
 
         MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
 
@@ -69,6 +76,8 @@ public class DelayWorldTest {
 
         Set<Level1Trader> traders = new HashSet<Level1Trader>();
 
+        Integer lemonsToGet = Math.round(lemonsQuantity.floatValue() / (numberOfTraders.floatValue() + 1.0f));
+
         for (int i = 0 ; i < numberOfTraders ; i++){
             RandomTrader randomTrader =
                     new RandomTraderBuilder()
@@ -76,26 +85,34 @@ public class DelayWorldTest {
                             .setCash(initialTraderCash)
                             .setSeed(r.nextInt())
                             .setTradeRange(lemons, 1, 100, -5l, +5l, -5l, +5l)
-                            .addStock(lemons, 1000)
+                            .addStock(lemons, lemonsWarehouse.getStock(lemonsToGet))
                             .build();
 
             //stockExchange.createLevel1View().registerTradeListener(historicTrader);
             traders.add(randomTrader);
         }
 
+        marketMaker = new MarketMakerBasicBuilder("Goldman")
+                    .addStock(lemons,lemonsWarehouse.getRemainingStock())
+                    .addStockWarehouse(lemonsWarehouse)
+                    .setCash(initialTraderCash)
+                    .setSeed(r.nextInt())
+                    .setMarketShare(marketShare)
+                    .setSpread(spread)
+                    .build();
+
         stockExchange.createLevel1View().registerTradeListener(new StdOutTradeListener());
 
         engine = new SerialRandomEngineBuilder(world, seed)
                 .addStockExchange(stockExchange)
                 .addTraders(traders)
-                .setStandartDelay(5l)
+                .addPrivilegedTrader(marketMaker)
+                .setStandartDelay(6l)
                 .build();
     }
 
     @Test
-    public void testEngineRunningCorrectly(){
+    public void testInBigEnvironment() {
         engine.run();
-        //shows a bug in the system if debugging internals of the priority queue of executors,
-        //but it is actually just the priority queue implementation - no actual problem will ever occur
     }
 }

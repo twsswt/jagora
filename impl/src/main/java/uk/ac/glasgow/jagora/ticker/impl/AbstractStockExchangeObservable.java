@@ -71,6 +71,9 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	@Override
 	public void registerTradeListener(TradeListener tradeListener) {
+		if (tradeListeners.contains(tradeListener))
+			return;
+
 		tradeListeners.add(tradeListener);
 	}
 
@@ -179,6 +182,9 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	
 	@Override
 	public void registerOrderListener(OrderListener orderListener) {
+		if (orderListeners.contains(orderListener))
+			return;
+
 		orderListeners.add(orderListener);
 	}
 	

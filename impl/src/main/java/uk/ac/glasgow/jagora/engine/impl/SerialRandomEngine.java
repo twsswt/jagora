@@ -7,6 +7,7 @@ import java.util.Set;
 
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.DelayedExchangeLevel1View.DelayedOrderExecutor;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -18,9 +19,9 @@ public class SerialRandomEngine implements TradingEngine {
 
 	private final Set<StockExchange> exchanges;
 	private final Set<Level1Trader> traders;
-	private  Set<Level2Trader> priviliigedTraders;
 	private final World world;
 	private final Random random;
+	private final Set<Level2Trader> privilegedTraders;
 
 	private Queue<DelayedOrderExecutor> orderExecutors;
 
@@ -33,13 +34,27 @@ public class SerialRandomEngine implements TradingEngine {
 	 * @param traders - a fixed set of traders
 	 * @param random - seed
 	 */ SerialRandomEngine(World world, Set<StockExchange> exchanges,
-						   Set<Level1Trader> traders, Random random, Long standardDelay){
+						   Set<Level1Trader> traders, Random random,
+						   Long standardDelay, Set<Level2Trader> level2Traders){
 		this.world = world;
 		this.exchanges = new HashSet<StockExchange>(exchanges);
 		this.traders = new HashSet<Level1Trader>(traders);
 		this.random = random;
-		this.level1ViewQueue = new PriorityQueue<DelayedExchangeLevel1View>();
+		this.orderExecutors = new PriorityQueue<DelayedOrderExecutor>();
 		this.standardDelay = standardDelay;
+		this.privilegedTraders = new HashSet<>(level2Traders);
+	}
+
+	SerialRandomEngine(World world, Set<StockExchange> exchanges,
+					   Set<Level1Trader> traders, Random random,
+					   Long standardDelay){
+		this.world = world;
+		this.exchanges = new HashSet<StockExchange>(exchanges);
+		this.traders = new HashSet<Level1Trader>(traders);
+		this.random = random;
+		this.orderExecutors = new PriorityQueue<DelayedOrderExecutor>();
+		this.standardDelay = standardDelay;
+		this.privilegedTraders = new HashSet<>();
 	}
 	
 	@Override
@@ -49,20 +64,30 @@ public class SerialRandomEngine implements TradingEngine {
 			Level1Trader trader = random.chooseElement(traders);
 			DelayedExchangeLevel1View delayedView =
 					new DelayedExchangeLevel1View(exchange.createLevel1View(),
-							standardDelay + world.getCurrentTick() - trader.getDelayDecrease());
+							standardDelay,world.getCurrentTick(),trader.getDelayDecrease());
 
 
 			trader.speak(delayedView);
-			orderExecutors.add(delayedView.getOrderExecutors());
+			for(DelayedOrderExecutor executor: delayedView.getOrderExecutors()) {
+				orderExecutors.add(executor);
+			}
+
 
 			while (!orderExecutors.isEmpty()
 					&& world.getCurrentTick() >= orderExecutors.peek().getDelayedTick()){
-				level1ViewQueue.poll().invoke();
+				DelayedOrderExecutor executor = orderExecutors.poll();
+						executor.execute();
+			}
+
+			Level2Trader level2Trader = random.chooseElement(privilegedTraders);
+			if (level2Trader != null) {
+				StockExchangeLevel2View level2View = exchange.createLevel2View();
+				level2Trader.speak(level2View);
 			}
 
 			exchange.doClearing();
 
-			world.getTick(new Object());//used to enable running without Level2Traders
+			world.getTick(null);//used to enable running without Level2Traders
 		}
 	}
 
