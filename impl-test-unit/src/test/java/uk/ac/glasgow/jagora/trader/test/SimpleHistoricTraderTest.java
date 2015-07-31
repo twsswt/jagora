@@ -58,7 +58,7 @@ public class SimpleHistoricTraderTest extends EasyMockSupport {
 		
 		replayAll ();
 		
-		alice.tradeExecuted(new TradeExecutionEvent(lemons, mockBuyer, mockSeller, 0l, 10l, 1));
+		alice.tradeExecuted(new TradeExecutionEvent(lemons, mockBuyer, mockSeller, 0l, 10l, 1,null));
 		alice.speak(mockExchange);
 		
 		verifyAll();

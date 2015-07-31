@@ -8,11 +8,16 @@ import uk.ac.glasgow.jagora.StockWarehouse;
  */
 public class MarketDatum {
 
+    private class OrderEvent  {
+        private Long price;
+        private Integer quantity;
+    }
+
     final StockWarehouse stockWarehouse;
 
     final int totalQuantity;
 
-    Long lastPriceTraded;
+    Long lastPriceTraded = 0l;
     Boolean lastTradeWasSell;
 
     Integer buySideLiquidity = 0;
@@ -25,11 +30,13 @@ public class MarketDatum {
 
     }
 
-    protected void addBuySideLiquidity(Integer quantity){
+    protected Boolean liquidityInformation (){return (buySideLiquidity != 0 && sellSideLiquidity != 0);}
+
+    protected void addBuySideLiquidity(Integer quantity, Long price){
         buySideLiquidity += quantity;
     }
 
-    protected void addSellSideLiquidity(Integer quantity){
+    protected void addSellSideLiquidity(Integer quantity, Long price){
         sellSideLiquidity += quantity;
     }
     //At the moment canceled orders can't be accounted for
@@ -40,5 +47,7 @@ public class MarketDatum {
     protected void setLastPriceTraded(Long lastPriceTraded) {
         this.lastPriceTraded = lastPriceTraded;
     }
+
+    protected void setLastTradeDirection(Boolean lastTradeWasSell) {this.lastTradeWasSell = lastTradeWasSell;}
 
 }

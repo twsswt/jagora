@@ -12,11 +12,11 @@ public class StockPositionDatum {
     final Stock stock;
     final Integer sharesAimed;
 
-    BuyOrder currentBuyOrder;
-    SellOrder currentSellOrder;
+    BuyOrder currentBuyOrder = null;
+    SellOrder currentSellOrder = null;
 
-    Long newBuyPrice;
-    Long newSellPrice;
+    Long newBuyPrice = 0l;
+    Long newSellPrice = 0l;
 
     StockPositionDatum (Float marketShare, Integer initialQuantity,Stock stock) {
         sharesAimed = Math.round(marketShare*initialQuantity.floatValue());

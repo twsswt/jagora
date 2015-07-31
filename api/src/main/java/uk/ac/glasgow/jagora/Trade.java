@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
@@ -17,4 +18,6 @@ public interface Trade {
 	public Integer getQuantity() ;
 
 	public Long getPrice() ;
+
+	public Boolean isAggressiveSell ();
 }

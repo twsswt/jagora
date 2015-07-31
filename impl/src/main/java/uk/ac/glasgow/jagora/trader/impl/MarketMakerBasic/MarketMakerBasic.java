@@ -66,23 +66,29 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
     }
 
 
-
     private void register(StockExchangeLevel2View level2View) {
         level2View.registerOrderListener(this);
         level2View.registerTradeListener(this);
         registered.add(level2View);
     }
 
-    //TODO change this to something more sensible in terms of not having to make new orders all the time?
     private void changeMarketPosition(StockExchangeLevel1View level1View, StockPositionDatum positionDatum) {
 
-        //TODO check if you need to make the cancellation safe
-        cancelSafeBuyOrder(level1View,positionDatum.currentBuyOrder);
+        //if some of these positions are not set yet don't place anything on the market
+        if (positionDatum.newBuyPrice == 0l || positionDatum.newSellPrice == 0l)
+            return;
+
+
+        if (positionDatum.currentBuyOrder != null)
+            cancelSafeBuyOrder(level1View,positionDatum.currentBuyOrder);
+        //TODO think of the right amount of stock to put in a position
         BuyOrder buyOrder = new LimitBuyOrder
                 (this,positionDatum.stock,inventory.get(positionDatum.stock),positionDatum.newBuyPrice);
         placeSafeBuyOrder(level1View,buyOrder);
 
-        cancelSafeSellOrder(level1View,positionDatum.currentSellOrder);
+        if (positionDatum.currentSellOrder != null)
+            cancelSafeSellOrder(level1View,positionDatum.currentSellOrder);
+
         SellOrder sellOrder = new LimitSellOrder
                 (this, positionDatum.stock,inventory.get(positionDatum.stock),positionDatum.newSellPrice);
         placeSafeSellOrder(level1View,sellOrder);
@@ -93,9 +99,17 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         MarketDatum marketDatum = marketData.get(stock);
         StockPositionDatum positionDatum = positionData.get(stock);
 
-        Double liquidityAdjustment =
-                ((double)marketDatum.buySideLiquidity - (double)marketDatum.sellSideLiquidity)
-                /(double)marketDatum.buySideLiquidity; //experiment with this
+        //if no available information about last trade,don't place orders yet
+        if (marketDatum.lastPriceTraded == 0l)
+            return;
+
+        Double liquidityAdjustment = 0.0;
+        //if there isn't information regarding liquidity, don't adjust for it
+        if(marketDatum.liquidityInformation()) {
+            liquidityAdjustment =
+                    ((double) marketDatum.buySideLiquidity - (double) marketDatum.sellSideLiquidity)
+                            / (double) marketDatum.buySideLiquidity; //experiment with this
+        }
 
         Long PriceLiquidityAdjustment =
                 Math.round(liquidityAdjustment*(double)marketDatum.lastPriceTraded* random.nextDouble());
@@ -112,7 +126,6 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
                     + PriceLiquidityAdjustment + inventoryPriceAdjustment);
 
             positionDatum.setNewSellPrice (marketDatum.lastPriceTraded + this.spread);
-
         }
         else {
             positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - this.spread);
@@ -127,10 +140,10 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
     public void orderEntered(OrderEntryEvent orderEntryEvent) {
         MarketDatum marketDatum = marketData.get(orderEntryEvent.stock);
         if (orderEntryEvent.orderDirection == OrderEntryEvent.OrderDirection.BUY) {
-            marketDatum.addBuySideLiquidity(orderEntryEvent.quantity);
+            marketDatum.addBuySideLiquidity(orderEntryEvent.quantity,orderEntryEvent.price);
         }
         else {
-            marketDatum.addSellSideLiquidity(orderEntryEvent.quantity);
+            marketDatum.addSellSideLiquidity(orderEntryEvent.quantity,orderEntryEvent.price);
         }
     }
 
@@ -140,6 +153,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         MarketDatum marketDatum = marketData.get(tradeExecutionEvent.stock);
         marketDatum.setLastPriceTraded(tradeExecutionEvent.price);
         marketDatum.removeLiquidity(tradeExecutionEvent.quantity);
+        marketDatum.setLastTradeDirection(tradeExecutionEvent.isAggressiveSell);
     }
 
 

@@ -79,12 +79,13 @@ public class SerialRandomEngine implements TradingEngine {
 						executor.execute();
 			}
 
-			Level2Trader level2Trader = random.chooseElement(privilegedTraders);
-			if (level2Trader != null) {
-				StockExchangeLevel2View level2View = exchange.createLevel2View();
-				level2Trader.speak(level2View);
+			if (world.getCurrentTick() > 10l) {
+				Level2Trader level2Trader = random.chooseElement(privilegedTraders);
+				if (level2Trader != null) {
+					StockExchangeLevel2View level2View = exchange.createLevel2View();
+					level2Trader.speak(level2View);
+				}
 			}
-
 			exchange.doClearing();
 
 			world.getTick(null);//used to enable running without Level2Traders

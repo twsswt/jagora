@@ -47,7 +47,7 @@ public class TradeTest {
 		limitBuyOrder = new LimitBuyOrder(alice, lemons, 500, 500l);
 		limitSellOrder = new LimitSellOrder(bob, lemons, 1000, 450l);
 		
-		trade = new DefaultTrade(lemons, 500, 450l, limitSellOrder, limitBuyOrder);
+		trade = new DefaultTrade(lemons, 500, 450l, limitSellOrder, limitBuyOrder,null);
 		
 		world = new ManualTickWorld();
 		world.setTickForEvent(0l, trade);

@@ -32,7 +32,7 @@ public class MarketMakerBasicTest {
     private MarketMakerBasic marketMaker;
 
     private Float marketShare = 0.05f;
-    private Long spread = 5l;
+    private Long spread = 1l;
 
 
     private World world;
@@ -42,7 +42,7 @@ public class MarketMakerBasicTest {
 
     private SerialTickerTapeObserver tickerTapeObserver;
 
-    private Long numberOfTraderActions = 50l;
+    private Long numberOfTraderActions = 1000l;
     private Integer seed = 1;
     private Integer numberOfTraders = 10;
     private Long initialTraderCash = 10000000l;
@@ -64,6 +64,7 @@ public class MarketMakerBasicTest {
         tickerTapeObserver = new SerialTickerTapeObserver();
 
         stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
+        stockExchange.createMarket(lemonsWarehouse);
 
         Random r = new Random(seed);
 
@@ -108,7 +109,7 @@ public class MarketMakerBasicTest {
                 .addTraders(traders)
                 .addPrivilegedTrader(marketMaker)
                 .setStandartDelay(6l)
-                .build();
+                .buildNew();
     }
 
     @Test

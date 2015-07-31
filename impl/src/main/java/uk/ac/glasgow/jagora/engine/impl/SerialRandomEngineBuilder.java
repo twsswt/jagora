@@ -16,7 +16,7 @@ public class SerialRandomEngineBuilder {
 	private Set<Level1Trader> traders;
 	private Integer seed;
 	private Long standardDelay = 100l;
-	private Set<Level2Trader> privilegedTraders;
+	private Set<Level2Trader> privilegedTraders = new HashSet<>();
 
 	public SerialRandomEngineBuilder(World world, Integer seed) {
 		this.world = world;

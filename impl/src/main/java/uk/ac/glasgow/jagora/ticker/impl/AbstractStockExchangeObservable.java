@@ -93,7 +93,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				executedTrade.event.getSeller(),
 				executedTrade.tick,
 				executedTrade.event.getPrice(),
-				executedTrade.event.getQuantity());
+				executedTrade.event.getQuantity(),
+				executedTrade.event.isAggressiveSell());
 		
 		List<TradeListener> randomisedTickerTapeListeners =
 			getRandomisedTicketTapeListeners();

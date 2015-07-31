@@ -121,9 +121,11 @@ public class ContinuousOrderDrivenMarket implements Market {
 				);
 			
 			Long price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);
-			
+
+			//if BuyEvent is placed before sell event, then the sell event is considered to be aggressive
+			Boolean isAggressiveSell = lowestSellEvent.tick > highestBuyEvent.tick;
 			Trade trade = 
-				new DefaultTrade (stock, quantity, price, lowestSell, highestBid);
+				new DefaultTrade (stock, quantity, price, lowestSell, highestBid, isAggressiveSell);
 			
 			try {
 				TickEvent<Trade> executedTrade = trade.execute(world);
