@@ -126,12 +126,15 @@ public class DefaultStockExchange implements StockExchange{
         //Important if we want to implement the hypothetical crash
 		@Override
 		public void cancelBuyOrder(BuyOrder buyOrder) {
-			getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);			
+			getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);
+			//stockExchangeObservable.notifyOrderListenersOfCancellation(buyOrder);
 		}
 
 		@Override
-		public void cancelSellOrder(SellOrder sellOrder) {
+		public void cancelSellOrder(SellOrder sellOrder){
+
 			getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
+			//stockExchangeObservable.notifyOrderListenersOfCancellation(sellOrder);
 		}
 		
 		@Override

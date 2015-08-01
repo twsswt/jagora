@@ -12,4 +12,8 @@ public class StubOrderListener implements OrderListener {
 		this.lastOrderReceived = orderEntryEvent;
 	}
 
+	@Override
+	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+
+	}
 }

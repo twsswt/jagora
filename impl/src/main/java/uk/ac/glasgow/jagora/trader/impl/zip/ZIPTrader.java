@@ -178,4 +178,10 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	public ZIPOrderJob<? extends Order> getCurrentOrderJob() {
 		return this.currentOrderJob;
 	}
+
+	//tobe implemented
+	@Override
+	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+
+	}
 }

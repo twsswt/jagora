@@ -10,8 +10,8 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
-    interface DelayedOrderExecutor extends Comparable<DelayedOrderExecutor>{
-        void execute();
+    interface DelayedOrderExecutor extends Comparable<DelayedOrderExecutor> {
+        void execute() ;
         Long getDelayedTick ();
 
         @Override

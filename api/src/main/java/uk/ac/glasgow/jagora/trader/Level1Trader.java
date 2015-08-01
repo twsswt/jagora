@@ -10,7 +10,7 @@ public interface Level1Trader extends Trader{
 	 * 
 	 * @param traderView
 	 */
-	public abstract void speak(StockExchangeLevel1View traderView);
+	public abstract void speak(StockExchangeLevel1View traderView) ;
 
 	/**
 	 *

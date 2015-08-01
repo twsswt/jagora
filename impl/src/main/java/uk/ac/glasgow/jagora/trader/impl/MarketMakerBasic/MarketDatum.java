@@ -1,21 +1,33 @@
 package uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic;
 
 
+import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.StockWarehouse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to hold market information about a particular stock
  */
 public class MarketDatum {
 
-    private class OrderEvent  {
+    private class OrderEvent implements Comparable<OrderEvent>  {
         private Long price;
         private Integer quantity;
+
+        @Override
+        public int compareTo(OrderEvent o) {
+            return 0;
+        }
     }
 
     final StockWarehouse stockWarehouse;
 
     final int totalQuantity;
+
+    final List<OrderEvent> buyLiquidity = new ArrayList<>();
+    final List<OrderEvent> sellLiquidity = new ArrayList<>();
 
     Long lastPriceTraded = 0l;
     Boolean lastTradeWasSell;
@@ -48,6 +60,10 @@ public class MarketDatum {
         buySideLiquidity -= quantity;
         sellSideLiquidity -= quantity;
     }
+
+    protected void removeBuySideLiquidity(Integer quantity){buySideLiquidity -=quantity;}
+    protected void removeSellSideLiquidity (Integer quantity){ sellSideLiquidity -= quantity;}
+
     protected void setLastPriceTraded(Long lastPriceTraded) {
         this.lastPriceTraded = lastPriceTraded;
     }

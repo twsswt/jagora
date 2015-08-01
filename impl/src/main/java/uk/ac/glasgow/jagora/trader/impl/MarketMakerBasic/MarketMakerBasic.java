@@ -53,7 +53,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
     }
 
     @Override
-    public void speak(StockExchangeLevel2View level2View) {
+    public void speak(StockExchangeLevel2View level2View){
         if (!registered.contains(level2View)) register (level2View);
 
         //update all positions on market
@@ -155,4 +155,11 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
     }
 
 
+    @Override
+    public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+        if (orderEntryEvent.orderDirection == OrderEntryEvent.OrderDirection.SELL)
+            marketDatum.removeSellSideLiquidity(orderEntryEvent.quantity);
+        else
+            marketDatum.removeBuySideLiquidity(orderEntryEvent.quantity);
+    }
 }

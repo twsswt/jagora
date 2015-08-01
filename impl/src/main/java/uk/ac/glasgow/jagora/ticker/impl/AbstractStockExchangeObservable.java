@@ -23,8 +23,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	private final HashMap<Order,OrderEntryEvent> submittedSellOrders;
 	private final HashMap<Order,OrderEntryEvent> submittedBuyOrders;
 
-	private final List<TickEvent<SellOrder>> cancelledSellOrders;
-	private final List<TickEvent<BuyOrder>> cancelledBuyOrders;
+	private final List<OrderEntryEvent> cancelledSellOrders;
+	private final List<OrderEntryEvent> cancelledBuyOrders;
 
 
 
@@ -56,24 +56,43 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		return result;
 	}
 
-	public List<TickEvent<SellOrder>> getSellOrderHistory(Stock stock){
-		List<TickEvent<SellOrder>> result = new ArrayList<>();
+	public List<OrderEntryEvent> getSellOrderHistory(Stock stock){
+		List<OrderEntryEvent> result = new ArrayList<>();
 
 		submittedSellOrders.values()
 				.stream()
-				.filter(submittedOrder -> submittedOrder.event.getStock().equals(stock))
+				.filter(submittedOrder -> submittedOrder.stock.equals(stock))
 				.forEach(submittedOrder -> result.add(submittedOrder));
 
 		return result;
 	}
 
-	public List<TickEvent<BuyOrder>> getBuyOrderHistory(Stock stock){
-		List<TickEvent<BuyOrder>> result = new ArrayList<>();
+	public List<OrderEntryEvent> getBuyOrderHistory(Stock stock){
+		List<OrderEntryEvent> result = new ArrayList<>();
 
 		submittedBuyOrders.values()
 				.stream()
-				.filter(submittedOrder -> submittedOrder.event.getStock().equals(stock))
+				.filter(submittedOrder -> submittedOrder.stock.equals(stock))
 				.forEach(submittedOrder -> result.add(submittedOrder));
+
+		return result;
+	}
+
+	public List<OrderEntryEvent> getCancelledBuyOrderHistory(Stock stock){
+		return getCancelledHistory(stock,cancelledBuyOrders);
+	}
+
+	public List<OrderEntryEvent> getCancelledSellOrderHistory(Stock stock){
+		return getCancelledHistory(stock, cancelledSellOrders);
+	}
+
+	private List<OrderEntryEvent> getCancelledHistory(Stock stock, List<OrderEntryEvent> list){
+		List<OrderEntryEvent> result = new ArrayList<>();
+
+		list
+				.stream()
+				.filter(cancelledOrder -> cancelledOrder.stock.equals(stock))
+				.forEach(cancelledOrder -> result.add(cancelledOrder));
 
 		return result;
 	}
@@ -225,9 +244,9 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		//add submitted orders in the book
 		if (orderEvent.event instanceof SellOrder)
-			submittedSellOrders.put(orderEntryEvent, (TickEvent<SellOrder>) orderEvent);
+			submittedSellOrders.put(orderEvent.event,orderEntryEvent);
 		else
-			submittedBuyOrders.put(orderEntryEvent,(TickEvent < BuyOrder>) orderEvent);
+			submittedBuyOrders.put(orderEvent.event,orderEntryEvent);
 	}
 
 	/**
@@ -239,10 +258,23 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		OrderEntryEvent orderEntryEvent, OrderListener orderListener);
 
 	@Override
-	public void notifyOrderListenersOfCancellation(Order order) {
+	public void notifyOrderListenersOfCancellation(Order order) throws Exception{
 		OrderEntryEvent orderEntryEvent;
-		if (order instanceof SellOrder)
-			orderEntryEvent = submittedSellOrders.get(order)
+		if(order == null)
+			throw new Exception("Null Order has been passed");
+
+		if (order instanceof SellOrder) {
+			orderEntryEvent = submittedSellOrders.get(order);
+			cancelledSellOrders.add(orderEntryEvent);
+		}
+		else {
+			orderEntryEvent = submittedBuyOrders.get(order);
+			cancelledBuyOrders.add(orderEntryEvent);
+		}
+
+		//if the entru event can't be found?
+		if (orderEntryEvent == null )
+			throw new Exception("an order which can't be found is tried to be cancelled");
 
 
 		for (OrderListener orderListener: orderListeners)

@@ -43,4 +43,8 @@ public class GnuPlotPriceDATLogger implements TradeListener, OrderListener {
 			format(template,orderEntryEvent.tick, price));
 	}
 
-} 
+	@Override
+	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+
+	}
+}

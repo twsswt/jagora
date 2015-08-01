@@ -50,4 +50,8 @@ public class ZIPTraderTargetPriceGnuPlotDATLogger implements OrderListener {
 		printStream.println(String.format(template, orderEntryEvent.tick, averageBid, averageOffer));
 	}
 
-} 
+	@Override
+	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+
+	}
+}

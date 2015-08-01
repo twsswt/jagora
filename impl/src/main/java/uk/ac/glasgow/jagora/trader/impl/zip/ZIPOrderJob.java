@@ -51,7 +51,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 		managedOrder = createNewOrder(targetPrice);	
 	}
 			
-	protected void updateOrder (StockExchangeLevel1View level1View){
+	protected void updateOrder (StockExchangeLevel1View level1View) {
 		
 		Long unconstrainedPrice = zipTrader.getNextOrderPrice(lastTargetPrice, targetPrice, managedOrder.getPrice());
 
@@ -68,7 +68,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 		
 	protected abstract T createNewOrder (Long price);
 	
-	protected abstract void placeOrder (T order, StockExchangeLevel1View level1View);
+	protected abstract void placeOrder (T order, StockExchangeLevel1View level1View) ;
 			
 	protected void updateTargetPrice (){
 

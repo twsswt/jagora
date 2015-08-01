@@ -19,6 +19,7 @@ import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTickerTapeListener;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
@@ -133,14 +134,14 @@ public class DefaultStockExchangeTest {
 		assertEquals("", 265, secondOrangeTrade.getPrice(), 0.0);
 		assertEquals("", 10, secondOrangeTrade.getQuantity()+0);
 
-		List<TickEvent<SellOrder>> SellOrderHistory = tickerTapeObserver.getSellOrderHistory(oranges);
+		List<OrderEntryEvent> SellOrderHistory = tickerTapeObserver.getSellOrderHistory(oranges);
 		assertEquals("",2,SellOrderHistory.size());
-		assertEquals("", (Long) 265l,SellOrderHistory.get(0).event.getPrice());
-		assertEquals("", (Long) 250l,SellOrderHistory.get(1).event.getPrice());
+		assertEquals("", (Long) 265l,SellOrderHistory.get(0).price);
+		assertEquals("", (Long) 250l,SellOrderHistory.get(1).price);
 
-		List<TickEvent<BuyOrder>> buyOrderHistory = tickerTapeObserver.getBuyOrderHistory(oranges);
+		List<OrderEntryEvent> buyOrderHistory = tickerTapeObserver.getBuyOrderHistory(oranges);
 		assertEquals("", 1,buyOrderHistory.size());
-		assertEquals("", (Long) 270l,buyOrderHistory.get(0).event.getPrice());
+		assertEquals("", (Long) 270l,buyOrderHistory.get(0).price);
 
 		List<SellOrder> orangeSellOrders = 
 			defaultStockExchange.getSellOrders(oranges);
