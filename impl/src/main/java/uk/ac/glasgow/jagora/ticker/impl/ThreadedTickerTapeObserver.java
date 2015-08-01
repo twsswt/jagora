@@ -40,4 +40,14 @@ public class ThreadedTickerTapeObserver extends AbstractStockExchangeObservable 
 		}.start();
 		
 	}
+
+	@Override
+	public void notifyOrderListenerOfCancelledOrder(OrderEntryEvent orderEntryEvent, OrderListener orderListener) {
+		new Thread (){
+			@Override
+			public void run (){
+				orderListener.orderCancelled(orderEntryEvent);
+			}
+		}.start();
+	}
 }

@@ -10,6 +10,7 @@ import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
@@ -42,7 +43,7 @@ public class MarketMakerBasicTest {
 
     private SerialTickerTapeObserver tickerTapeObserver;
 
-    private Long numberOfTraderActions = 1000l;
+    private Long numberOfTraderActions = 5000l;
     private Integer seed = 1;
     private Integer numberOfTraders = 10;
     private Long initialTraderCash = 10000000l;
@@ -59,7 +60,7 @@ public class MarketMakerBasicTest {
         lemons = new Stock("lemons");
         lemonsWarehouse = new StockWarehouse(lemons, lemonsQuantity);
 
-        MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
+        MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestOrderPricer());
 
         tickerTapeObserver = new SerialTickerTapeObserver();
 
@@ -114,6 +115,10 @@ public class MarketMakerBasicTest {
 
     @Test
     public void testInBigEnvironment() {
+
         engine.run();
+        System.out.println(marketMaker.getCash() );
+        System.out.println(marketMaker.getInventory(lemons));
+       // System.out.println(tickerTapeObserver.getSellOrderHistory(lemons));
     }
 }

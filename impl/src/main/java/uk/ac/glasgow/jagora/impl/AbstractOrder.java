@@ -81,6 +81,9 @@ public abstract class AbstractOrder implements Order {
 	public boolean equals(Object obj) {
 
 		Long price = getPrice();
+		Trader trader = getTrader();
+		Stock stock = getStock();
+		Integer remainingQuantity = getRemainingQuantity();
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -92,6 +95,12 @@ public abstract class AbstractOrder implements Order {
 			if (other.getPrice() != null)
 				return false;
 		} else if (!price.equals(other.getPrice()))
+			return false;
+		if (!remainingQuantity.equals(other.getRemainingQuantity()))
+			return false;
+		if (!stock.equals(other.getStock()))
+			return false;
+		if (!trader.equals(other.getTrader()))
 			return false;
 		return true;
 	}

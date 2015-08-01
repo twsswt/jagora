@@ -19,4 +19,8 @@ public class SerialTickerTapeObserver extends AbstractStockExchangeObservable {
 		orderListener.orderEntered(orderEntryEvent);
 	}
 
+	@Override
+	public void notifyOrderListenerOfCancelledOrder(OrderEntryEvent orderEntryEvent, OrderListener orderListener) {
+		orderListener.orderCancelled(orderEntryEvent);
+	}
 }

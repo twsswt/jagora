@@ -18,7 +18,7 @@ public class MarketMakerBasicBuilder {
 
     private Map<Stock,Integer> inventory;
 
-    private List<StockWarehouse> stockWarehouses;
+    private StockWarehouse stockWarehouse;
 
     private Float marketShare;
     private Long spread;
@@ -26,7 +26,6 @@ public class MarketMakerBasicBuilder {
     public MarketMakerBasicBuilder (String name) {
         this.name = name;
         inventory = new HashMap<>();
-        stockWarehouses = new ArrayList<>();
     }
 
     public MarketMakerBasicBuilder setName(String name) {
@@ -50,7 +49,7 @@ public class MarketMakerBasicBuilder {
     }
 
     public MarketMakerBasicBuilder addStockWarehouse(StockWarehouse stockWarehouse){
-        stockWarehouses.add(stockWarehouse);
+        this.stockWarehouse = stockWarehouse;
         return this;
     }
 
@@ -66,7 +65,7 @@ public class MarketMakerBasicBuilder {
 
     public MarketMakerBasic build() {
        return new MarketMakerBasic(
-               name,cash,inventory, stockWarehouses,
+               name,cash,inventory, stockWarehouse,
                marketShare, new Random(seed),spread);
     }
 }

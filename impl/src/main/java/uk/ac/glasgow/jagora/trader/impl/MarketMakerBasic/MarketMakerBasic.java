@@ -14,15 +14,17 @@ import uk.ac.glasgow.jagora.trader.impl.zip.*;
 
 import java.util.*;
 
-
+/**
+ * This version of MarketMaker only works for one Stock
+ */
 public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader,TradeListener, OrderListener {
 
     private Random random;
 
     private Float marketShare;
 
-    private Map<Stock, MarketDatum> marketData;
-    private Map<Stock, StockPositionDatum> positionData = new HashMap<>();
+    private MarketDatum marketDatum;
+    private StockPositionDatum positionDatum ;
 
     private Set<StockExchangeLevel2View> registered;
 
@@ -31,7 +33,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
 
     public MarketMakerBasic (String name, Long cash, Map<Stock, Integer> inventory,
-                             List<StockWarehouse> stockWarehouses, Float marketShare,
+                             StockWarehouse stockWarehouse, Float marketShare,
                              Random random, Long spread){
 
         super(name,cash,inventory);
@@ -42,13 +44,9 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
         //the implementation currently doesn't support adding subsequents stocks on the market
         //also at the moment tww markets will be supported for the same stock only if they have the same warehouse
-        marketData = new HashMap<Stock,MarketDatum>();
-        for(StockWarehouse stockWarehouse : stockWarehouses) {
-            marketData.put(stockWarehouse.getStock(), new MarketDatum(stockWarehouse));
-            positionData.put(stockWarehouse.getStock(),
-                    new StockPositionDatum
-                            (marketShare,stockWarehouse.getInitialQuantity(),stockWarehouse.getStock()));
-        }
+        marketDatum = new MarketDatum(stockWarehouse);
+        positionDatum =
+                new StockPositionDatum(marketShare,stockWarehouse.getInitialQuantity(),stockWarehouse.getStock());
 
         registered = new HashSet<StockExchangeLevel2View>();
 
@@ -59,10 +57,9 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         if (!registered.contains(level2View)) register (level2View);
 
         //update all positions on market
-        marketData.keySet().forEach((stock) -> updateMarketPositions(stock));
+        updateMarketPositions();
 
-        for (StockPositionDatum positionDatum: positionData.values())
-            changeMarketPosition(level2View, positionDatum);
+        changeMarketPosition(level2View);
     }
 
 
@@ -72,7 +69,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         registered.add(level2View);
     }
 
-    private void changeMarketPosition(StockExchangeLevel1View level1View, StockPositionDatum positionDatum) {
+    private void changeMarketPosition(StockExchangeLevel1View level1View) {
 
         //if some of these positions are not set yet don't place anything on the market
         if (positionDatum.newBuyPrice == 0l || positionDatum.newSellPrice == 0l)
@@ -81,10 +78,11 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
         if (positionDatum.currentBuyOrder != null)
             cancelSafeBuyOrder(level1View,positionDatum.currentBuyOrder);
-        //TODO think of the right amount of stock to put in a position
+        //TODO think of the right amount of stock to put in a position NEED to do this!
         BuyOrder buyOrder = new LimitBuyOrder
                 (this,positionDatum.stock,inventory.get(positionDatum.stock),positionDatum.newBuyPrice);
         placeSafeBuyOrder(level1View,buyOrder);
+        positionDatum.currentBuyOrder = buyOrder;
 
         if (positionDatum.currentSellOrder != null)
             cancelSafeSellOrder(level1View,positionDatum.currentSellOrder);
@@ -92,12 +90,12 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         SellOrder sellOrder = new LimitSellOrder
                 (this, positionDatum.stock,inventory.get(positionDatum.stock),positionDatum.newSellPrice);
         placeSafeSellOrder(level1View,sellOrder);
+        positionDatum.currentSellOrder = sellOrder;
     }
 
-    private void updateMarketPositions (Stock stock) {
+    private void updateMarketPositions () {
 
-        MarketDatum marketDatum = marketData.get(stock);
-        StockPositionDatum positionDatum = positionData.get(stock);
+
 
         //if no available information about last trade,don't place orders yet
         if (marketDatum.lastPriceTraded == 0l)
@@ -105,21 +103,23 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
         Double liquidityAdjustment = 0.0;
         //if there isn't information regarding liquidity, don't adjust for it
-        if(marketDatum.liquidityInformation()) {
-            liquidityAdjustment =
-                    ((double) marketDatum.buySideLiquidity - (double) marketDatum.sellSideLiquidity)
-                            / (double) marketDatum.buySideLiquidity; //experiment with this
-        }
+//        if(marketDatum.liquidityInformation()) {
+//            liquidityAdjustment =
+//                    ((double) marketDatum.buySideLiquidity - (double) marketDatum.sellSideLiquidity)
+//                            / (double) marketDatum.buySideLiquidity; //experiment with this
+//        }
+//
+//        Long PriceLiquidityAdjustment =
+//                Math.round(liquidityAdjustment*(double)marketDatum.lastPriceTraded* random.nextDouble());
+        Long PriceLiquidityAdjustment = 0l;
 
-        Long PriceLiquidityAdjustment =
-                Math.round(liquidityAdjustment*(double)marketDatum.lastPriceTraded* random.nextDouble());
 
-
-        Double inventoryAdjustment =
-                (positionDatum.sharesAimed.doubleValue() - inventory.get(stock).doubleValue())
-                /positionDatum.sharesAimed.doubleValue();
-        Long inventoryPriceAdjustment =
-                Math.round(inventoryAdjustment*marketDatum.lastPriceTraded*random.nextDouble());
+//        Double inventoryAdjustment =
+//                (positionDatum.sharesAimed.doubleValue() - inventory.get(positionDatum.stock).doubleValue())
+//                /positionDatum.sharesAimed.doubleValue();
+//        Long inventoryPriceAdjustment =
+//                Math.round(inventoryAdjustment*marketDatum.lastPriceTraded*random.nextDouble());
+        Long inventoryPriceAdjustment = 0l;
 
         if (marketDatum.lastTradeWasSell) {
             positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - this.spread
@@ -131,14 +131,13 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
             positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - this.spread);
 
             positionDatum.setNewSellPrice(marketDatum.lastPriceTraded + this.spread -
-                    PriceLiquidityAdjustment - inventoryPriceAdjustment);
+                    PriceLiquidityAdjustment + inventoryPriceAdjustment);
         }
 
     }
-    //TODO include the price of the order?
+
     @Override
     public void orderEntered(OrderEntryEvent orderEntryEvent) {
-        MarketDatum marketDatum = marketData.get(orderEntryEvent.stock);
         if (orderEntryEvent.orderDirection == OrderEntryEvent.OrderDirection.BUY) {
             marketDatum.addBuySideLiquidity(orderEntryEvent.quantity,orderEntryEvent.price);
         }
@@ -150,9 +149,8 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
     //TODO something more significant with the trade execution
     @Override
     public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
-        MarketDatum marketDatum = marketData.get(tradeExecutionEvent.stock);
         marketDatum.setLastPriceTraded(tradeExecutionEvent.price);
-        marketDatum.removeLiquidity(tradeExecutionEvent.quantity);
+        marketDatum.removeLiquidity(tradeExecutionEvent.quantity,tradeExecutionEvent.price);
         marketDatum.setLastTradeDirection(tradeExecutionEvent.isAggressiveSell);
     }
 

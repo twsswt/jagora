@@ -18,4 +18,8 @@ public class OutputStreamOrderListener implements OrderListener {
 		printStream.println(orderEntryEvent);
 	}
 
+	@Override
+	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+		printStream.println(orderEntryEvent);
+	}
 }

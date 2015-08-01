@@ -26,6 +26,8 @@ public interface StockExchangeObservable {
 	
 	public abstract void notifyOrderListeners(TickEvent<? extends Order> orderEvent);
 
+	void notifyOrderListenersOfCancellation(Order order);
+
 	void registerPriceListener (PriceListener tradePriceListener);
 
 

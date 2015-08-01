@@ -41,26 +41,14 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		
 		stockExchangeLevel1View.cancelSellOrder(sellOrder);			
 		//isn't there an easier way to do this?
-		Integer indexToCancel = null;
-		for (int i = 0 ; i < openSellOrders.size(); i++)
-			if (openSellOrders.get(i) == sellOrder)
-				indexToCancel = i;
-
-		if (indexToCancel != null)
-			openSellOrders.remove(indexToCancel);
+		openSellOrders.remove(sellOrder);
 	}
 
 	protected void cancelSafeBuyOrder(StockExchangeLevel1View stockExchangeLevel1View, BuyOrder buyOrder) {
 		
 		stockExchangeLevel1View.cancelBuyOrder(buyOrder);
 		
-		Integer indexToCancel = null;
-		for (int i = 0 ; i < openBuyOrders.size(); i++)
-			if (openBuyOrders.get(i) == buyOrder)
-				indexToCancel = i;
-		
-		if (indexToCancel != null)
-			openBuyOrders.remove(indexToCancel);
+		openBuyOrders.remove(buyOrder);
 	}
 
 	/**

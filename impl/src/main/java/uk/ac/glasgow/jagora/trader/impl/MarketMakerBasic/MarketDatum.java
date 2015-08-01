@@ -39,8 +39,12 @@ public class MarketDatum {
     protected void addSellSideLiquidity(Integer quantity, Long price){
         sellSideLiquidity += quantity;
     }
+
     //At the moment canceled orders can't be accounted for
-    protected void removeLiquidity (Integer quantity){
+    protected void removeLiquidity (Integer quantity, Long price){
+        if (buySideLiquidity <= 0 || sellSideLiquidity <= 0)
+            return;
+
         buySideLiquidity -= quantity;
         sellSideLiquidity -= quantity;
     }

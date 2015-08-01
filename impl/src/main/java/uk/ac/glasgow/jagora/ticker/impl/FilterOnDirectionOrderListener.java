@@ -21,4 +21,9 @@ public class FilterOnDirectionOrderListener implements OrderListener {
 
 	}
 
+	@Override
+	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+		if (orderEntryEvent.orderDirection == this.direction)
+			downStreamOrderListener.orderCancelled(orderEntryEvent);
+	}
 }
