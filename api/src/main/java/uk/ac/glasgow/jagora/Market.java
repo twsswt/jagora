@@ -15,9 +15,9 @@ public interface Market {
 
 	public TickEvent<SellOrder> recordSellOrder(SellOrder order);
 
-	public void cancelBuyOrder(BuyOrder order);
+	public TickEvent<BuyOrder> cancelBuyOrder(BuyOrder order);
 
-	public void cancelSellOrder(SellOrder order);
+	public TickEvent <SellOrder> cancelSellOrder(SellOrder order);
 
 	public List<TickEvent<Trade>> doClearing();
 

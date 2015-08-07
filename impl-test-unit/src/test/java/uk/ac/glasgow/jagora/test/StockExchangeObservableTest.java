@@ -47,8 +47,8 @@ public class StockExchangeObservableTest {
 
     }
 
-    @Test(expected = Exception.class)
-    public void testCancellationBook () throws Exception{
+    @Test
+    public void testCancellationBook () {
 
         stockExchangeObservable.registerOrderListener(orderListener);
 
@@ -62,22 +62,12 @@ public class StockExchangeObservableTest {
 
         stockExchangeObservable.notifyOrderListeners(new TickEvent<>(sellOrder1, 10l));
 
-        try {
-            stockExchangeObservable.notifyOrderListenersOfCancellation(sellOrder1);
-        } catch (Exception e) {
-            fail();
-        }
+        stockExchangeObservable.notifyOrderListenersOfCancellation(new TickEvent<>(sellOrder1, 11l));
 
         List<OrderEntryEvent> cancelledBuyOrders = stockExchangeObservable.getCancelledBuyOrderHistory(lemons);
         List<OrderEntryEvent> cancelledSellOrders = stockExchangeObservable.getCancelledSellOrderHistory(lemons);
         assertEquals("", cancelledBuyOrders.size(), 0);
         assertEquals("",cancelledSellOrders.get(0).trader, bruce);
-
-        SellOrder fakeOrder = new LimitSellOrder(bruce,lemons, 50, 50l);
-
-
-        stockExchangeObservable.notifyOrderListenersOfCancellation(fakeOrder);
-
 
     }
 

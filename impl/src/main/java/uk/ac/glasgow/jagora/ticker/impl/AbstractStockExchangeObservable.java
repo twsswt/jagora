@@ -1,14 +1,22 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
 
-import java.util.*;
-
-import uk.ac.glasgow.jagora.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import uk.ac.glasgow.jagora.Order;
+import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.ticker.*;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.world.TickEvent;
+
+import java.util.*;
+
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+
+
 
 public abstract class AbstractStockExchangeObservable implements StockExchangeObservable {
 
@@ -20,8 +28,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	private final List<TickEvent<Trade>> executedTrades;
 
-	private final HashMap<Order,OrderEntryEvent> submittedSellOrders;
-	private final HashMap<Order,OrderEntryEvent> submittedBuyOrders;
+	private final List<OrderEntryEvent> submittedSellOrders;
+	private final List<OrderEntryEvent> submittedBuyOrders;
 
 	private final List<OrderEntryEvent> cancelledSellOrders;
 	private final List<OrderEntryEvent> cancelledBuyOrders;
@@ -37,11 +45,12 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		executedTrades = new ArrayList<TickEvent<Trade>>();
 
-		submittedSellOrders = new HashMap<>();
-		submittedBuyOrders = new HashMap<>();
+		submittedSellOrders = new ArrayList();
+		submittedBuyOrders = new ArrayList<>();
 		
 		cancelledBuyOrders = new ArrayList<>();
 		cancelledSellOrders= new ArrayList<>();
+
 	}
 	
 	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
@@ -59,10 +68,10 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	public List<OrderEntryEvent> getSellOrderHistory(Stock stock){
 		List<OrderEntryEvent> result = new ArrayList<>();
 
-		submittedSellOrders.values()
-				.stream()
-				.filter(submittedOrder -> submittedOrder.stock.equals(stock))
-				.forEach(submittedOrder -> result.add(submittedOrder));
+		for (OrderEntryEvent event: submittedSellOrders){
+			if (event.stock.equals(stock))
+				result.add(event);
+		}
 
 		return result;
 	}
@@ -70,10 +79,11 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	public List<OrderEntryEvent> getBuyOrderHistory(Stock stock){
 		List<OrderEntryEvent> result = new ArrayList<>();
 
-		submittedBuyOrders.values()
-				.stream()
-				.filter(submittedOrder -> submittedOrder.stock.equals(stock))
-				.forEach(submittedOrder -> result.add(submittedOrder));
+		for (OrderEntryEvent event: submittedBuyOrders){
+			if (event.stock.equals(stock))
+				result.add(event);
+		}
+
 
 		return result;
 	}
@@ -89,10 +99,10 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	private List<OrderEntryEvent> getCancelledHistory(Stock stock, List<OrderEntryEvent> list){
 		List<OrderEntryEvent> result = new ArrayList<>();
 
-		list
-				.stream()
-				.filter(cancelledOrder -> cancelledOrder.stock.equals(stock))
-				.forEach(cancelledOrder -> result.add(cancelledOrder));
+		for (OrderEntryEvent event: list) {
+			if (event != null && event.stock.equals(stock))
+				result.add(event);
+		}
 
 		return result;
 	}
@@ -217,9 +227,12 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		orderListeners.add(orderListener);
 	}
-	
+
+	public  Integer orderCount = 0;
+
 	@Override
 	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent){
+
 
 		List<OrderListener> randomisedOrderListeners = 
 			new ArrayList<OrderListener>(orderListeners);
@@ -238,44 +251,49 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				event.getRemainingQuantity(),
 				event.getPrice(), 
 				direction);
-		
+
 		for (OrderListener orderListener : randomisedOrderListeners)
 			notifyOrderListenerOfOrder(orderEntryEvent, orderListener);
-
+		orderCount ++;
 		//add submitted orders in the book
 		if (orderEvent.event instanceof SellOrder)
-			submittedSellOrders.put(orderEvent.event,orderEntryEvent);
+			submittedSellOrders.add(orderEntryEvent);
 		else
-			submittedBuyOrders.put(orderEvent.event,orderEntryEvent);
+			submittedBuyOrders.add(orderEntryEvent);
+
 	}
 
 	/**
-     * Left for implementation in child classes.
-     * @param orderEntryEvent
-     * @param orderListener
-     */
+	 * Left for implementation in child classes.
+	 * @param orderEntryEvent
+	 * @param orderListener
+	 */
 	public abstract void notifyOrderListenerOfOrder(
-		OrderEntryEvent orderEntryEvent, OrderListener orderListener);
+			OrderEntryEvent orderEntryEvent, OrderListener orderListener);
 
 	@Override
-	public void notifyOrderListenersOfCancellation(Order order) throws Exception{
-		OrderEntryEvent orderEntryEvent;
-		if(order == null)
-			throw new Exception("Null Order has been passed");
+	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderEvent) {
 
-		if (order instanceof SellOrder) {
-			orderEntryEvent = submittedSellOrders.get(order);
+		Order event = orderEvent.event;
+
+		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
+
+		OrderEntryEvent orderEntryEvent =
+				new OrderEntryEvent(
+						orderEvent.tick,
+						event.getTrader(),
+						event.getStock(),
+						event.getRemainingQuantity(),
+						event.getPrice(),
+						direction);
+
+		//TODO bug remaining quantity is not updated
+		if (event instanceof SellOrder) {
 			cancelledSellOrders.add(orderEntryEvent);
 		}
 		else {
-			orderEntryEvent = submittedBuyOrders.get(order);
 			cancelledBuyOrders.add(orderEntryEvent);
 		}
-
-		//if the entru event can't be found?
-		if (orderEntryEvent == null )
-			throw new Exception("an order which can't be found is tried to be cancelled");
-
 
 		for (OrderListener orderListener: orderListeners)
 			notifyOrderListenerOfCancelledOrder(orderEntryEvent, orderListener);

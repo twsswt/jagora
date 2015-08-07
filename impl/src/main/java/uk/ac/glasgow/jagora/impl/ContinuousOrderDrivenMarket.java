@@ -79,13 +79,15 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 	
 	@Override
-	public void cancelBuyOrder(BuyOrder order) {
+	public TickEvent<BuyOrder> cancelBuyOrder(BuyOrder order) {
 		buyBook.cancelOrder(order);
+		return world.getTick(order);
 	}
 	
 	@Override
-	public void cancelSellOrder(SellOrder order) {
+	public TickEvent<SellOrder> cancelSellOrder(SellOrder order) {
 		sellBook.cancelOrder(order);
+		return world.getTick(order);
 	}
 
 

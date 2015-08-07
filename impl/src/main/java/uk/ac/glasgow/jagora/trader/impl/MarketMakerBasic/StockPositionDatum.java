@@ -12,11 +12,13 @@ public class StockPositionDatum {
     final Stock stock;
     final Integer sharesAimed;
 
-    BuyOrder currentBuyOrder = null;
-    SellOrder currentSellOrder = null;
+    protected BuyOrder currentBuyOrder = null;
+    protected SellOrder currentSellOrder = null;
 
-    Long newBuyPrice = 0l;
-    Long newSellPrice = 0l;
+    protected Long newBuyPrice = 0l;
+    protected Long newSellPrice = 0l;
+
+    protected Double inventoryAdjustment = 0.0;
 
     StockPositionDatum (Float marketShare, Integer initialQuantity,Stock stock) {
         sharesAimed = Math.round(marketShare*initialQuantity.floatValue());
@@ -30,4 +32,6 @@ public class StockPositionDatum {
     void setNewSellPrice(Long price){
          this.newSellPrice = price;
     }
+
+    void setInventoryAdjustment(Double inventoryAdjustment) {this.inventoryAdjustment = inventoryAdjustment;}
 }

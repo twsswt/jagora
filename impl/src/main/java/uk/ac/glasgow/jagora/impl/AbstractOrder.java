@@ -1,16 +1,16 @@
 package uk.ac.glasgow.jagora.impl;
 
-import static java.lang.String.format;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.String.format;
 
 public abstract class AbstractOrder implements Order {
 	
@@ -26,7 +26,12 @@ public abstract class AbstractOrder implements Order {
 		this.stock = stock;
 		this.initialQuantity = quantity;
 	}
-	
+
+	@Override
+	public Integer getInitialQuantity() {
+		return initialQuantity;
+	}
+
 	@Override
 	public Trader getTrader (){
 		return trader;
@@ -83,7 +88,7 @@ public abstract class AbstractOrder implements Order {
 		Long price = getPrice();
 		Trader trader = getTrader();
 		Stock stock = getStock();
-		Integer remainingQuantity = getRemainingQuantity();
+		Integer initialQuantity = getInitialQuantity();
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -96,7 +101,7 @@ public abstract class AbstractOrder implements Order {
 				return false;
 		} else if (!price.equals(other.getPrice()))
 			return false;
-		if (!remainingQuantity.equals(other.getRemainingQuantity()))
+		if (!initialQuantity.equals(other.getInitialQuantity()))
 			return false;
 		if (!stock.equals(other.getStock()))
 			return false;

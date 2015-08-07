@@ -1,16 +1,16 @@
 package uk.ac.glasgow.jagora.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DefaultStockExchange implements StockExchange{
 
@@ -126,15 +126,16 @@ public class DefaultStockExchange implements StockExchange{
         //Important if we want to implement the hypothetical crash
 		@Override
 		public void cancelBuyOrder(BuyOrder buyOrder) {
-			getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);
-			//stockExchangeObservable.notifyOrderListenersOfCancellation(buyOrder);
+			TickEvent<BuyOrder> orderEvent =
+					getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);
+			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
 		}
 
 		@Override
 		public void cancelSellOrder(SellOrder sellOrder){
-
-			getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
-			//stockExchangeObservable.notifyOrderListenersOfCancellation(sellOrder);
+			TickEvent<SellOrder> orderEvent =
+				getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
+			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
 		}
 		
 		@Override

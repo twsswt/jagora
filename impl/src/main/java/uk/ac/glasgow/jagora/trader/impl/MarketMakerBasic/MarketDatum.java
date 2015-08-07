@@ -1,7 +1,6 @@
 package uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic;
 
 
-import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.StockWarehouse;
 
 import java.util.ArrayList;
@@ -45,10 +44,12 @@ public class MarketDatum {
     protected Boolean liquidityInformation (){return (buySideLiquidity != 0 && sellSideLiquidity != 0);}
 
     protected void addBuySideLiquidity(Integer quantity, Long price){
+
         buySideLiquidity += quantity;
     }
 
     protected void addSellSideLiquidity(Integer quantity, Long price){
+
         sellSideLiquidity += quantity;
     }
 
@@ -61,8 +62,10 @@ public class MarketDatum {
         sellSideLiquidity -= quantity;
     }
 
-    protected void removeBuySideLiquidity(Integer quantity){buySideLiquidity -=quantity;}
-    protected void removeSellSideLiquidity (Integer quantity){ sellSideLiquidity -= quantity;}
+    protected void removeBuySideLiquidity(Integer quantity){buySideLiquidity -=quantity;
+     }
+    protected void removeSellSideLiquidity (Integer quantity){sellSideLiquidity -= quantity;
+     }
 
     protected void setLastPriceTraded(Long lastPriceTraded) {
         this.lastPriceTraded = lastPriceTraded;

@@ -11,6 +11,8 @@ public interface Order {
 
 	public abstract Integer getRemainingQuantity();
 
+	Integer getInitialQuantity ();
+
 	public abstract void satisfyTrade(TickEvent<Trade> trade)
 			throws TradeExecutionException;
 

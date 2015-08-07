@@ -65,6 +65,7 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 			receivedOrders.remove(toRemove);
 			updateLastKnownBestPrice();
 		}
+
 	}
 
     /**

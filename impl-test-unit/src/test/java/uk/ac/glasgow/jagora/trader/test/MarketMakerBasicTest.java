@@ -11,8 +11,8 @@ import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
-import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -21,12 +21,16 @@ import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
 import uk.ac.glasgow.jagora.trader.impl.RandomTrader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
+import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 
 public class MarketMakerBasicTest {
 
@@ -43,7 +47,7 @@ public class MarketMakerBasicTest {
 
     private SerialTickerTapeObserver tickerTapeObserver;
 
-    private Long numberOfTraderActions = 5000l;
+    private Long numberOfTraderActions = 10000l;//between 1500 and 1800
     private Integer seed = 1;
     private Integer numberOfTraders = 10;
     private Long initialTraderCash = 10000000l;
@@ -65,7 +69,7 @@ public class MarketMakerBasicTest {
         tickerTapeObserver = new SerialTickerTapeObserver();
 
         stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
-        stockExchange.createMarket(lemonsWarehouse);
+        stockExchange.createMarket(lemonsWarehouse); //showing proper usage for stockwarehouse
 
         Random r = new Random(seed);
 
@@ -114,11 +118,49 @@ public class MarketMakerBasicTest {
     }
 
     @Test
-    public void testInBigEnvironment() {
+    public void testLiquidityCalculation() {
 
         engine.run();
-        System.out.println(marketMaker.getCash() );
-        System.out.println(marketMaker.getInventory(lemons));
-       // System.out.println(tickerTapeObserver.getSellOrderHistory(lemons));
+
+        System.out.println("cash is " +marketMaker.getCash() );
+        System.out.println("inventory is " +marketMaker.getInventory(lemons));
+        System.out.println("MarketMaker buy side liquidity " + marketMaker.getBuySideLiquidity());
+        System.out.println("MarketMaker sell side liquidity " + marketMaker.getSellSideLiquidity());
+
+
+        //Need to execute the following block to have the observer view of liquidity
+        Integer realBuysideLiquidity = 0;
+        Integer realSellSideLiquidity = 0;
+        for (OrderEntryEvent event :tickerTapeObserver.getBuyOrderHistory(lemons))
+            realBuysideLiquidity += event.quantity;
+
+        for (OrderEntryEvent event: tickerTapeObserver.getSellOrderHistory(lemons))
+            realSellSideLiquidity += event.quantity;
+
+
+        for (OrderEntryEvent event : tickerTapeObserver.getCancelledBuyOrderHistory(lemons))
+            realBuysideLiquidity -= event.quantity;
+
+        for (OrderEntryEvent event: tickerTapeObserver.getCancelledSellOrderHistory(lemons))
+            realSellSideLiquidity -= event.quantity;
+
+        for (TickEvent<Trade> event :tickerTapeObserver.getTradeHistory(lemons)){
+            realBuysideLiquidity -= event.event.getQuantity();
+            realSellSideLiquidity -= event.event.getQuantity();
+        }
+
+        //this has to be adjusted around the point at which the market maker is let on the market
+        Double permittedError = 400.0;
+
+        assertThat (realBuysideLiquidity.doubleValue(),
+                closeTo(marketMaker.getBuySideLiquidity().doubleValue(),permittedError));
+        assertThat(realSellSideLiquidity.doubleValue(),
+                closeTo(marketMaker.getSellSideLiquidity().doubleValue(),permittedError));
+
+
+
+        System.out.println("Observer calculated buy liquidity " + realBuysideLiquidity);
+        System.out.println("Observer calculated sell liquidity " +realSellSideLiquidity);
+
     }
 }
