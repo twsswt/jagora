@@ -56,12 +56,8 @@ public class SerialRandomEngineBuilder {
 	}
 
 	public SerialRandomEngine build() {
-		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed),standardDelay);
+		return new SerialRandomEngine(
+				world, stockExchanges, traders, new Random(seed),standardDelay,privilegedTraders);
 	}
-
-	public SerialRandomEngine buildNew() {
-		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed),standardDelay,privilegedTraders);
-	}
-	
 	
 }

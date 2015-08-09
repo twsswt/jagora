@@ -20,7 +20,7 @@ public class StockPositionDatum {
 
     protected Double inventoryAdjustment = 0.0;
 
-    StockPositionDatum (Float marketShare, Integer initialQuantity,Stock stock) {
+        StockPositionDatum (Float marketShare, Integer initialQuantity,Stock stock) {
         sharesAimed = Math.round(marketShare*initialQuantity.floatValue());
         this.stock = stock;
     }

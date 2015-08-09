@@ -82,7 +82,9 @@ public abstract class AbstractTrader implements Trader {
 
 		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0); //
 		if (currentQuantity < trade.getQuantity()){ 
-			String message = format("Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].", name, trade, currentQuantity);
+			String message = format(
+					"Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].",
+					name, trade, currentQuantity);
 			throw new TradeExecutionException (message, trade, this);
 		} else {
 			inventory.put(trade.getStock(), currentQuantity - trade.getQuantity());

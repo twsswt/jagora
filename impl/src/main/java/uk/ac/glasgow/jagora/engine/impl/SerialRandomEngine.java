@@ -21,7 +21,7 @@ public class SerialRandomEngine implements TradingEngine {
 	private final Set<Level1Trader> traders;
 	private final World world;
 	private final Random random;
-	private final Set<Level2Trader> privilegedTraders;
+	private final Set<Level2Trader> privilegedTraders = new HashSet<>();
 
 	private Queue<DelayedOrderExecutor> orderExecutors;
 
@@ -33,7 +33,8 @@ public class SerialRandomEngine implements TradingEngine {
 	 * @param exchanges - pass a set of exchanges
 	 * @param traders - a fixed set of traders
 	 * @param random - seed
-	 */ SerialRandomEngine(World world, Set<StockExchange> exchanges,
+	 */
+	SerialRandomEngine(World world, Set<StockExchange> exchanges,
 						   Set<Level1Trader> traders, Random random,
 						   Long standardDelay, Set<Level2Trader> level2Traders){
 		this.world = world;
@@ -42,20 +43,9 @@ public class SerialRandomEngine implements TradingEngine {
 		this.random = random;
 		this.orderExecutors = new PriorityQueue<DelayedOrderExecutor>();
 		this.standardDelay = standardDelay;
-		this.privilegedTraders = new HashSet<>(level2Traders);
+		this.privilegedTraders.addAll(level2Traders);
 	}
 
-	SerialRandomEngine(World world, Set<StockExchange> exchanges,
-					   Set<Level1Trader> traders, Random random,
-					   Long standardDelay){
-		this.world = world;
-		this.exchanges = new HashSet<StockExchange>(exchanges);
-		this.traders = new HashSet<Level1Trader>(traders);
-		this.random = random;
-		this.orderExecutors = new PriorityQueue<DelayedOrderExecutor>();
-		this.standardDelay = standardDelay;
-		this.privilegedTraders = new HashSet<>();
-	}
 	
 	@Override
 	public void run() {

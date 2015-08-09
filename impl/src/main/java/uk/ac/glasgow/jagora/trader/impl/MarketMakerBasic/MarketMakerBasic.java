@@ -51,14 +51,12 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         this.stock = stockWarehouse.getStock();
         marketDatum = new MarketDatum(stockWarehouse);
         positionDatum =
-                new StockPositionDatum(marketShare,stockWarehouse.getInitialQuantity(),stockWarehouse.getStock());
+                new StockPositionDatum(
+                        marketShare,stockWarehouse.getInitialQuantity(),stockWarehouse.getStock());
 
         registered = new HashSet<StockExchangeLevel2View>();
 
     }
-
-    public Integer getBuySideLiquidity() {return marketDatum.buySideLiquidity;}
-    public Integer getSellSideLiquidity() {return marketDatum.sellSideLiquidity;}
 
     @Override
     public void speak(StockExchangeLevel2View level2View){
@@ -86,19 +84,32 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
         if (positionDatum.currentBuyOrder != null)
             cancelSafeBuyOrder(level1View,positionDatum.currentBuyOrder);
-        //TODO think of the right amount of stock to put in a position NEED to do this!
+
+        Integer buyQuantity = positionDatum.sharesAimed;
+        if (positionDatum.inventoryAdjustment < -1) {
+            //if there' a big imbalance provide a stub quote to preserve inventory
+            buyQuantity = Math.round(positionDatum.sharesAimed*0.01f);
+        }
+
         BuyOrder buyOrder = new LimitBuyOrder
-                (this,positionDatum.stock,inventory.get(positionDatum.stock),positionDatum.newBuyPrice);
-        placeSafeBuyOrder(level1View,buyOrder);
-        positionDatum.currentBuyOrder = buyOrder;
+                (this,positionDatum.stock,buyQuantity,positionDatum.newBuyPrice);
+
+        positionDatum.currentBuyOrder = placeSafeBuyOrder(level1View,buyOrder) ? buyOrder: null;
+        //TODO make some sort of exception if null
 
         if (positionDatum.currentSellOrder != null)
             cancelSafeSellOrder(level1View,positionDatum.currentSellOrder);
 
+        Integer sellQuantity = inventory.get(stock);
+        if (positionDatum.inventoryAdjustment > 1){
+            //if there' a big imbalance provide a stub quote to preserve inventory
+            sellQuantity = Math.round(inventory.get(stock)*0.1f);
+        }
+
         SellOrder sellOrder = new LimitSellOrder
-                (this, positionDatum.stock,inventory.get(positionDatum.stock),positionDatum.newSellPrice);
-        placeSafeSellOrder(level1View,sellOrder);
-        positionDatum.currentSellOrder = sellOrder;
+                (this, positionDatum.stock,sellQuantity,positionDatum.newSellPrice);
+
+        positionDatum.currentSellOrder = placeSafeSellOrder(level1View,sellOrder) ?sellOrder :null;
     }
 
     //TODO make adjustments work appropriately
@@ -122,13 +133,13 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         Long PriceLiquidityAdjustment = 0l;
 
 
-//        Double inventoryAdjustment =
-//                (positionDatum.sharesAimed.doubleValue() - inventory.get(positionDatum.stock).doubleValue())
-//                /positionDatum.sharesAimed.doubleValue();
-//        positionDatum.setInventoryAdjustment(inventoryAdjustment);
-//        Long inventoryPriceAdjustment =
-//                Math.round(inventoryAdjustment*marketDatum.lastPriceTraded*random.nextDouble());
-        Long inventoryPriceAdjustment = 0l;
+        Double inventoryAdjustment =
+                (positionDatum.sharesAimed.doubleValue() - inventory.get(positionDatum.stock).doubleValue())
+                /positionDatum.sharesAimed.doubleValue();
+        positionDatum.setInventoryAdjustment(inventoryAdjustment);
+        Long inventoryPriceAdjustment =
+                Math.round(inventoryAdjustment*marketDatum.lastPriceTraded*random.nextDouble());
+       // Long inventoryPriceAdjustment = 0l;
 
         if (marketDatum.lastTradeWasSell) {
             positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - this.spread
@@ -171,4 +182,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         else
             marketDatum.removeBuySideLiquidity(orderEntryEvent.quantity);
     }
+
+//    public Integer getBuySideLiquidity() {return marketDatum.buySideLiquidity;}
+//    public Integer getSellSideLiquidity() {return marketDatum.sellSideLiquidity;}
 }
