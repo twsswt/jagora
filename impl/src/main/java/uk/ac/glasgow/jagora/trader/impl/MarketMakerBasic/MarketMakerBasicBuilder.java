@@ -21,7 +21,7 @@ public class MarketMakerBasicBuilder {
     private StockWarehouse stockWarehouse;
 
     private Float marketShare;
-    private Long spread;
+    private Double spread;
 
     public MarketMakerBasicBuilder (String name) {
         this.name = name;
@@ -58,7 +58,7 @@ public class MarketMakerBasicBuilder {
         return this;
     }
 
-    public MarketMakerBasicBuilder setSpread(Long spread) {
+    public MarketMakerBasicBuilder setSpread(Double spread) {
         this.spread = spread;
         return this;
     }

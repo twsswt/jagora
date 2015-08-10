@@ -20,6 +20,8 @@ public class StockPositionDatum {
 
     protected Double inventoryAdjustment = 0.0;
 
+    protected Long spread = 0l;
+
     StockPositionDatum (Float marketShare, Integer initialQuantity,Stock stock) {
         sharesAimed = Math.round(marketShare*initialQuantity.floatValue());
         this.stock = stock;

@@ -34,18 +34,18 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
     private Set<StockExchangeLevel2View> registered;
 
-    private Long spread;
+    private Double spreadPercentage;
 
 
 
     public MarketMakerBasic (String name, Long cash, Map<Stock, Integer> inventory,
                              StockWarehouse stockWarehouse, Float marketShare,
-                             Random random, Long spread){
+                             Random random, Double spreadPercentage){
 
         super(name,cash,inventory);
 
         this.marketShare= marketShare;
-        this.spread = spread;
+        this.spreadPercentage = spreadPercentage;
         this.random = random;
 
         this.stock = stockWarehouse.getStock();
@@ -58,6 +58,10 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
     }
 
+    /**
+     * At the moments some trades must have occurred before speak works properly
+     * @param level2View
+     */
     @Override
     public void speak(StockExchangeLevel2View level2View){
         if (!registered.contains(level2View)) register (level2View);
@@ -112,7 +116,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         positionDatum.currentSellOrder = placeSafeSellOrder(level1View,sellOrder) ?sellOrder :null;
     }
 
-    //TODO make adjustments work appropriately
+
     private void updateMarketPositions () {
 
 
@@ -120,42 +124,52 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         if (marketDatum.lastPriceTraded == 0l)
             return;
 
-        Double liquidityAdjustment = 0.0;
-        //if there isn't information regarding liquidity, don't adjust for it
-//        if(marketDatum.liquidityInformation()) {
-//            liquidityAdjustment =
-//                    ((double) marketDatum.buySideLiquidity - (double) marketDatum.sellSideLiquidity)
-//                            / (double) marketDatum.buySideLiquidity; //experiment with this
-//        }
-//
-//        Long PriceLiquidityAdjustment =
-//                Math.round(liquidityAdjustment*(double)marketDatum.lastPriceTraded* random.nextDouble());
-        Long PriceLiquidityAdjustment = 0l;
+        positionDatum.spread = Math.round(spreadPercentage*marketDatum.lastPriceTraded.doubleValue());
 
 
-        Double inventoryAdjustment =
-                (positionDatum.sharesAimed.doubleValue() - inventory.get(positionDatum.stock).doubleValue())
-                /positionDatum.sharesAimed.doubleValue();
-        positionDatum.setInventoryAdjustment(inventoryAdjustment);
-        Long inventoryPriceAdjustment =
-                Math.round(inventoryAdjustment*marketDatum.lastPriceTraded*random.nextDouble());
-       // Long inventoryPriceAdjustment = 0l;
+        Long PriceLiquidityAdjustment = liquidityPriceCalculation();
+
+
+        Long inventoryPriceAdjustment = inventoryPriceCalculation();
 
         if (marketDatum.lastTradeWasSell) {
-            positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - this.spread
+            positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - positionDatum.spread
                     + PriceLiquidityAdjustment + inventoryPriceAdjustment);
 
-            positionDatum.setNewSellPrice (marketDatum.lastPriceTraded + this.spread
+            positionDatum.setNewSellPrice (marketDatum.lastPriceTraded + positionDatum.spread
             + inventoryPriceAdjustment);
         }
         else {
-            positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - this.spread
+            positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - positionDatum.spread
             + inventoryPriceAdjustment);
 
-            positionDatum.setNewSellPrice(marketDatum.lastPriceTraded + this.spread -
+            positionDatum.setNewSellPrice(marketDatum.lastPriceTraded + positionDatum.spread -
                     PriceLiquidityAdjustment + inventoryPriceAdjustment);
         }
 
+
+    }
+
+    private Long liquidityPriceCalculation () {
+        Double liquidityAdjustment = 0.0;
+        //if there isn't information regarding liquidity, don't adjust for it
+        if(marketDatum.liquidityInformation()) {
+            liquidityAdjustment =
+                    ((double) marketDatum.buySideLiquidity - (double) marketDatum.sellSideLiquidity)
+                            / (double) marketDatum.buySideLiquidity; //experiment with this
+        }
+
+        return Math.round(
+                liquidityAdjustment*positionDatum.spread* random.nextDouble());
+    }
+
+    private Long inventoryPriceCalculation () {
+        Double inventoryAdjustment =
+                (positionDatum.sharesAimed.doubleValue() - inventory.get(positionDatum.stock).doubleValue())
+                        /positionDatum.sharesAimed.doubleValue();
+        positionDatum.setInventoryAdjustment(inventoryAdjustment);
+        Double toReturn = inventoryAdjustment*positionDatum.spread.doubleValue()*random.nextDouble();
+        return  Math.round(toReturn);
     }
 
     @Override
@@ -184,6 +198,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         else
             marketDatum.removeBuySideLiquidity(orderEntryEvent.quantity);
     }
+
 
 //    public Integer getBuySideLiquidity() {return marketDatum.buySideLiquidity;}
 //    public Integer getSellSideLiquidity() {return marketDatum.sellSideLiquidity;}

@@ -37,7 +37,7 @@ public class MarketMakerBasicTest {
     private MarketMakerBasic marketMaker;
 
     private Float marketShare = 0.1f;
-    private Long spread = 1l;
+    private Double spread = 0.003;
 
 
     private World world;
