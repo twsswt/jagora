@@ -23,6 +23,9 @@ public class MarketMakerBasicBuilder {
     private Float marketShare;
     private Double spread;
 
+    private Double liquidityAdjustmentInfluence = 1.0;
+    private Double inventoryAdjustmentInfluence = 1.0;
+
     public MarketMakerBasicBuilder (String name) {
         this.name = name;
         inventory = new HashMap<>();
@@ -63,9 +66,20 @@ public class MarketMakerBasicBuilder {
         return this;
     }
 
+    public MarketMakerBasicBuilder setLiquidityAdjustmentInfluence(Double liquidityAdjustmentInfluence) {
+        this.liquidityAdjustmentInfluence = liquidityAdjustmentInfluence;
+        return this;
+    }
+
+    public MarketMakerBasicBuilder setInventoryAdjustmnetInfluence(Double inventoryAdjustmnetInfluence) {
+        this.inventoryAdjustmentInfluence = inventoryAdjustmnetInfluence;
+        return this;
+    }
+
     public MarketMakerBasic build() {
        return new MarketMakerBasic(
                name,cash,inventory, stockWarehouse,
-               marketShare, new Random(seed),spread);
+               marketShare, new Random(seed),spread,
+               inventoryAdjustmentInfluence, liquidityAdjustmentInfluence);
     }
 }

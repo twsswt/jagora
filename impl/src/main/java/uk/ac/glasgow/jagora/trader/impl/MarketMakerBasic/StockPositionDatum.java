@@ -27,8 +27,6 @@ public class StockPositionDatum {
         this.stock = stock;
     }
 
-
-
     void setNewBuyPrice(Long price){this.newBuyPrice = price;}
 
     void setNewSellPrice(Long price){

@@ -36,11 +36,15 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
     private Double spreadPercentage;
 
+    private Double inventoryAdjustmentInfluence;
+    private Double liquidityAdjustmnetInfluence;
 
 
     public MarketMakerBasic (String name, Long cash, Map<Stock, Integer> inventory,
                              StockWarehouse stockWarehouse, Float marketShare,
-                             Random random, Double spreadPercentage){
+                             Random random, Double spreadPercentage,
+                             Double inventoryAdjustmentInfluence,
+                             Double liquidityAdjustmnetInfluence){
 
         super(name,cash,inventory);
 
@@ -55,6 +59,9 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
                         marketShare,stockWarehouse.getInitialQuantity(),stockWarehouse.getStock());
 
         registered = new HashSet<StockExchangeLevel2View>();
+
+        this.inventoryAdjustmentInfluence = inventoryAdjustmentInfluence;
+        this.liquidityAdjustmnetInfluence = liquidityAdjustmnetInfluence;
 
     }
 
@@ -147,6 +154,8 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
                     PriceLiquidityAdjustment + inventoryPriceAdjustment);
         }
 
+        if (positionDatum.newBuyPrice >= positionDatum.newSellPrice)
+            fixPriceAnomalities();
 
     }
 
@@ -160,7 +169,8 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         }
 
         return Math.round(
-                liquidityAdjustment*positionDatum.spread* random.nextDouble());
+                liquidityAdjustment*positionDatum.spread.doubleValue()
+                        * random.nextDouble()*liquidityAdjustmnetInfluence);
     }
 
     private Long inventoryPriceCalculation () {
@@ -168,8 +178,19 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
                 (positionDatum.sharesAimed.doubleValue() - inventory.get(positionDatum.stock).doubleValue())
                         /positionDatum.sharesAimed.doubleValue();
         positionDatum.setInventoryAdjustment(inventoryAdjustment);
-        Double toReturn = inventoryAdjustment*positionDatum.spread.doubleValue()*random.nextDouble();
+        Double toReturn =
+                inventoryAdjustment*positionDatum.spread.doubleValue()*
+                        random.nextDouble()*inventoryAdjustmentInfluence;
         return  Math.round(toReturn);
+    }
+
+    private void fixPriceAnomalities () {
+        //isolate the intervening price and fix it
+        if (positionDatum.newSellPrice < marketDatum.lastPriceTraded)
+            positionDatum.newSellPrice = positionDatum.newBuyPrice + 1l;
+        else
+            positionDatum.newBuyPrice = positionDatum.newSellPrice - 1l;
+
     }
 
     @Override
