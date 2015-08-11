@@ -19,15 +19,11 @@ import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
-import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTrader;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
-import uk.ac.glasgow.jagora.world.impl.TimedWorld;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -75,7 +71,7 @@ public class DelayWorldTest {
                             .setName("trader["+i+"]")
                             .setCash(initialTraderCash)
                             .setSeed(r.nextInt())
-                            .setTradeRange(lemons, 1, 100, -5l, +5l, -5l, +5l)
+                            .setTradeRange(lemons, 1, 100,  -5l, +5l, -5l, +5l)
                             .addStock(lemons, 1000)
                             .build();
 

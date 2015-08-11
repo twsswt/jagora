@@ -1,21 +1,26 @@
-package uk.ac.glasgow.jagora.trader.impl;
+package uk.ac.glasgow.jagora.trader.impl.RandomTraders;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.trader.impl.RandomTrader.RangeData;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
+
+
 import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTraderBuilder extends AbstractTraderBuilder {
-	private String name;
-	private Long cash;
+	protected String name;
+	protected Long cash;
+
+	protected Double lowHighPct = 0.0; // just used for initialising the RangeData
 	
-	private Map<Stock, Integer> inventory;
+	protected Map<Stock, Integer> inventory;
 	
-	private Integer seed;
-	private Map<Stock, RangeData> sellRangeData;
-	private Map<Stock, RangeData> buyRangeData;
+	protected Integer seed;
+	protected Map<Stock, RangeData> sellRangeData;
+	protected Map<Stock, RangeData> buyRangeData;
 	
 	public RandomTraderBuilder(){
 		this.inventory = new HashMap<Stock,Integer>();
@@ -44,8 +49,8 @@ public class RandomTraderBuilder extends AbstractTraderBuilder {
 		Stock stock, Integer minQuantity, Integer maxQuantity,
 		Long sellLow, Long sellHigh, Long buyLow, Long buyHigh){
 		
-		sellRangeData.put(stock, new RangeData(stock, sellLow, sellHigh, minQuantity, maxQuantity));
-		buyRangeData.put(stock, new RangeData(stock, buyLow, buyHigh, minQuantity, maxQuantity));
+		sellRangeData.put(stock, new RangeData(stock, sellLow, sellHigh, minQuantity, maxQuantity,lowHighPct,lowHighPct));
+		buyRangeData.put(stock, new RangeData(stock, buyLow, buyHigh, minQuantity, maxQuantity,lowHighPct,lowHighPct));
 		return this;
 	}
 	@Override

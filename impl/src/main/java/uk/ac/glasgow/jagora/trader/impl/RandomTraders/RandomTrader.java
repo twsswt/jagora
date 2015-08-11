@@ -1,4 +1,4 @@
-package uk.ac.glasgow.jagora.trader.impl;
+package uk.ac.glasgow.jagora.trader.impl.RandomTraders;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -13,36 +13,21 @@ import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
+import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
-		
-	protected static class RangeData {
-		
-		public final Stock stock;
-		public final Long low, high;
-		public final Integer minQuantity, maxQuantity;
-		
-		public RangeData(Stock stock, Long lowPrice, Long highPrice, Integer minQuantity, Integer maxQuantity){
-			this.stock = stock;
-			this.low = lowPrice;
-			this.high = highPrice;
-			this.minQuantity = minQuantity;
-			this.maxQuantity = maxQuantity;
-		}
 
-	}
 	
 	private final Map<Stock,RangeData> sellRangeData;
 	private final Map<Stock,RangeData> buyRangeData;
 
-	private final Random random;
-	
+	protected final Random random;
+
 	
 	public RandomTrader(
 		String name, Long cash, Map<Stock, Integer> inventory,
 		Random random, Map<Stock,RangeData> sellRangeDatas, Map<Stock,RangeData> buyRangeDatas) {
-		
 		super(name, cash, inventory);
 		this.random = random;
 		this.sellRangeData = new HashMap<Stock,RangeData>(sellRangeDatas);
@@ -85,7 +70,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 			Long offerPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);
 			
 			if (offerPrice == null) return;
-			Long price = createRandomPrice(stock, offerPrice, rangeData);
+			Long price = createRandomPrice(offerPrice, rangeData);
 
 			SellOrder sellOrder =
 				new LimitSellOrder(this, stock, quantity, price);
@@ -112,7 +97,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 		Long bestBidPrice = stockExchangeLevel1View.getLastKnownBestBidPrice(stock);
 		if (bestBidPrice == null) return;
 		RangeData rangeData = buyRangeData.get(stock);
-		Long price = createRandomPrice(stock, bestBidPrice, rangeData);
+		Long price = createRandomPrice( bestBidPrice, rangeData);
 
 		Long availableCash = getAvailableCash();
 		
@@ -133,14 +118,12 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 
     /**
      *
-     * @param stock
      * @param midPoint
      * @param rangeData
      * @return a random price deviating around midpoint within stock's range of prices
      */
-	private Long createRandomPrice(Stock stock, Long midPoint, RangeData rangeData) {
-		//BUG doesn't distinguish between buy or sell, oor the price never goes below midpoint
-		//TODO fixit
+	protected Long createRandomPrice( Long midPoint, RangeData rangeData) {
+
 		Long relativePriceRange = rangeData.high - rangeData.low;
 		Long randomPrice = 
 			(long)(random.nextDouble() *  relativePriceRange) + rangeData.low + midPoint;

@@ -14,7 +14,7 @@ import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
 
 public class RandomTraderTest extends EasyMockSupport {
 		

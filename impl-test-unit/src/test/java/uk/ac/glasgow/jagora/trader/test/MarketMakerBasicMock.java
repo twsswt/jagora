@@ -52,7 +52,7 @@ public class MarketMakerBasicMock {
         mockExchange = createNiceMock(StockExchangeLevel2View.class);
 
         MarketMakerBasic marketMaker = traderBuilder.build();
-
+       // expext(mockExchange.placeBuyOrder(capture());)
         BuyOrder order = null;
 
         Capture<BuyOrder> captured = newCapture();

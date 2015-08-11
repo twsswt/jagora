@@ -12,16 +12,16 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
-import uk.ac.glasgow.jagora.world.TickEvent;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTrader;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentage;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentageBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
@@ -85,18 +85,19 @@ public class MarketMakerBasicTest {
         Integer lemonsToGet = Math.round(lemonsQuantity.floatValue() / (numberOfTraders.floatValue() + 1.0f));
 
         for (int i = 0 ; i < numberOfTraders ; i++){
-            RandomTrader randomTrader =
-                    new RandomTraderBuilder()
+            RandomTraderPercentage randomTrader =
+                    new RandomTraderPercentageBuilder()
                             .setName("trader["+i+"]")
                             .setCash(initialTraderCash)
                             .setSeed(r.nextInt())
-                            .setTradeRange(lemons, 1, 100, -5l, +5l, -5l, +5l)
+                            .setTradeRange(lemons, 1, 100, -0.005,+0.005,-0.005,0.005)
                             .addStock(lemons, lemonsWarehouse.getStock(lemonsToGet))
                             .build();
 
             //stockExchange.createLevel1View().registerTradeListener(historicTrader);
             traders.add(randomTrader);
         }
+
 
         marketMaker = new MarketMakerBasicBuilder("Goldman")
                     .addStock(lemons,lemonsWarehouse.getRemainingStock())
