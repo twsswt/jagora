@@ -7,10 +7,7 @@ import org.junit.Test;
 
 
 import uk.ac.glasgow.jagora.*;
-import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
-import uk.ac.glasgow.jagora.impl.AbstractOrder;
-import uk.ac.glasgow.jagora.impl.DefaultTrade;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.*;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
@@ -33,6 +30,8 @@ public class MarketMakerBasicMock {
     @Mock
     StockExchangeLevel2View mockExchange;
 
+
+
     @Before
     public void setUp() {
         lemons = new Stock("lemons");
@@ -40,25 +39,45 @@ public class MarketMakerBasicMock {
 
         traderBuilder = new MarketMakerBasicBuilder("Goldman")
                 .addStockWarehouse(lemonsWarehouse)
-                .setCash(1000000l)
+                .setCash(100000000l)
                 .setMarketShare(0.1f)
                 .setSeed(1)
                 .setSpread(0.01)
                 .addStock(lemons, Math.round(lemonsWarehouse.getInitialQuantity() * 0.1f));
     }
 
+
+    /**
+     *
+     * In the algorithm an order is placed and subsequently
+     * on every speak() turn of the marketMaker
+     * In this test the second place of an order should be
+     * at a lower price because of the inventory excess
+     * - more inventory of a stock than the one aimed for
+     */
     @Test
     public void testInventoryPriceAdjustment () throws Exception{
-        mockExchange = createNiceMock(StockExchangeLevel2View.class);
+        mockExchange = createMock(StockExchangeLevel2View.class);
 
         MarketMakerBasic marketMaker = traderBuilder.build();
-       // expext(mockExchange.placeBuyOrder(capture());)
-        BuyOrder order = null;
 
-        Capture<BuyOrder> captured = newCapture();
-        //TODO can't figure how to make this work
-        //mockExchange.placeBuyOrder(capture(captured));
-        //mockExchange.placeBuyOrder(new LimitBuyOrder(marketMaker,lemons, 1000,1000l));
+        //just necessities for operation
+        mockExchange.registerOrderListener(marketMaker);
+        mockExchange.registerTradeListener(marketMaker);
+
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
+        SellOrder sellOrder2 = new LimitSellOrder(marketMaker,lemons,2000,10067l);
+        mockExchange.placeSellOrder(sellOrder1);
+        mockExchange.cancelSellOrder(sellOrder1);
+        mockExchange.placeSellOrder(sellOrder2);
+
+
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
+        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker,lemons,1000,9867l);
+        mockExchange.placeBuyOrder(buyOrder1);
+        mockExchange.cancelBuyOrder(buyOrder1);
+        mockExchange.placeBuyOrder(buyOrder2);
+
 
         replay(mockExchange);
 
@@ -75,7 +94,7 @@ public class MarketMakerBasicMock {
         marketMaker.speak(mockExchange);
 
         //balance of inventory is broken with the buy of this stock
-        marketMaker.buyStock(new DefaultTrade(lemons,10000,10l,null,new LimitBuyOrder(marketMaker,lemons,null,null),true));
+        marketMaker.buyStock(new DefaultTrade(lemons,1000,10l,null,new LimitBuyOrder(marketMaker,lemons,null,null),true));
 
         //now as there is more stock than the targeted market share, prices should be going down
         marketMaker.speak(mockExchange);

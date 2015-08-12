@@ -15,6 +15,8 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentage;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentageBuilder;
 
 public class RandomTraderTest extends EasyMockSupport {
 		
@@ -33,17 +35,19 @@ public class RandomTraderTest extends EasyMockSupport {
 		
 		lemons  = new Stock("lemons");
 		
-		trader = new RandomTraderBuilder()
-			.setName("alice")
-			.setCash(100l)
-			.setSeed(1)
-			.addStock(lemons, 500000)
-			.setTradeRange(lemons, 1, 100, -5l, +5l, -5l, +5l)
-			.build();
+
 	}
 
 	@Test
-	public void test() {
+	public void testRandomTrader() {
+
+		trader = new RandomTraderBuilder()
+				.setName("alice")
+				.setCash(100l)
+				.setSeed(1)
+				.addStock(lemons, 500000)
+				.setTradeRange(lemons, 1, 100, -5l, +5l, -5l, +5l)
+				.build();
 		
 		expect(mockExchange.getLastKnownBestOfferPrice(lemons)).andReturn(50l);
 		mockExchange.placeSellOrder(new LimitSellOrder(trader, lemons, 29, 49l));
@@ -58,5 +62,31 @@ public class RandomTraderTest extends EasyMockSupport {
 		verifyAll ();
 	
 	}
+
+	@Test
+	public void testRandomTraderPercentage () {
+
+		trader = new RandomTraderPercentageBuilder()
+				.setSeed(8)
+				.setName("baba")
+				.addStock(lemons,50000)
+				.setCash(1000000l)
+				.setTradeRange(lemons,1,100,-0.005,+0.005,-0.005,0.005)
+				.build();
+
+		expect(mockExchange.getLastKnownBestOfferPrice(lemons)).andReturn(100l);
+		mockExchange.placeSellOrder(new LimitSellOrder(trader, lemons, 8,101l));
+		expect(mockExchange.getLastKnownBestBidPrice(lemons)).andReturn(100l);
+		mockExchange.placeBuyOrder(new LimitBuyOrder(trader, lemons, 54, 100l));
+
+		replayAll ();
+
+		trader.speak(mockExchange);
+		trader.speak(mockExchange);
+
+		verifyAll ();
+
+	}
+
 
 }
