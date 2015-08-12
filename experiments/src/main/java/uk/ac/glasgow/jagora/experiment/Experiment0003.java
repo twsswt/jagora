@@ -5,6 +5,8 @@ import static java.util.Collections.shuffle;
 import static java.util.stream.IntStream.range;
 import static org.hamcrest.Matchers.closeTo;
 import static org.junit.Assert.assertThat;
+import static uk.ac.glasgow.jagora.experiment.ExperimentalReportsPathsUtil.experimentalPricesDatFilePath;
+import static uk.ac.glasgow.jagora.experiment.ExperimentalReportsPathsUtil.experimentalReportDirectory;
 import static uk.ac.glasgow.jagora.experiment.MarketCalculationsUtil.calculateEquilibriumPrice;
 
 import java.io.File;
@@ -31,7 +33,7 @@ import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTraderListener;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -49,7 +51,7 @@ public class Experiment0003 {
 	// Experimental constants
 
 	private final Integer seed = 1;
-	private final Integer permittedError = 100;
+	private final Integer permittedEquilibriumError = 100;
 
 	private final Long maxTickCount = 500000l;
 	private final Double priceAveragingPortion = 0.5;
@@ -71,9 +73,11 @@ public class Experiment0003 {
 	
 	private final Long minOfferLimit = 0l;
 	private final Long maxBidLimit = 5000l;
+			
+	private final String experimentalReportDirectory = experimentalReportDirectory(this.getClass());
 	
-	private final String pricesDatFilePath = "reports/jagora/prices.dat";
-	private final String zipTradersDatFilePath = "reports/jagora/zip-targets.dat";
+	private final String pricesDatFilePath = experimentalPricesDatFilePath(this.getClass());
+	private final String zipTradersDatFilePath = experimentalReportDirectory + "/zip-targets.dat";
 	
 	// Experimental parameters.
 	
@@ -142,7 +146,9 @@ public class Experiment0003 {
 		//registerFilteredStdOutOrderListener(OrderDirection.BUY);
 		//registerFilteredStdOutOrderListener(OrderDirection.SELL);
 				
-		tickerTapeObserver.registerTradeListener(new StdOutTradeListener());
+		OutputStreamTraderListener outputStreamTradeListener =
+			new OutputStreamTraderListener(System.out);
+		tickerTapeObserver.registerTradeListener(outputStreamTradeListener);
 		
 		PrintStream pricesDatFileStream = createPrintStreamToFile(pricesDatFilePath);
 		
@@ -228,7 +234,7 @@ public class Experiment0003 {
 	@Test
 	public void runExperiment() {
 				
-		Double expectedEquilibriumPrice = 
+		Double expectedTradePrice = 
 			calculateEquilibriumPrice(maxPrice, minPrice, maxBidLimit, minOfferLimit, numberOfBuyers, numberOfSellers); 
 						
 		while (world.isAlive()){	
@@ -241,7 +247,7 @@ public class Experiment0003 {
 		
 		Long lastTradeTick = tradeEvents.get(tradeEvents.size() - 1).tick;
 		
-		Double averagePrice = 
+		Double averageTradePrice = 
 			tradeEvents
 				.stream()
 				.filter(tradeEvent -> tradeEvent.tick >= lastTradeTick * priceAveragingPortion)
@@ -249,7 +255,7 @@ public class Experiment0003 {
 				.average()
 				.getAsDouble();
 				
-		assertThat (averagePrice, closeTo(expectedEquilibriumPrice, permittedError));		
+		assertThat (averageTradePrice, closeTo(expectedTradePrice, permittedEquilibriumError));		
 	}
 
 }

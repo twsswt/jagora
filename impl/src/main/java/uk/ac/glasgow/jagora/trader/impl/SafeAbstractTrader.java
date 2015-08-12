@@ -44,9 +44,8 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		for (int i = 0 ; i < openSellOrders.size(); i++)
 			if (openSellOrders.get(i) == sellOrder)
 				indexToCancel = i;
-		
 		if (indexToCancel != null)
-			openSellOrders.remove(indexToCancel);
+			openSellOrders.remove(indexToCancel.intValue());
 	}
 
 	protected void cancelSafeBuyOrder(StockExchangeLevel1View stockExchangeLevel1View, BuyOrder buyOrder) {
@@ -59,7 +58,7 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 				indexToCancel = i;
 		
 		if (indexToCancel != null)
-			openBuyOrders.remove(indexToCancel);
+			openBuyOrders.remove(indexToCancel.intValue());
 	}
 
 	protected Long getAvailableCash() {

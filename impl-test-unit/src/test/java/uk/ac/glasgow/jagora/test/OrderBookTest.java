@@ -38,8 +38,15 @@ public class OrderBookTest {
 	@Before
 	public void setUp() throws Exception {
 	
-		alice = new StubTraderBuilder("alice", 100000000l).addStock(lemons, 10000).build();
-		bob   = new StubTraderBuilder("bob", 5000000l).addStock(lemons, 200).build();
+		alice = new StubTraderBuilder("alice")
+			.setCash(100000000l)
+			.addStock(lemons, 10000)
+			.build();
+		
+		bob   = new StubTraderBuilder("bob")
+			.setCash(5000000l)
+			.addStock(lemons, 200)
+			.build();
 		
 		manualTickWorld = new ManualTickWorld();
 				

@@ -35,11 +35,13 @@ public class TradeTest {
 
 	@Before
 	public void setUp() throws Exception {
-		alice = new StubTraderBuilder("alice", 100000000l)
+		alice = new StubTraderBuilder("alice")
+			.setCash(100000000l)
 			.addStock(lemons, 10000)
 			.build();
 		
-		bob = new StubTraderBuilder("alice", 100000000l)
+		bob = new StubTraderBuilder("alice")
+			.setCash(100000000l)
 			.addStock(lemons, 10000)
 			.build();
 	

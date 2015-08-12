@@ -43,13 +43,15 @@ public class DefaultStockExchangeTest {
 	public void setUp() throws Exception {
 	
 		bob   = 
-			new StubTraderBuilder("bob", 50000l)
+			new StubTraderBuilder("bob")
+				.setCash(50000l)
 				.addStock(lemons, 200)
 				.addStock(oranges,400)
 				.build();
 		
 		alice = 
-			new StubTraderBuilder("alice", 1000000l)
+			new StubTraderBuilder("alice")
+				.setCash(1000000l)
 				.addStock(lemons, 100)
 				.addStock(oranges, 2000)
 				.build();

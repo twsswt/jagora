@@ -38,7 +38,8 @@ public class RandomTraderTest extends EasyMockSupport {
 			.setCash(100l)
 			.setSeed(1)
 			.addStock(lemons, 500000)
-			.setTradeRange(lemons, 1, 100, -5l, +5l, -5l, +5l)
+			.setBuyOrderRange(lemons, 1, 100, -5l, +5l)
+			.setSellOrderRange(lemons, 1, 100, -5l, +5l)
 			.build();
 	}
 

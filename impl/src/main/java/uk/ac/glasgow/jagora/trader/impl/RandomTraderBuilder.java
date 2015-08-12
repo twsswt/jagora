@@ -29,12 +29,17 @@ public class RandomTraderBuilder {
 		return this;
 	}
 	
-	public RandomTraderBuilder setTradeRange(
-		Stock stock, Integer minQuantity, Integer maxQuantity,
-		Long sellLow, Long sellHigh, Long buyLow, Long buyHigh){
+	public RandomTraderBuilder setSellOrderRange(
+		Stock stock, Integer minQuantity, Integer maxQuantity, Long sellLowVariance, Long sellHighVariance){
 		
-		sellRangeData.put(stock, new RangeData(stock, sellLow, sellHigh, minQuantity, maxQuantity));
-		buyRangeData.put(stock, new RangeData(stock, buyLow, buyHigh, minQuantity, maxQuantity));
+		sellRangeData.put(stock, new RangeData(stock, sellLowVariance, sellHighVariance, minQuantity, maxQuantity));
+		return this;
+	}
+	
+	public RandomTraderBuilder setBuyOrderRange(
+		Stock stock, Integer minQuantity, Integer maxQuantity, Long buyLowVariance, Long buyHighVariance){
+		
+		buyRangeData.put(stock, new RangeData(stock, buyLowVariance, buyHighVariance, minQuantity, maxQuantity));
 		return this;
 	}
 	

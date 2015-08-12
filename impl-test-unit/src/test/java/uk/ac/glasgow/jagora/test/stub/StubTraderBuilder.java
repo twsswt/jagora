@@ -12,9 +12,8 @@ public class StubTraderBuilder {
 	
 	private Map<Stock, Integer> inventory;
 		
-	public StubTraderBuilder(String name, Long cash){
+	public StubTraderBuilder(String name){
 		this.name = name;
-		this.cash = cash;
 		this.inventory = new HashMap<Stock,Integer>();
 	}
 	

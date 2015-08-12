@@ -35,9 +35,9 @@ public class GnuPlotPriceDATLogger implements TradeListener, OrderListener {
 		String template = null;
 		Long price = orderEntryEvent.price;
 		if (orderEntryEvent.orderDirection == SELL)
-			template = "%d,%d";
+			template = "%d,%d,,";
 		 else 
-			template = "%d,,%d";
+			template = "%d,,%d,";
 
 		printStream.println(
 			format(template,orderEntryEvent.tick, price));

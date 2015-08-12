@@ -67,10 +67,9 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 		RangeData rangeData = sellRangeData.get(stock);
 		
 		Integer quantity = createRandomQuantity(stock, uncommittedQuantity, rangeData);
-		
 		if (quantity > 0){
 			
-			Long offerPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);
+			Long offerPrice = stockExchangeLevel1View.getLastKnownBestBidPrice(stock);
 			
 			if (offerPrice == null) return;
 			Long price = createRandomPrice(stock, offerPrice, rangeData);
@@ -82,6 +81,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 			
 		} else {
 			SellOrder randomSellOrder = random.chooseElement(openSellOrders);
+
 			if (randomSellOrder != null)
 				cancelSafeSellOrder(stockExchangeLevel1View, randomSellOrder);
 		}
@@ -90,7 +90,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 	private void performRandomBuyAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
-		Long bestBidPrice = stockExchangeLevel1View.getLastKnownBestBidPrice(stock);
+		Long bestBidPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);
 		if (bestBidPrice == null) return;
 		RangeData rangeData = buyRangeData.get(stock);
 		Long price = createRandomPrice(stock, bestBidPrice, rangeData);
@@ -115,10 +115,11 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 	private Long createRandomPrice(Stock stock, Long midPoint, RangeData rangeData) {
 		
 		Long relativePriceRange = rangeData.high - rangeData.low;
+				
 		Long randomPrice = 
 			(long)(random.nextDouble() *  relativePriceRange) + rangeData.low + midPoint;
 		
-		return max(randomPrice, 0l);
+		return max(randomPrice, 1l);
 	}
 	
 	private Integer createRandomQuantity(Stock stock, Integer ceiling, RangeData rangeData) {

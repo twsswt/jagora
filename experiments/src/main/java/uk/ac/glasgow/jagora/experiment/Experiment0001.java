@@ -20,7 +20,7 @@ import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTraderListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
@@ -55,7 +55,8 @@ public class Experiment0001 {
 
 		Random r = new Random(seed);
 		
-		Trader dan = new StubTraderBuilder("stub", initialTraderCash)
+		Trader dan = new StubTraderBuilder("stub")
+			.setCash(initialTraderCash)
 			.addStock(lemons, 10).build();
 		
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
@@ -74,7 +75,8 @@ public class Experiment0001 {
 			traders.add(historicTrader);
 		}
 		
-		stockExchange.createLevel1View().registerTradeListener(new StdOutTradeListener());
+		OutputStreamTraderListener tradeListener = new OutputStreamTraderListener(System.out);
+		stockExchange.createLevel1View().registerTradeListener(tradeListener);
 		
 		engine = new SerialRandomEngineBuilder(world, seed)
 			.addStockExchange(stockExchange)

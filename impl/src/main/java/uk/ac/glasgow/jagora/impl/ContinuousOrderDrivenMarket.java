@@ -124,7 +124,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 
 	@Override
 	public String toString() {
-		return String.format("best bid: %d, best offer: %d", getBestBidPrice(), getBestOfferPrice());
+		return String.format("best bid: %d, best offer: %d", getLastKnownBestBidPrice(), getLastKnownBestOfferPrice());
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import uk.ac.glasgow.jagora.Order;
+import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.trader.Trader;
@@ -12,12 +12,14 @@ public class ScheduledLimitBuyOrder implements Comparable<ScheduledLimitBuyOrder
 	private final World world;
 	private final Stock stock;
 	private final Integer quantity;
+	private final Long limitPrice;
 	
-	public ScheduledLimitBuyOrder(Long delay, World world, Stock stock,	Integer quantity){
+	public ScheduledLimitBuyOrder(Long delay, World world, Stock stock,	Integer quantity, Long limitPrice){
 		this.delay = delay;
 		this.world = world;
 		this.stock = stock;
 		this.quantity = quantity;
+		this.limitPrice = limitPrice;
 	}
 
 	@Override
@@ -29,11 +31,11 @@ public class ScheduledLimitBuyOrder implements Comparable<ScheduledLimitBuyOrder
 		return delay;
 	}
 
-	public Order createBuyOrder(Trader trader, Long availableCash) {
-		return new LimitBuyOrder(trader, stock, quantity, availableCash/quantity);
+	public BuyOrder createBuyOrder(Trader trader) {
+		return new LimitBuyOrder(trader, stock, quantity, limitPrice);
 	}
 
-	public boolean shouldBeExecuted() {
+	public Boolean shouldBeExecuted() {
 		return world.getCurrentTick() > delay;
 	}
 }
