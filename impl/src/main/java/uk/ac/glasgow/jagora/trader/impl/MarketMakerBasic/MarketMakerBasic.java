@@ -97,7 +97,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
             cancelSafeBuyOrder(level1View,positionDatum.currentBuyOrder);
 
         Integer buyQuantity = positionDatum.sharesAimed;
-        if (positionDatum.inventoryAdjustment < -1) {
+        if (positionDatum.inventoryAdjustment < -2) {
             //if there' a big imbalance provide a stub quote to preserve inventory
             buyQuantity = Math.round(positionDatum.sharesAimed*0.01f);
         }
@@ -112,7 +112,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
             cancelSafeSellOrder(level1View,positionDatum.currentSellOrder);
 
         Integer sellQuantity = inventory.get(stock);
-        if (positionDatum.inventoryAdjustment > 1){
+        if (positionDatum.inventoryAdjustment > 0.66){
             //if there' a big imbalance provide a stub quote to preserve inventory
             sellQuantity = Math.round(inventory.get(stock)*0.1f);
         }
@@ -155,7 +155,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         }
 
         if (positionDatum.newBuyPrice >= positionDatum.newSellPrice)
-            fixPriceAnomalities();
+            fixPriceAnomalies();
 
     }
 
@@ -184,7 +184,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
         return  Math.round(toReturn);
     }
 
-    private void fixPriceAnomalities () {
+    private void fixPriceAnomalies () {
         //isolate the intervening price and fix it
         if (positionDatum.newSellPrice < marketDatum.lastPriceTraded)
             positionDatum.newSellPrice = positionDatum.newBuyPrice + 1l;

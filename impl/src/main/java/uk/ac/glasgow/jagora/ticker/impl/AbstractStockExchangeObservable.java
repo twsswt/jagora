@@ -228,7 +228,6 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		orderListeners.add(orderListener);
 	}
 
-	public  Integer orderCount = 0;
 
 	@Override
 	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent){
@@ -254,7 +253,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		for (OrderListener orderListener : randomisedOrderListeners)
 			notifyOrderListenerOfOrder(orderEntryEvent, orderListener);
-		orderCount ++;
+
 		//add submitted orders in the book
 		if (orderEvent.event instanceof SellOrder)
 			submittedSellOrders.add(orderEntryEvent);
