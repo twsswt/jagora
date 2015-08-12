@@ -150,7 +150,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
             positionDatum.setNewBuyPrice (marketDatum.lastPriceTraded - positionDatum.spread
             + inventoryPriceAdjustment);
 
-            positionDatum.setNewSellPrice(marketDatum.lastPriceTraded + positionDatum.spread -
+            positionDatum.setNewSellPrice(marketDatum.lastPriceTraded + positionDatum.spread +
                     PriceLiquidityAdjustment + inventoryPriceAdjustment);
         }
 

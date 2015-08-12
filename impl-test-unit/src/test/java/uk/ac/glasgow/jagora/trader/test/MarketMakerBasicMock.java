@@ -50,7 +50,7 @@ public class MarketMakerBasicMock {
     /**
      *
      * In the algorithm an order is placed and subsequently
-     * on every speak() turn of the marketMaker
+     * cancelled on every speak() turn of the marketMaker.
      * In this test the second place of an order should be
      * at a lower price because of the inventory excess
      * - more inventory of a stock than the one aimed for
@@ -104,9 +104,37 @@ public class MarketMakerBasicMock {
 
     }
 
+    /**
+     * In the algorithm an order is placed and subsequently
+     * cancelled on every speak() turn of the marketMaker.
+     * In this test buy liquidity is subsequently increased,
+     * which should increase the spread on the side that
+     * was last active - Sell in this case. The second
+     * sell order should have a higher price than the first one
+     */
     @Test
     public void testBuyLiquidityImbalancePriceAdjustment() {
+
+
+        mockExchange = createMock(StockExchangeLevel2View.class);
+
         MarketMakerBasic marketMaker = traderBuilder.build();
+
+        mockExchange.registerOrderListener(marketMaker);
+        mockExchange.registerTradeListener(marketMaker);
+
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
+        mockExchange.placeBuyOrder(buyOrder1);
+        mockExchange.cancelBuyOrder(buyOrder1);
+        mockExchange.placeBuyOrder(buyOrder1);
+
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
+        SellOrder sellOrder2 = new LimitSellOrder(marketMaker,lemons,1000,10114l);
+        mockExchange.placeSellOrder(sellOrder1);
+        mockExchange.cancelSellOrder(sellOrder1);
+        mockExchange.placeSellOrder(sellOrder2);
+
+        replay(mockExchange);
 
         marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.BUY));
         marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.SELL));
@@ -121,12 +149,40 @@ public class MarketMakerBasicMock {
         //Now that there is imbalance in liquidity - more buy desire, spread should increase
         // Sell price should be going up
         marketMaker.speak(mockExchange);
+
+        verify(mockExchange);
     }
 
+    /**
+     * In the algorithm an order is placed and subsequently
+     * cancelled on every speak() turn of the marketMaker.
+     *  In this test Sell Liquidity is subsequently increased,
+     *  which should increase the spread on the side that was
+     *  last active - buy in this case. The second buy order should
+     *  have a lower price than the first one.
+     */
     @Test
     public void testSellLiquidityImbalancePriceAdjustment () {
+        mockExchange = createMock(StockExchangeLevel2View.class);
 
         MarketMakerBasic marketMaker = traderBuilder.build();
+
+        mockExchange.registerOrderListener(marketMaker);
+        mockExchange.registerTradeListener(marketMaker);
+
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
+        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker,lemons,1000,9858l);
+        mockExchange.placeBuyOrder(buyOrder1);
+        mockExchange.cancelBuyOrder(buyOrder1);
+        mockExchange.placeBuyOrder(buyOrder2);
+
+
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
+        mockExchange.placeSellOrder(sellOrder1);
+        mockExchange.cancelSellOrder(sellOrder1);
+        mockExchange.placeSellOrder(sellOrder1);
+
+        replay(mockExchange);
 
         marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.BUY));
         marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.SELL));
@@ -140,6 +196,8 @@ public class MarketMakerBasicMock {
         //Now that there is imbalance in liquidity - more buy desire, spread should increase
         // Buy  price should be going down
         marketMaker.speak(mockExchange);
+
+        verify(mockExchange);
     }
 
 
