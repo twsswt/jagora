@@ -73,4 +73,9 @@ public class MarketDatum {
 
     protected void setLastTradeDirection(Boolean lastTradeWasSell) {this.lastTradeWasSell = lastTradeWasSell;}
 
+    @Override
+    public String toString() {
+        return String.format("Buy Side liquidity is " + this.buySideLiquidity
+        + " SellSide liquidity is " + this.sellSideLiquidity);
+    }
 }

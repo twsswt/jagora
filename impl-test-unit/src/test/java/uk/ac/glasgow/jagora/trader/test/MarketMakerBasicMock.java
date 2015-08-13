@@ -14,6 +14,8 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
 
+import java.util.Scanner;
+
 import static org.easymock.EasyMock.*;
 
 
@@ -31,11 +33,10 @@ public class MarketMakerBasicMock {
     StockExchangeLevel2View mockExchange;
 
 
-
     @Before
     public void setUp() {
         lemons = new Stock("lemons");
-        lemonsWarehouse = new StockWarehouse(lemons, 10000 );
+        lemonsWarehouse = new StockWarehouse(lemons, 10000);
 
         traderBuilder = new MarketMakerBasicBuilder("Goldman")
                 .addStockWarehouse(lemonsWarehouse)
@@ -50,7 +51,6 @@ public class MarketMakerBasicMock {
 
 
     /**
-     *
      * In the algorithm an order is placed and subsequently
      * cancelled on every speak() turn of the marketMaker.
      * In this test the second place of an order should be
@@ -58,7 +58,7 @@ public class MarketMakerBasicMock {
      * - more inventory of a stock than the one aimed for
      */
     @Test
-    public void testInventoryPriceAdjustment () throws Exception{
+    public void testInventoryPriceAdjustment() throws Exception {
         mockExchange = createMock(StockExchangeLevel2View.class);
 
         MarketMakerBasic marketMaker = traderBuilder.build();
@@ -67,15 +67,15 @@ public class MarketMakerBasicMock {
         mockExchange.registerOrderListener(marketMaker);
         mockExchange.registerTradeListener(marketMaker);
 
-        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
-        SellOrder sellOrder2 = new LimitSellOrder(marketMaker,lemons,2000,10067l);
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker, lemons, 1000, 10100l);
+        SellOrder sellOrder2 = new LimitSellOrder(marketMaker, lemons, 2000, 10067l);
         mockExchange.placeSellOrder(sellOrder1);
         mockExchange.cancelSellOrder(sellOrder1);
         mockExchange.placeSellOrder(sellOrder2);
 
 
-        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
-        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker,lemons,1000,9867l);
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker, lemons, 1000, 9900l);
+        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker, lemons, 1000, 9867l);
         mockExchange.placeBuyOrder(buyOrder1);
         mockExchange.cancelBuyOrder(buyOrder1);
         mockExchange.placeBuyOrder(buyOrder2);
@@ -84,19 +84,18 @@ public class MarketMakerBasicMock {
         replay(mockExchange);
 
 
-
         //Put some orders in the marketMaker so that liquidity calculations are not affected
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.BUY));
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.SELL));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
 
         //Put at least one trade executed so the pricing algorithm can function properly
-        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons,null,null, null, 10000l, 500, true ));
+        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500, true));
 
 
         marketMaker.speak(mockExchange);
 
         //balance of inventory is broken with the buy of this stock
-        marketMaker.buyStock(new DefaultTrade(lemons,1000,10l,null,new LimitBuyOrder(marketMaker,lemons,null,null),true));
+        marketMaker.buyStock(new DefaultTrade(lemons, 1000, 10l, null, new LimitBuyOrder(marketMaker, lemons, null, null), true));
 
         //now as there is more stock than the targeted market share, prices should be going down
         marketMaker.speak(mockExchange);
@@ -126,28 +125,28 @@ public class MarketMakerBasicMock {
         mockExchange.registerTradeListener(marketMaker);
 
 
-        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
-        SellOrder sellOrder2 = new LimitSellOrder(marketMaker,lemons,1000,10114l);
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker, lemons, 1000, 10100l);
+        SellOrder sellOrder2 = new LimitSellOrder(marketMaker, lemons, 1000, 10114l);
         mockExchange.placeSellOrder(sellOrder1);
         mockExchange.cancelSellOrder(sellOrder1);
         mockExchange.placeSellOrder(sellOrder2);
 
-        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker, lemons, 1000, 9900l);
         mockExchange.placeBuyOrder(buyOrder1);
         mockExchange.cancelBuyOrder(buyOrder1);
         mockExchange.placeBuyOrder(buyOrder1);
 
         replay(mockExchange);
 
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.BUY));
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.SELL));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
 
         //Algorithm for spread increase will work only if last trade was
-        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons,null,null, null, 10000l, 500, false ));
+        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500, false));
 
         marketMaker.speak(mockExchange);
 
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,1000l, OrderEntryEvent.OrderDirection.BUY));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 1000l, OrderEntryEvent.OrderDirection.BUY));
 
         //Now that there is imbalance in liquidity - more buy desire, spread should increase
         // Sell price should be going up
@@ -159,13 +158,13 @@ public class MarketMakerBasicMock {
     /**
      * In the algorithm an order is placed and subsequently
      * cancelled on every speak() turn of the marketMaker.
-     *  In this test Sell Liquidity is subsequently increased,
-     *  which should increase the spread on the side that was
-     *  last active - buy in this case. The second buy order should
-     *  have a lower price than the first one.
+     * In this test Sell Liquidity is subsequently increased,
+     * which should increase the spread on the side that was
+     * last active - buy in this case. The second buy order should
+     * have a lower price than the first one.
      */
     @Test
-    public void testSellLiquidityImbalancePriceAdjustment () {
+    public void testSellLiquidityImbalancePriceAdjustment() {
         mockExchange = createMock(StockExchangeLevel2View.class);
 
         MarketMakerBasic marketMaker = traderBuilder.build();
@@ -173,28 +172,28 @@ public class MarketMakerBasicMock {
         mockExchange.registerOrderListener(marketMaker);
         mockExchange.registerTradeListener(marketMaker);
 
-        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
-        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker,lemons,1000,9858l);
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker, lemons, 1000, 9900l);
+        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker, lemons, 1000, 9858l);
         mockExchange.placeBuyOrder(buyOrder1);
         mockExchange.cancelBuyOrder(buyOrder1);
         mockExchange.placeBuyOrder(buyOrder2);
 
 
-        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker, lemons, 1000, 10100l);
         mockExchange.placeSellOrder(sellOrder1);
         mockExchange.cancelSellOrder(sellOrder1);
         mockExchange.placeSellOrder(sellOrder1);
 
         replay(mockExchange);
 
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.BUY));
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.SELL));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
 
-        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons,null,null, null, 10000l, 500, true ));
+        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500, true));
 
         marketMaker.speak(mockExchange);
 
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,1000l, OrderEntryEvent.OrderDirection.SELL));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 1000l, OrderEntryEvent.OrderDirection.SELL));
 
         //Now that there is imbalance in liquidity - more buy desire, spread should increase
         // Buy  price should be going down
@@ -227,27 +226,27 @@ public class MarketMakerBasicMock {
         mockExchange.registerTradeListener(marketMaker);
 
 
-        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
-        SellOrder sellOrder2 = new LimitSellOrder(marketMaker,lemons,1000,9901l);
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker, lemons, 1000, 10100l);
+        SellOrder sellOrder2 = new LimitSellOrder(marketMaker, lemons, 1000, 9901l);
         mockExchange.placeSellOrder(sellOrder1);
         mockExchange.cancelSellOrder(sellOrder1);
         mockExchange.placeSellOrder(sellOrder2);
 
-        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker, lemons, 1000, 9900l);
         mockExchange.placeBuyOrder(buyOrder1);
         mockExchange.cancelBuyOrder(buyOrder1);
         mockExchange.placeBuyOrder(buyOrder1);
 
         replay(mockExchange);
 
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.BUY));
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.SELL));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
 
-        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons,null,null, null, 10000l, 500, false));
+        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500, false));
 
         marketMaker.speak(mockExchange);
 
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,1000l, OrderEntryEvent.OrderDirection.SELL));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 1000l, OrderEntryEvent.OrderDirection.SELL));
 
         marketMaker.speak(mockExchange);
 
@@ -263,9 +262,9 @@ public class MarketMakerBasicMock {
      * it is usually trying to buy is put
      */
     @Test
-    public void testStubQuoteAdjustment() throws Exception{
+    public void testStubQuoteAdjustment() throws Exception {
         mockExchange = createMock(StockExchangeLevel2View.class);
-
+        
         MarketMakerBasic marketMaker = traderBuilder
                 .setLiquidityAdjustmentInfluence(5.0) //This being the changing factor
                 .setInventoryAdjustmnetInfluence(1.0)
@@ -274,14 +273,14 @@ public class MarketMakerBasicMock {
         mockExchange.registerOrderListener(marketMaker);
         mockExchange.registerTradeListener(marketMaker);
 
-        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker,lemons,1000,9900l);
-        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker,lemons, 10,9830l);
+        BuyOrder buyOrder1 = new LimitBuyOrder(marketMaker, lemons, 1000, 9900l);
+        BuyOrder buyOrder2 = new LimitBuyOrder(marketMaker, lemons, 10, 9830l);
         mockExchange.placeBuyOrder(buyOrder1);
         mockExchange.cancelBuyOrder(buyOrder1);
         mockExchange.placeBuyOrder(buyOrder2);
 
-        SellOrder sellOrder1 = new LimitSellOrder(marketMaker,lemons,1000,10100l);
-        SellOrder sellOrder2 = new LimitSellOrder(marketMaker,lemons,3100,10030l);
+        SellOrder sellOrder1 = new LimitSellOrder(marketMaker, lemons, 1000, 10100l);
+        SellOrder sellOrder2 = new LimitSellOrder(marketMaker, lemons, 3100, 10030l);
         mockExchange.placeSellOrder(sellOrder1);
         mockExchange.cancelSellOrder(sellOrder1);
         mockExchange.placeSellOrder(sellOrder2);
@@ -289,10 +288,10 @@ public class MarketMakerBasicMock {
 
         replay(mockExchange);
 
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.BUY));
-        marketMaker.orderEntered(new OrderEntryEvent(null,null,lemons, 1000,10000l, OrderEntryEvent.OrderDirection.SELL));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
+        marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
 
-        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons,null,null, null, 10000l, 500, false));
+        marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500, false));
 
         marketMaker.speak(mockExchange);
 
@@ -304,5 +303,6 @@ public class MarketMakerBasicMock {
         verify(mockExchange);
 
     }
+
 }
 

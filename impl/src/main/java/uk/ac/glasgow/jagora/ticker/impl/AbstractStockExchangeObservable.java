@@ -226,6 +226,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 			return;
 
 		orderListeners.add(orderListener);
+		
 	}
 
 

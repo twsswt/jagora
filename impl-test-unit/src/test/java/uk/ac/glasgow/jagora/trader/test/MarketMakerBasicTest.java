@@ -12,20 +12,25 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketDatum;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTrader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentage;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentageBuilder;
+import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 
@@ -53,8 +58,6 @@ public class MarketMakerBasicTest {
     private Long initialTraderCash = 100000000l;
     private TradingEngine engine;
     private Integer lemonsQuantity = 100000;
-
-
 
 
     @Before
@@ -119,7 +122,7 @@ public class MarketMakerBasicTest {
     }
 
     @Test
-    public void testLiquidityCalculation() {
+    public void testLiquidityCalculation() throws Exception{
 
         engine.run();
 
@@ -127,47 +130,57 @@ public class MarketMakerBasicTest {
         System.out.println("cash is " +marketMaker.getCash() );
         System.out.println("inventory is " +marketMaker.getInventory(lemons));
 
-        //THE FOLLOWING BLOCK OF CODE CAN BE ENABLED BY UNCOMMENTING THE LAST
-        //TWO LINES OF MarketMakerBasic CLASS
+        Field marketDatum = marketMaker.getClass().getDeclaredField("marketDatum");
+        marketDatum.setAccessible(true);
+        MarketDatum marketData = (MarketDatum) marketDatum.get(marketMaker);
 
-        /*  <
-        System.out.println("MarketMaker buy side liquidity " + marketMaker.getBuySideLiquidity());
-        System.out.println("MarketMaker sell side liquidity " + marketMaker.getSellSideLiquidity());
+        Field buyField = marketData.getClass().getDeclaredField("buySideLiquidity");
+        buyField.setAccessible(true);
+        Integer buySideLiquidity = (Integer) buyField.get(marketData);
+
+        Field sellField = marketData.getClass().getDeclaredField("sellSideLiquidity");
+        sellField.setAccessible(true);
+        Integer sellSideLiquidity = (Integer) sellField.get(marketData);
+
+
+        System.out.println("Buy liquidity calculated by marketMaker is " + buySideLiquidity);
+        System.out.println("Sell liquidity calculated by marketMaker is " + sellSideLiquidity);
+
 
         //Need to execute the following block to have the observer view of liquidity
-        Integer realBuysideLiquidity = 0;
+        Integer realBuySideLiquidity = 0;
         Integer realSellSideLiquidity = 0;
         for (OrderEntryEvent event :tickerTapeObserver.getBuyOrderHistory(lemons))
-            realBuysideLiquidity += event.quantity;
+            realBuySideLiquidity += event.quantity;
 
         for (OrderEntryEvent event: tickerTapeObserver.getSellOrderHistory(lemons))
             realSellSideLiquidity += event.quantity;
 
 
         for (OrderEntryEvent event : tickerTapeObserver.getCancelledBuyOrderHistory(lemons))
-            realBuysideLiquidity -= event.quantity;
+            realBuySideLiquidity -= event.quantity;
 
         for (OrderEntryEvent event: tickerTapeObserver.getCancelledSellOrderHistory(lemons))
             realSellSideLiquidity -= event.quantity;
 
         for (TickEvent<Trade> event :tickerTapeObserver.getTradeHistory(lemons)){
-            realBuysideLiquidity -= event.event.getQuantity();
+            realBuySideLiquidity -= event.event.getQuantity();
             realSellSideLiquidity -= event.event.getQuantity();
         }
 
         //this has to be adjusted around the point at which the market maker is let on the market
         Double permittedError = 400.0;
 
-//        assertThat (realBuysideLiquidity.doubleValue(),
-//                closeTo(marketMaker.getBuySideLiquidity().doubleValue(),permittedError));
-//        assertThat(realSellSideLiquidity.doubleValue(),
-//                closeTo(marketMaker.getSellSideLiquidity().doubleValue(),permittedError));
+        assertThat (realBuySideLiquidity.doubleValue(),
+                closeTo(buySideLiquidity.doubleValue(),permittedError));
+        assertThat(realSellSideLiquidity.doubleValue(),
+                closeTo(sellSideLiquidity.doubleValue(),permittedError));
 
 
 
-        System.out.println("Observer calculated buy liquidity " + realBuysideLiquidity);
+        System.out.println("Observer calculated buy liquidity " + realBuySideLiquidity);
         System.out.println("Observer calculated sell liquidity " +realSellSideLiquidity);
-        */
+
 
     }
 }
