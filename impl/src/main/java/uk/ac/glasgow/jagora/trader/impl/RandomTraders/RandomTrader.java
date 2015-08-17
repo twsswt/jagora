@@ -38,7 +38,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 	public void speak(StockExchangeLevel1View traderMarketView) {
 		Stock randomStock = random.chooseElement(sellRangeData.keySet());
 		//good because we can only trade with predefined stocks
-		
+
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
 		else 
@@ -79,7 +79,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 			
 		} else {
 			SellOrder randomSellOrder = random.chooseElement(openSellOrders);
-            //possible bug - it's not the same stock as the one in the signature?
+
 			if (randomSellOrder != null)
 				cancelSafeSellOrder(stockExchangeLevel1View, randomSellOrder);
 		}

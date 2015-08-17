@@ -5,7 +5,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTraderPercentageBuilder extends RandomTraderBuilder {
-    private Long LongChange = 0l;
+    private final Long LongChange = 0l;
 
     public RandomTraderPercentageBuilder() {
         super();

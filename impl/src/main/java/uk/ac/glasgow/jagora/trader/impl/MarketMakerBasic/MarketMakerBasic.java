@@ -17,7 +17,8 @@ import java.util.Set;
 
 /**
  * This implementation of MarketMaker will only work for a single stock
- * on a single or multiple exchanges. The provided stockWarehouse should be
+ * on a single exchange!- multiple stocks and exchanges are  confusing the algorithm.
+ * The provided stockWarehouse should be
  * consistent throughout the whole usage of the environment to ensure proper
  * functioning of the algorithm.
  */
@@ -220,7 +221,4 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
             marketDatum.removeBuySideLiquidity(orderEntryEvent.quantity);
     }
 
-
-//    public Integer getBuySideLiquidity() {return marketDatum.buySideLiquidity;}
-//    public Integer getSellSideLiquidity() {return marketDatum.sellSideLiquidity;}
 }

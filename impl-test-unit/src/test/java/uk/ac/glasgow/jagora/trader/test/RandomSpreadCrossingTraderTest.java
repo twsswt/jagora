@@ -13,8 +13,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTrader;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTraderBuilder;
 
 public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
 	
@@ -45,8 +45,7 @@ public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
 
 	@Test
 	public void test() {
-		
-		//mockExchange
+
 		mockExchange.getBestBidPrice(lemons);
 		expectLastCall().andReturn(4l);
 		mockExchange.placeSellOrder(new LimitSellOrder (trader, lemons, 1, 3l));

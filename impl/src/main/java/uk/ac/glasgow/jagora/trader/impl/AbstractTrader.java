@@ -98,7 +98,7 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void buyStock(Trade trade) throws TradeExecutionException {
-		if(trade.getBuyer() != this)
+		if(trade.getBuyer() != this && trade.getSeller() != this)
 			throw  new TradeExecutionException("Trader not the same", trade, this);
 
 		Long totalPrice = trade.getPrice() * trade.getQuantity();
