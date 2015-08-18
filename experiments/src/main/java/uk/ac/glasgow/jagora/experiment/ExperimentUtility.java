@@ -14,12 +14,11 @@ import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
+import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.HighFrequencyRandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.HighFrequencyRandomTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.RandomTraders.*;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -30,32 +29,43 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.stream.IntStream.range;
 
 
-
+/**
+ *  Utility class to be used for setting up experiments
+ *  Experiments should be child classes.
+ *  Methods can be overridden.
+ *  Only works for a single stock
+ */
 public class ExperimentUtility {
+
 
     // experimental parameters
 
     protected Long numberOfTraderActions = 10000l;
     protected Integer seed = 1;
-    protected Long standartDelay = 7l;
+    protected Long standardDelay = 10l;
 
-    protected Long initialTraderCash = 100000000l;
+    protected Long initialTraderCash = 100000l;
     protected Long initialLevel2TraderCash = 1000000l;
     protected Integer lemonsQuantity = 1000000;
 
-    protected Integer numberOfRandomTraders = 100;
-    protected Integer numberOfMarketMakers = 10;
-    protected Integer numberOfHighFrequencyTraders = 10;
-    protected Integer numberofRandomSpreadCrossingTraders = 100;
-    protected Integer numberOfSimpleHistoricTraders = 100;
 
+
+    protected Integer numberOfRandomTraders = 0;
+    protected Integer numberOfMarketMakers = 0;
+    protected Integer numberOfHighFrequencyTraders = 0;
+    protected Integer numberOfRandomSpreadCrossingTraders = 0;
+    protected Integer numberOfSimpleHistoricTraders = 0;
+
+    protected Double institutionalInvestorStockPercentage = 0.0;
     protected Float   marketMakerShare = 0.05f;
     protected Double marketMakerInventoryAdjustmentInfluence = 1.0;
     protected Double marketMakerLiquidityAdjustmentInfluence = 1.0;
@@ -65,6 +75,8 @@ public class ExperimentUtility {
     protected Double randomSpreadCrossingTraderSpread = 0.001;
     protected Integer quantityTradeRangeLow = 1;
     protected Integer quantityTradeRangeHigh = 300;
+
+    protected Long firstTradePrice = 1000l;
 
     protected final String pricesDatFilePath = "reports/jagora/default/prices.dat";
 
@@ -84,6 +96,9 @@ public class ExperimentUtility {
     protected Set<Level1Trader> level1Traders;
     protected Set<Level2Trader> level2Traders;
 
+    protected Map<Long,Integer> delayedBuyOrders = new HashMap<>();
+    protected Map<Long,Integer> delayedSellOrders = new HashMap<>();
+
     protected Integer stockQuantity = 0;
 
 
@@ -101,7 +116,9 @@ public class ExperimentUtility {
         level2Traders = new HashSet<>();
 
         addRandomTraders(level1Traders);
+        addRandomSpreadCrossingTraders(level1Traders);
         addSimpleHistoricTraders(level1Traders);
+        addInstitutionalInvestorTrader(level1Traders);
 
         addHighFrequencyTraders (level2Traders);
         addMarketMakers (level2Traders);
@@ -109,7 +126,7 @@ public class ExperimentUtility {
 
         engine = new SerialRandomEngineBuilder(world,seed)
                 .addStockExchange(stockExchange)
-                .setStandartDelay(standartDelay)
+                .setStandartDelay(standardDelay)
                 .addTraders(level1Traders)
                 .addPrivilegedTraders(level2Traders)
                 .build();
@@ -117,14 +134,15 @@ public class ExperimentUtility {
         configureFirstTrade();
     }
 
+
     protected void calculateNumberOfShares() {
         Double quantityForLevel1Traders = lemonsWarehouse.getInitialQuantity()*
-                (1.0 - numberOfMarketMakers*marketMakerShare);
+                (1.0 - numberOfMarketMakers*marketMakerShare - institutionalInvestorStockPercentage);
 
         Double quantityForLevel1Trader =
                 quantityForLevel1Traders/
                         (numberOfRandomTraders + numberOfSimpleHistoricTraders
-                                +numberofRandomSpreadCrossingTraders);
+                                + numberOfRandomSpreadCrossingTraders);
         stockQuantity = quantityForLevel1Trader.intValue();
 
     }
@@ -207,6 +225,52 @@ public class ExperimentUtility {
     }
 
 
+    protected void addRandomSpreadCrossingTraders(Set<Level1Trader> level1Traders) {
+        for (Integer i : range(0, numberOfRandomSpreadCrossingTraders).toArray()) {
+
+            String name = createTraderName(RandomSpreadCrossingTrader.class,i);
+
+            RandomSpreadCrossingTrader trader =
+                        new RandomSpreadCrossingTraderBuilder()
+                            .setName(name)
+                            .addStock(lemons, stockQuantity)
+                            .setSeed(seed)
+                            .setCash(initialTraderCash)
+                            .addTradeRange(lemons,quantityTradeRangeLow,quantityTradeRangeHigh,4l)
+                            .build();
+
+            level1Traders.add(trader);
+        }
+    }
+
+    protected void addInstitutionalInvestorTrader (Set<Level1Trader> level1Traders) throws Exception{
+
+            if (delayedBuyOrders.isEmpty() && delayedSellOrders.isEmpty())
+                return;
+
+            String name = createTraderName(InstitutionalInvestorTrader.class, 1);
+            Integer quantity = Math.round(lemonsQuantity* institutionalInvestorStockPercentage.floatValue());
+
+            InstitutionalInvestorTraderBuilder traderBuilder =
+                    new InstitutionalInvestorTraderBuilder()
+                            .setName(name)
+                            .setCash(initialLevel2TraderCash)
+                            .addStock(lemons, lemonsWarehouse.getStock(quantity));
+
+            for (Long delay : delayedBuyOrders.keySet())
+                traderBuilder.addScheduledLimitBuyOrder(
+                        delay, world,lemons, delayedBuyOrders.get(delay) );
+
+            for (Long delay : delayedSellOrders.keySet())
+                traderBuilder.addScheduledLimitSellOrder(
+                        delay, world, lemons, delayedSellOrders.get(delay));
+
+
+
+        level1Traders.add(traderBuilder.build());
+
+    }
+
     protected String createTraderName(Class<? extends Trader> clazz, Integer i) {
         String traderTypeName = clazz.getSimpleName();
         String nameFormat = "%s[%d]";
@@ -235,8 +299,8 @@ public class ExperimentUtility {
                 .addStock(lemons, 10).build();
 
         StockExchangeLevel1View danView = stockExchange.createLevel1View();
-        danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, 1001l));
-        danView.placeSellOrder(new LimitSellOrder(dan, lemons, 7, 999l));
+        danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, firstTradePrice + 1));
+        danView.placeSellOrder(new LimitSellOrder(dan, lemons, 7, firstTradePrice));
 
     }
 

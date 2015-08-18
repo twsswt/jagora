@@ -33,7 +33,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 	private final Map<Stock,TradeRange> tradeRanges;
 	private final Random random;
 	
-	public RandomSpreadCrossingTrader(
+	protected RandomSpreadCrossingTrader(
 		String name, Long cash, Map<Stock, Integer> inventory,
 		Random random, Map<Stock,TradeRange> tradeRanges) {
 		

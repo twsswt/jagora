@@ -285,7 +285,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 						event.getPrice(),
 						direction);
 
-		//TODO bug remaining quantity is not updated
+
 		if (event instanceof SellOrder) {
 			cancelledSellOrders.add(orderEntryEvent);
 		}
