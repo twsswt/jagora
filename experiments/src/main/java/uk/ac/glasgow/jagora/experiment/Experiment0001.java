@@ -1,12 +1,7 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
@@ -27,6 +22,10 @@ import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
+
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 public class Experiment0001 {
 

@@ -1,21 +1,18 @@
 package uk.ac.glasgow.jagora.trader.test;
 
-import static org.easymock.EasyMock.expect;
-
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
-import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
-import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.MarginalTraderBuilder;
+
+import static org.easymock.EasyMock.expect;
 
 public class MarginalTraderTest extends EasyMockSupport {
 		

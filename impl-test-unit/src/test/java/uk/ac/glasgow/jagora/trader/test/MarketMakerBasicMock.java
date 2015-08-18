@@ -1,20 +1,18 @@
 package uk.ac.glasgow.jagora.trader.test;
 
-import org.easymock.*;
+import org.easymock.EasyMockRule;
+import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-
 import uk.ac.glasgow.jagora.*;
-import uk.ac.glasgow.jagora.impl.*;
+import uk.ac.glasgow.jagora.impl.DefaultTrade;
+import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
-
-import java.util.Scanner;
 
 import static org.easymock.EasyMock.*;
 
@@ -219,7 +217,7 @@ public class MarketMakerBasicMock {
 
         MarketMakerBasic marketMaker = traderBuilder
                 .setLiquidityAdjustmentInfluence(5.0) //This being the changing factor
-                .setInventoryAdjustmnetInfluence(1.0)
+                .setInventoryAdjustmentInfluence(1.0)
                 .build();
 
         mockExchange.registerOrderListener(marketMaker);
@@ -267,7 +265,7 @@ public class MarketMakerBasicMock {
         
         MarketMakerBasic marketMaker = traderBuilder
                 .setLiquidityAdjustmentInfluence(5.0) //This being the changing factor
-                .setInventoryAdjustmnetInfluence(1.0)
+                .setInventoryAdjustmentInfluence(1.0)
                 .build();
 
         mockExchange.registerOrderListener(marketMaker);

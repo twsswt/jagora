@@ -1,16 +1,16 @@
 package uk.ac.glasgow.jagora.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.world.TickEvent;
+
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.*;
 
 public class ReceivedSellOrderTest {
 	

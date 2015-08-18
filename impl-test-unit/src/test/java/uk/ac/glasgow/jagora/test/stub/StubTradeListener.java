@@ -1,10 +1,10 @@
 package uk.ac.glasgow.jagora.test.stub;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StubTradeListener implements TradeListener {
 

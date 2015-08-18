@@ -1,8 +1,8 @@
 package uk.ac.glasgow.jagora;
 
-import java.util.List;
-
 import uk.ac.glasgow.jagora.world.TickEvent;
+
+import java.util.List;
 
 /**
  * Defines features of a market for a single stock.

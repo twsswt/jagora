@@ -1,8 +1,6 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;

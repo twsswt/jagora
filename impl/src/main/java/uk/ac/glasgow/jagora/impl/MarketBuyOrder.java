@@ -1,7 +1,6 @@
 package uk.ac.glasgow.jagora.impl;
 
 
-import uk.ac.glasgow.jagora.Market;
 import uk.ac.glasgow.jagora.MarketOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;

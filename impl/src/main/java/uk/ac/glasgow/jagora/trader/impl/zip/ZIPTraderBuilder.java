@@ -1,15 +1,11 @@
 package uk.ac.glasgow.jagora.trader.impl.zip;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.IntStream;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJobSpecification.BuyOrderJobSpecification;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJobSpecification.SellOrderJobSpecification;
+
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class ZIPTraderBuilder {
 

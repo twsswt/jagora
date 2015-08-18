@@ -1,9 +1,9 @@
 package uk.ac.glasgow.jagora.test.stub;
 
+import uk.ac.glasgow.jagora.Stock;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import uk.ac.glasgow.jagora.Stock;
 
 public class StubTraderBuilder {
 	

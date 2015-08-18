@@ -2,8 +2,8 @@ package uk.ac.glasgow.jagora.ticker.impl;
 
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 /**
  * Ordering of notification is randomised to prevent early registrants from

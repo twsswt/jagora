@@ -1,9 +1,9 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import java.io.PrintStream;
-
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
+
+import java.io.PrintStream;
 
 public class OutputStreamOrderListener implements OrderListener {
 

@@ -1,15 +1,11 @@
 package uk.ac.glasgow.jagora.trader.test;
 
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
-
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -18,6 +14,9 @@ import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
+
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
 
 public class ZIPTraderTest extends EasyMockSupport {
 	

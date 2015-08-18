@@ -1,12 +1,7 @@
 package uk.ac.glasgow.jagora.test;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
@@ -26,6 +21,10 @@ import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.ThreadedTickerTapeObserver;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class DefaultStockExchangeTest {
 

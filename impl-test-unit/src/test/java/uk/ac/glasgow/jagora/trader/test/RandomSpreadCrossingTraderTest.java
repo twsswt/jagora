@@ -1,20 +1,19 @@
 package uk.ac.glasgow.jagora.trader.test;
 
-import static org.easymock.EasyMock.expectLastCall;
-
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTrader;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTraderBuilder;
+
+import static org.easymock.EasyMock.expectLastCall;
 
 public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
 	

@@ -1,15 +1,11 @@
 package uk.ac.glasgow.jagora.test;
 
-import org.junit.*;
+import org.junit.Before;
 import org.junit.Test;
-import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockWarehouse;
-import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
-import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
 import static org.testng.AssertJUnit.assertEquals;
 

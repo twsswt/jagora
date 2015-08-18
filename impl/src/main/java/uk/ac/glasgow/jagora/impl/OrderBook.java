@@ -1,13 +1,13 @@
 package uk.ac.glasgow.jagora.impl;
 
+import uk.ac.glasgow.jagora.Order;
+import uk.ac.glasgow.jagora.world.TickEvent;
+import uk.ac.glasgow.jagora.world.World;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-
-import uk.ac.glasgow.jagora.Order;
-import uk.ac.glasgow.jagora.world.TickEvent;
-import uk.ac.glasgow.jagora.world.World;
 
 /**
  * Manages buy or sell orders for a single stock type.

@@ -1,14 +1,14 @@
 package uk.ac.glasgow.jagora.test.stub;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StubStockExchange implements StockExchange {
 

@@ -1,11 +1,5 @@
 package uk.ac.glasgow.jagora.trader.impl.RandomTraders;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
@@ -15,6 +9,12 @@ import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.util.Random;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Level1Trader {
 	

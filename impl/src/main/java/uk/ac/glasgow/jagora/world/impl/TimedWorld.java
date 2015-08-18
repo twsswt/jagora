@@ -1,9 +1,9 @@
 package uk.ac.glasgow.jagora.world.impl;
 
-import java.util.Date;
-
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
+
+import java.util.Date;
 
 public class TimedWorld implements World{
 	

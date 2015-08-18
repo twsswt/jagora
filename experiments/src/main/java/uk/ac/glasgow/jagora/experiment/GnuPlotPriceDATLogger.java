@@ -1,14 +1,14 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import static java.lang.String.format;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 import java.io.PrintStream;
 
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
-import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import static java.lang.String.format;
+import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
 
 /**
  * 

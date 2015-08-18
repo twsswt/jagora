@@ -1,17 +1,9 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.Order;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
+
+import java.util.*;
 
 /**
  * This type of trader implements ScheduledLimitBuyOrder,
@@ -40,13 +32,13 @@ public class InstitutionalInvestorTrader extends SafeAbstractTrader implements L
 
 			scheduledOrders.poll();
 			Order order = nextScheduledOrder.	createBuyOrder(this, getCash());
-			//possible bug?? every time you create a buy order?
+
 			if (order instanceof BuyOrder){
 				traderMarketView.placeBuyOrder((BuyOrder)order);	
 				placedOrders.add(order);
 
 			}else 
-				traderMarketView.placeSellOrder((SellOrder)order); //you don't keep them in your book?
+				traderMarketView.placeSellOrder((SellOrder)order);
 			
 			nextScheduledOrder = scheduledOrders.peek();
 		}

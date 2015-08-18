@@ -1,11 +1,14 @@
 package uk.ac.glasgow.jagora.engine.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import uk.ac.glasgow.jagora.*;
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DelayedExchangeLevel1View implements StockExchangeLevel1View {

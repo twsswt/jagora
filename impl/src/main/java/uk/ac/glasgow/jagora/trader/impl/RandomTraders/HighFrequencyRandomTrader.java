@@ -37,8 +37,7 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 
     private Long lastPriceTraded =0l;
 
-
-    public HighFrequencyRandomTrader(String name, Long cash, Map<Stock, Integer> inventory,
+    HighFrequencyRandomTrader(String name, Long cash, Map<Stock, Integer> inventory,
                                      RangeData buyRangeData, RangeData sellRangeData,
                                      Random random) {
         super(name, cash, inventory);

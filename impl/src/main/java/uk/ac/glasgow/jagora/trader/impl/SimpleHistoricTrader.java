@@ -1,10 +1,5 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.OptionalDouble;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -13,6 +8,11 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.util.Random;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.OptionalDouble;
 
 /**
  * A trader that places a bid if the current best offer is below the historic
@@ -121,8 +121,6 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 	}
 	
 	private Integer computeAverageQuantity(Stock stock) {
-		// TODO Recalculating the average like this each time isn't very efficient.  
-		// It would be better to maintain a running average.
 		
 		synchronized (tradeExecutionEvents){
 			OptionalDouble average = 

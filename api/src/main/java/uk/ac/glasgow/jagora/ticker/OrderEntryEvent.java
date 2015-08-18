@@ -1,8 +1,9 @@
 package uk.ac.glasgow.jagora.ticker;
 
-import static java.lang.String.format;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.Trader;
+
+import static java.lang.String.format;
 
 public class OrderEntryEvent {
 	

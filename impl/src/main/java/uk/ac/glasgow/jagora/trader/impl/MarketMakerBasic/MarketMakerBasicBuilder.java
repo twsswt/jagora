@@ -5,9 +5,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockWarehouse;
 import uk.ac.glasgow.jagora.util.Random;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MarketMakerBasicBuilder {
@@ -71,7 +69,7 @@ public class MarketMakerBasicBuilder {
         return this;
     }
 
-    public MarketMakerBasicBuilder setInventoryAdjustmnetInfluence(Double inventoryAdjustmnetInfluence) {
+    public MarketMakerBasicBuilder setInventoryAdjustmentInfluence(Double inventoryAdjustmnetInfluence) {
         this.inventoryAdjustmentInfluence = inventoryAdjustmnetInfluence;
         return this;
     }

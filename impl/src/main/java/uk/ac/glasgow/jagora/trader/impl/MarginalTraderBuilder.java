@@ -1,10 +1,10 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.util.Random;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MarginalTraderBuilder  {

@@ -1,16 +1,16 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import static java.lang.String.format;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.TradeExecutionException;
+import uk.ac.glasgow.jagora.trader.Trader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.TradeExecutionException;
-import uk.ac.glasgow.jagora.trader.Trader;
+import static java.lang.String.format;
 
 /**
  * Implements basic trader functionality. Sub-classes implement trader specific

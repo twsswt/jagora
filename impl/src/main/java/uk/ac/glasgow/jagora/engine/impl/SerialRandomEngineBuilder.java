@@ -1,13 +1,13 @@
 package uk.ac.glasgow.jagora.engine.impl;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class SerialRandomEngineBuilder {
 

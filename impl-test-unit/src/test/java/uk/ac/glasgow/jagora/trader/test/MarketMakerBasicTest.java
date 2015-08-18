@@ -20,8 +20,6 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketDatum;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
 import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentage;
 import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderPercentageBuilder;
 import uk.ac.glasgow.jagora.world.TickEvent;
@@ -30,7 +28,6 @@ import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 

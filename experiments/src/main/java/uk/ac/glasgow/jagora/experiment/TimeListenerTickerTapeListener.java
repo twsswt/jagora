@@ -1,9 +1,9 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import static java.lang.String.format;
-
-import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
+
+import static java.lang.String.format;
 
 public class TimeListenerTickerTapeListener implements TradeListener {
 

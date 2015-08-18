@@ -1,22 +1,19 @@
 package uk.ac.glasgow.jagora.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.*;
 import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
+
+import static org.junit.Assert.assertEquals;
 
 public class MarketOrderTest {
 

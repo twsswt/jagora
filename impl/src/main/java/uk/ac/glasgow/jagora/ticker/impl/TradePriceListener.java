@@ -1,10 +1,8 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
 
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.trader.Trader;
 

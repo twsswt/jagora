@@ -1,14 +1,11 @@
 package uk.ac.glasgow.jagora.trader.test;
 
-import static org.easymock.EasyMock.expect;
-
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -16,6 +13,8 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
+
+import static org.easymock.EasyMock.expect;
 
 public class SimpleHistoricTraderTest extends EasyMockSupport {
 

@@ -1,10 +1,8 @@
 package uk.ac.glasgow.jagora.test;
 
 
-import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;

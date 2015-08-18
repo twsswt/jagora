@@ -1,10 +1,6 @@
 package uk.ac.glasgow.jagora;
 
 
-import uk.ac.glasgow.jagora.Stock;
-
-
-
 public class StockWarehouse {
 
     private final Stock stock;

@@ -1,11 +1,5 @@
 package uk.ac.glasgow.jagora.trader.impl.RandomTraders;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
@@ -16,6 +10,12 @@ import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.util.Random;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 
 	
@@ -24,6 +24,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 
 	protected final Random random;
 
+	Integer saveQuantity = 0;
 	
 	public RandomTrader(
 		String name, Long cash, Map<Stock, Integer> inventory,
@@ -64,7 +65,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 		RangeData rangeData = sellRangeData.get(stock);
 		
 		Integer quantity = createRandomQuantity(uncommittedQuantity, rangeData);
-		
+		saveQuantity = uncommittedQuantity - quantity;
 		if (quantity > 0){
 			
 			Long offerPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);

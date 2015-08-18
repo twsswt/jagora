@@ -1,13 +1,13 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public abstract class SafeAbstractTrader extends AbstractTrader {
 
@@ -19,7 +19,7 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		this.openBuyOrders = new ArrayList<BuyOrder>();
 		this.openSellOrders = new ArrayList<SellOrder>();
 	}
-	// no signal if the trade is not executed?
+
 	protected Boolean placeSafeBuyOrder(StockExchangeLevel1View traderView, BuyOrder buyOrder) {
 		//if you have enough money, you can place the order(that's safe)
 

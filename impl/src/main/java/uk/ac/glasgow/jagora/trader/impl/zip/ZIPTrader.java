@@ -1,15 +1,4 @@
 package uk.ac.glasgow.jagora.trader.impl.zip;
-import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.INCREASE;
-import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.REDUCE;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
 
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
@@ -22,6 +11,11 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction;
+
+import java.util.*;
+
+import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.INCREASE;
+import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.REDUCE;
 
 public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, TradeListener, OrderListener {
 		

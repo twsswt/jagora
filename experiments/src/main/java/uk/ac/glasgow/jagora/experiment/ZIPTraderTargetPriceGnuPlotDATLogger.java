@@ -1,13 +1,13 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import java.io.PrintStream;
-import java.util.Set;
-
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPBuyOrderJob;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPSellOrderJob;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
+
+import java.io.PrintStream;
+import java.util.Set;
 
 /**
  * 

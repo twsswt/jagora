@@ -1,14 +1,13 @@
 package uk.ac.glasgow.jagora.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.pricer.TradePricer;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
-import uk.ac.glasgow.jagora.StockWarehouse;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author tws

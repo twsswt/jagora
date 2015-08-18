@@ -1,14 +1,11 @@
 package uk.ac.glasgow.jagora.impl;
 
-import static java.lang.String.format;
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.TradeExecutionException;
+import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
+
+import static java.lang.String.format;
 
 public class DefaultTrade implements Trade {
 

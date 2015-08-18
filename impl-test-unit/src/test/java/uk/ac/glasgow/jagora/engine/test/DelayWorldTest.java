@@ -1,7 +1,7 @@
 package uk.ac.glasgow.jagora.engine.test;
 
 
-import org.junit.*;
+import org.junit.Before;
 import org.junit.Test;
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;

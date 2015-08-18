@@ -1,18 +1,7 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import static java.lang.String.format;
-import static java.util.stream.IntStream.range;
-
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
@@ -27,8 +16,8 @@ import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
-import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
+import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
@@ -42,13 +31,23 @@ import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.TimedWorld;
 
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
+import static java.lang.String.format;
+import static java.util.stream.IntStream.range;
+
 public class Experiment0002 {
 
 	//Parameters.
 	private Long durationInMilliSeconds = 120000l;
 	private Integer seed = 1;
 
-	private Integer numberOfRandomTraders = 50;
+	private Integer numberOfRandomTraders = 10;
 	private Integer numberOfSpreadCrossingRandomTraders = 50;
 	private Integer numberOfSimpleHistoricTraders = 5;
 	private Integer numberOfInstitutionalInvestorTraders = 1;
@@ -189,6 +188,7 @@ public class Experiment0002 {
 	@Test
 	public void test() {
 		engine.run();
+
 	}
 
 }

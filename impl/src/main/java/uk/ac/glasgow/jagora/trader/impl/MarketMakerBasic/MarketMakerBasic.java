@@ -41,7 +41,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
     private Double liquidityAdjustmnetInfluence;
 
 
-    public MarketMakerBasic (String name, Long cash, Map<Stock, Integer> inventory,
+    MarketMakerBasic (String name, Long cash, Map<Stock, Integer> inventory,
                              StockWarehouse stockWarehouse, Float marketShare,
                              Random random, Double spreadPercentage,
                              Double inventoryAdjustmentInfluence,

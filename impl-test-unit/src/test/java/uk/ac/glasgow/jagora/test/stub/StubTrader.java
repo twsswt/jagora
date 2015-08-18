@@ -1,9 +1,5 @@
 package uk.ac.glasgow.jagora.test.stub;
 
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
@@ -13,6 +9,10 @@ import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
 import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
+
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
 
 public class StubTrader extends AbstractTrader implements Level1Trader {
 	

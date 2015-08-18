@@ -1,10 +1,10 @@
 package uk.ac.glasgow.jagora.trader.impl.zip;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class MarketDatum {
 	

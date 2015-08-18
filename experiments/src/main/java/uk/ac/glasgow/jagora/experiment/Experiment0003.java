@@ -1,28 +1,8 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import static java.lang.String.format;
-import static java.util.Collections.shuffle;
-import static java.util.stream.IntStream.range;
-import static org.hamcrest.Matchers.closeTo;
-import static org.junit.Assert.assertThat;
-import static uk.ac.glasgow.jagora.experiment.MarketCalculationsUtil.calculateEquilibriumPrice;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
@@ -38,6 +18,21 @@ import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import static java.lang.String.format;
+import static java.util.Collections.shuffle;
+import static java.util.stream.IntStream.range;
+import static org.hamcrest.Matchers.closeTo;
+import static org.junit.Assert.assertThat;
+import static uk.ac.glasgow.jagora.experiment.MarketCalculationsUtil.calculateEquilibriumPrice;
 
 /**
  * Reproduce's Cliff (1997)'s experimental results for Zero Intelligence Traders.
