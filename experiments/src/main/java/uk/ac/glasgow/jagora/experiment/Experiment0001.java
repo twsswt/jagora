@@ -1,5 +1,7 @@
 package uk.ac.glasgow.jagora.experiment;
 
+import static java.util.stream.IntStream.range;
+
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -17,72 +19,99 @@ import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
+import uk.ac.glasgow.jagora.pricer.TradePricer;
+import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTraderListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
-import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
 public class Experiment0001 {
-
-	private World world;
-	private Stock lemons;
-	private StockExchange stockExchange;
-	
-	private SerialTickerTapeObserver tickerTapeObserver;
-	
-	private Long numberOfTraderActions = 10l;
-	private Integer seed = 1;
-	private int numberOfTraders = 1000;
-	private Long initialTraderCash = 10000000l;
+		
 	private TradingEngine engine;
 	
 	@Before
 	public void setUp() throws Exception {
-		world = new SimpleSerialWorld(numberOfTraderActions);
-		lemons = new Stock("lemons");
 		
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
+		Random r = new Random(1);
 		
-		tickerTapeObserver = new SerialTickerTapeObserver();
+		World world =
+			new SimpleSerialWorld(10000l);
 		
-		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
-
-		Random r = new Random(seed);
+		Stock lemons =
+			new Stock("lemons");
 		
-		Trader dan = new StubTraderBuilder("stub")
-			.setCash(initialTraderCash)
-			.addStock(lemons, 10).build();
+		TradePricer tradePricer =
+			new OldestOrderPricer();
 		
-		StockExchangeLevel1View danView = stockExchange.createLevel1View();
-		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, 1001l));
-		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 5, 999l));
+		MarketFactory marketFactory = 
+			new ContinuousOrderDrivenMarketFactory(tradePricer);
+		
+		StockExchangeObservable stockExchangeObservable = 
+			new SerialTickerTapeObserver();
+		
+		StockExchange stockExchange = 
+			new DefaultStockExchange(world, stockExchangeObservable, marketFactory);
 		
 		Set<Level1Trader> traders = new HashSet<Level1Trader>();
 		
-		for (int i = 0 ; i < numberOfTraders ; i++){
-			SimpleHistoricTrader historicTrader = 
-				new SimpleHistoricTraderBuilder("trader["+i+"]",initialTraderCash, r.nextInt())
-					.addStock(lemons, 1000)
-					.build();
-			
-			stockExchange.createLevel1View().registerTradeListener(historicTrader);
-			traders.add(historicTrader);
-		}
+		SimpleHistoricTraderBuilder simpleHistoricTraderBuilder = 
+			new SimpleHistoricTraderBuilder()
+				.setCash(1000l)
+				.addStock(lemons, 5)
+				.monitorStockExchange(stockExchange);
 		
-		OutputStreamTraderListener tradeListener = new OutputStreamTraderListener(System.out);
-		stockExchange.createLevel1View().registerTradeListener(tradeListener);
+		range(0, 50).forEach(i -> traders.add(
+				simpleHistoricTraderBuilder
+					.setSeed(r.nextInt())
+					.setName("trader["+i+"]")
+					.build()));
 		
-		engine = new SerialRandomEngineBuilder(world, seed)
+		/*traders.add(
+			new RandomTraderBuilder()
+				.setCash(1000l)
+				.addStock(lemons, 5000)
+				.setSellOrderRange(lemons, 1, 2, -1l, 10l)
+				.setBuyOrderRange (lemons, 1, 2, -9l, 2l)
+				.setName("RandomTrader")
+				.setSeed(r.nextInt())
+				.build());*/
+		
+		OutputStreamTraderListener tradeListener = 
+			new OutputStreamTraderListener(System.out);
+		
+		OutputStreamOrderListener orderListener = 
+			new OutputStreamOrderListener(System.out);
+		
+		stockExchangeObservable.registerTradeListener(tradeListener);
+		stockExchangeObservable.registerOrderListener(orderListener);
+		
+		engine = new SerialRandomEngineBuilder()
+			.setWorld(world)
+			.setSeed(1)
 			.addStockExchange(stockExchange)
 			.addTraders(traders)
 			.build();
-	}
+		
+		Trader dan = new StubTraderBuilder("stub")
+		.setCash(200l)
+		.addStock(lemons, 1).build();
+	
+		StockExchangeLevel1View danView = stockExchange.createLevel1View();
+		
+		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 1, 75l));
+		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 1, 75l));
+		
+		stockExchange.doClearing();
+		
+		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 1, 100l));
+		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 1, 50l));	}
 	
 	@Test
 	public void test() {

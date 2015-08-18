@@ -11,15 +11,24 @@ import uk.ac.glasgow.jagora.world.World;
 public class SerialRandomEngineBuilder {
 
 	private World world;
-	private Set<StockExchange> stockExchanges;
-	private Set<Level1Trader> traders;
 	private Integer seed;
 
-	public SerialRandomEngineBuilder(World world, Integer seed) {
-		this.world = world;
-		this.seed = seed;
+	private Set<StockExchange> stockExchanges;
+	private Set<Level1Trader> traders;
+
+	public SerialRandomEngineBuilder() {
 		stockExchanges = new HashSet<StockExchange>();
 		traders = new HashSet<Level1Trader>();
+	}
+	
+	public SerialRandomEngineBuilder setWorld(World world) {
+		this.world = world;
+		return this;
+	}
+	
+	public SerialRandomEngineBuilder setSeed (Integer seed){
+		this.seed = seed;
+		return this;
 	}
 	
 	public SerialRandomEngineBuilder addStockExchange(StockExchange stockExchange){
@@ -36,10 +45,9 @@ public class SerialRandomEngineBuilder {
 		this.traders.addAll(traders);
 		return this;
 	}
-
+	
 	public SerialRandomEngine build() {
 		return new SerialRandomEngine(world, stockExchanges, traders, new Random(seed));
 	}
-	
 	
 }

@@ -62,7 +62,6 @@ public class Experiment0002 {
 
 		lemons = new Stock("lemons");
 		
-		
 		world = new SimpleSerialWorld(2000000l);
 		
 		TradePricer tradePricer = new OldestOrderPricer ();
@@ -75,31 +74,29 @@ public class Experiment0002 {
 
 		Set<Level1Trader> traders = new HashSet<Level1Trader>();
 						
-		Level1Trader dan = new StubTraderBuilder("stub")
+		Level1Trader stubTrader = new StubTraderBuilder("stub")
 			.setCash(200l)
 			.addStock(lemons, 1)
 			.build();
 		
-		StockExchangeLevel1View dansView = stockExchange.createLevel1View();
-		dansView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 1, 99l));
-		dansView.placeSellOrder(new LimitSellOrder(dan, lemons, 1, 101l));
-				
+		StockExchangeLevel1View stubsView = stockExchange.createLevel1View();
+		stubsView.placeBuyOrder(new LimitBuyOrder(stubTrader, lemons, 1, 99l));
+		stubsView.placeSellOrder(new LimitSellOrder(stubTrader, lemons, 1, 101l));		
 
-		for (Integer i : range(0, 49).toArray()){
-			
-			RandomTrader trader = 
-				new RandomTraderBuilder()
-				.setName(format("RandomTrader[%d]", i))
+		RandomTraderBuilder randomTraderBuilder = 
+			new RandomTraderBuilder()
 				.setCash(200l)
-				.setSeed(r.nextInt())
 				.addStock(lemons, 1)
 				.setSellOrderRange(lemons, 1, 2, -1l, 10l)
-				.setBuyOrderRange (lemons, 1, 2, -9l, 2l)
-				.build();
-			
-			traders.add(trader);
-		}
-													
+				.setBuyOrderRange (lemons, 1, 2, -9l, 2l);
+		
+		range(0, 49).forEach(i -> 
+			traders.add(
+				randomTraderBuilder
+				.setName(format("RandomTrader[%d]", i))
+				.setSeed(r.nextInt())
+				.build()));
+
 		Level1Trader institutionalInvestorTrader = 
 			new InstitutionalInvestorTraderBuilder()
 			.setName("InstitutionalInvestorTrader")
@@ -116,7 +113,9 @@ public class Experiment0002 {
 		tickerTapeObserver.registerTradeListener(gnuPlotPriceDATLogger);
 		tickerTapeObserver.registerOrderListener(gnuPlotPriceDATLogger);
 		
-		engine = new SerialRandomEngineBuilder(world, 1)
+		engine = new SerialRandomEngineBuilder()
+			.setWorld(world)
+			.setSeed(1)
 			.addStockExchange(stockExchange)
 			.addTraders(traders)
 			.build();

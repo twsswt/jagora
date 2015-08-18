@@ -60,7 +60,9 @@ public class SerialRandomEngineTest {
 			new SellOnlyTrader(
 				"bob", initialStock, lemons, stockPrice, orderQuantity);
 		
-		engine = new SerialRandomEngineBuilder(world, seed)
+		engine = new SerialRandomEngineBuilder()
+			.setWorld(world)
+			.setSeed(seed)
 			.addTrader(alice)
 			.addTrader(bob)
 			.addStockExchange(stockExchange)

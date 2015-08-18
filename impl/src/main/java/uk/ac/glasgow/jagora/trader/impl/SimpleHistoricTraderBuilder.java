@@ -18,10 +18,7 @@ public class SimpleHistoricTraderBuilder {
 	private Map<Stock, Integer> inventory;
 	private Set<StockExchange> stockExchanges;
 		
-	public SimpleHistoricTraderBuilder(String name, Long cash, Integer seed){
-		this.name = name;
-		this.cash = cash;
-		this.seed = seed;
+	public SimpleHistoricTraderBuilder(){
 		this.inventory = new HashMap<Stock,Integer>();
 		this.stockExchanges = new HashSet<StockExchange>();
 	}
