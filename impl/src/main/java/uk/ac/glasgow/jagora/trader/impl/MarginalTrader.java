@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
+import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -77,6 +78,11 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 		LimitBuyOrder limitBuyOrder = new LimitBuyOrder(this, randomStock, quantity, buyPrice);
 		traderMarketView.placeBuyOrder(limitBuyOrder);
+
+	}
+
+	@Override
+	public void notifyOfCancellation(Order order) {
 
 	}
 

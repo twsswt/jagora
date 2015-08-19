@@ -42,7 +42,7 @@ public class ExperimentUtilityExample  extends  ExperimentUtility{
 
         seed = 30;
         //change of parameters
-        numberOfRandomSpreadCrossingTraders = 10;
+        numberOfSimpleHistoricTraders = 25;
         initialTraderCash = 5000l;
         standardDelay = 20l;
 

@@ -46,4 +46,9 @@ public class StubTrader extends AbstractTrader implements Level1Trader {
 	public void supplyOrder (Order order){
 		orders.offer(order);
 	}
+
+	@Override
+	public void notifyOfCancellation(Order order) {
+
+	}
 }

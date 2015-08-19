@@ -1,9 +1,6 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,16 +40,13 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	
 	protected void cancelSafeSellOrder(	StockExchangeLevel1View stockExchangeLevel1View, SellOrder sellOrder) {
 		
-		stockExchangeLevel1View.cancelSellOrder(sellOrder);			
-		//isn't there an easier way to do this?
-		openSellOrders.remove(sellOrder);
+		stockExchangeLevel1View.cancelSellOrder(sellOrder);
 	}
 
 	protected void cancelSafeBuyOrder(StockExchangeLevel1View stockExchangeLevel1View, BuyOrder buyOrder) {
 		
 		stockExchangeLevel1View.cancelBuyOrder(buyOrder);
-		
-		openBuyOrders.remove(buyOrder);
+
 	}
 
 	/**
@@ -76,5 +70,13 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 			.sum();
 		
 		return inventory.getOrDefault(stock, 0) - committedQuantity;
+	}
+
+	@Override
+	public void notifyOfCancellation(Order order) {
+		if (order instanceof BuyOrder)
+			openBuyOrders.remove(order);
+		else
+			openSellOrders.remove(order);
 	}
 }

@@ -76,7 +76,7 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
 
         //update all positions on market
         updateMarketPositions();
-        //Check out the weirdest bug ever?!??!?
+
         changeMarketPosition(level2View);
     }
 
@@ -102,6 +102,8 @@ public class MarketMakerBasic extends SafeAbstractTrader implements Level2Trader
             //if there' a big imbalance provide a stub quote to preserve inventory
             buyQuantity = Math.round(positionDatum.sharesAimed*0.01f);
         }
+        Integer cashLimit = (int) (getAvailableCash().doubleValue()/positionDatum.newBuyPrice.doubleValue());
+        buyQuantity = Math.min(buyQuantity,cashLimit);
 
         BuyOrder buyOrder = new LimitBuyOrder
                 (this,positionDatum.stock,buyQuantity,positionDatum.newBuyPrice);

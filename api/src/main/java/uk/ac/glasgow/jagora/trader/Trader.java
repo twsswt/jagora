@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.trader;
 
+import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
@@ -49,6 +50,13 @@ public interface Trader {
 	 *             funds.
 	 */
 	public abstract void buyStock(Trade trade) throws TradeExecutionException;
+
+	/**
+	 * notifies the trader that the cancellation of their order
+	 * has been executed on the real exchange
+	 * @param order
+	 */
+	void notifyOfCancellation(Order order);
 
 	public abstract String getName();
 	

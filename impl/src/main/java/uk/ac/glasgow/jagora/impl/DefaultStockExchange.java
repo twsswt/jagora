@@ -129,6 +129,7 @@ public class DefaultStockExchange implements StockExchange{
 			TickEvent<BuyOrder> orderEvent =
 					getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);
 			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
+			buyOrder.getTrader().notifyOfCancellation(buyOrder);
 		}
 
 		@Override
@@ -136,6 +137,7 @@ public class DefaultStockExchange implements StockExchange{
 			TickEvent<SellOrder> orderEvent =
 				getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
 			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
+			sellOrder.getTrader().notifyOfCancellation(sellOrder);
 		}
 		
 		@Override

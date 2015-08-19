@@ -54,7 +54,7 @@ public class ExperimentUtility {
     protected Long standardDelay = 10l;
 
     protected Long initialTraderCash = 100000l;
-    protected Long initialLevel2TraderCash = 1000000l;
+    protected Long initialLevel2TraderCash = 100000000l;
     protected Integer lemonsQuantity = 1000000;
 
 
@@ -67,8 +67,8 @@ public class ExperimentUtility {
 
     protected Double institutionalInvestorStockPercentage = 0.0;
     protected Float   marketMakerShare = 0.05f;
-    protected Double marketMakerInventoryAdjustmentInfluence = 1.0;
-    protected Double marketMakerLiquidityAdjustmentInfluence = 1.0;
+    protected Double marketMakerInventoryAdjustmentInfluence = 0.0;
+    protected Double marketMakerLiquidityAdjustmentInfluence = 0.0;
     protected Double marketMakerSpread = 0.003;
     protected Double hFTSpread = 0.001;
     protected Double randomTradersSpread = 0.001;
@@ -211,13 +211,14 @@ public class ExperimentUtility {
 
             String name = createTraderName(RandomTrader.class, i);
 
-            RandomTrader trader =
-                    new RandomTraderBuilder()
+            RandomTraderPercentage trader =
+                    new RandomTraderPercentageBuilder()
                             .setName(name)
                             .setCash(initialTraderCash)
                             .setSeed(random.nextInt())
                             .addStock(lemons, lemonsWarehouse.getStock(stockQuantity))
-                            .setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -1l, 4l, -4l, 1l)
+                            .setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh,
+                                    -randomTradersSpread,randomTradersSpread, -randomTradersSpread,randomTradersSpread )
                             .build();
 
             level1Traders.add(trader);
@@ -286,10 +287,6 @@ public class ExperimentUtility {
 
         stockExchange = new DefaultStockExchange(world,tickerTapeObserver,marketFactory);
         stockExchange.createMarket(lemonsWarehouse);
-
-
-        stockExchange.createLevel1View().registerTradeListener(new StdOutTradeListener());
-
 
 
     }

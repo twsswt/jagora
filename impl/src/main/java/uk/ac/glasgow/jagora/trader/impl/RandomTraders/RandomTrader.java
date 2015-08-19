@@ -24,7 +24,6 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 
 	protected final Random random;
 
-	Integer saveQuantity = 0;
 	
 	public RandomTrader(
 		String name, Long cash, Map<Stock, Integer> inventory,
@@ -38,7 +37,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 	@Override
 	public void speak(StockExchangeLevel1View traderMarketView) {
 		Stock randomStock = random.chooseElement(sellRangeData.keySet());
-		//good because we can only trade with predefined stocks
+
 
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
@@ -65,7 +64,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 		RangeData rangeData = sellRangeData.get(stock);
 		
 		Integer quantity = createRandomQuantity(uncommittedQuantity, rangeData);
-		saveQuantity = uncommittedQuantity - quantity;
+
 		if (quantity > 0){
 			
 			Long offerPrice = stockExchangeLevel1View.getLastKnownBestOfferPrice(stock);
