@@ -31,7 +31,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 	}
 		
 	private final Map<Stock,TradeRange> tradeRanges;
-	private final Random random;
+	protected final Random random;
 	
 	protected RandomSpreadCrossingTrader(
 		String name, Long cash, Map<Stock, Integer> inventory,
@@ -44,7 +44,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 
 	@Override
 	public void speak(StockExchangeLevel1View traderMarketView) {
-		Stock randomStock = random.chooseElement(tradeRanges.keySet());
+		Stock randomStock = random.chooseElement(inventory.keySet());
 		
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
@@ -132,8 +132,8 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
      * @param isSell
      * @return returns random price for stock lower the best bid (for sell) or higher than lowest ask (for buy)
      */
-	private Long createRandomPrice(Stock stock, Long basePrice, boolean isSell) {
-	//possible to get a very bad deal? (what if nextDouble returns a 1?)
+	protected Long createRandomPrice(Stock stock, Long basePrice, boolean isSell) {
+
 		TradeRange tradeRange = tradeRanges.get(stock);
 		Long randomPrice = 
 			(isSell?-1:1) * (long)(random.nextDouble() *  tradeRange.price) + basePrice;
@@ -147,7 +147,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
      * @param ceiling maximum available quantity in the stock
      * @return random quantity of stock, which is in its tradeRange for the particular trader
      */
-	private Integer createRandomQuantity(Stock stock, Integer ceiling) {
+	protected Integer createRandomQuantity(Stock stock, Integer ceiling) {
 		TradeRange stockData = tradeRanges.get(stock);
 		
 		Integer tradeQuantityRange = stockData.maxQuantity - stockData.minQuantity;

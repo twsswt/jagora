@@ -8,13 +8,18 @@ public class Experiment004 extends ExperimentUtility {
 
     @Before
     public void setUp() throws Exception{
+        numberOfTraderActions = 1000000l;
+
         numberOfSimpleHistoricTraders = 10;
-        numberOfRandomTraders = 10;
-        randomTradersSpread = 0.005;
+        numberOfRandomSpreadCrossingTraders = 10;
+        randomSpreadCrossingTraderSpread = 0.01;
 
         numberOfMarketMakers = 1;
         marketMakerSpread = 0.002;
         marketMakerShare = 0.1f;
+
+        numberOfHighFrequencyTraders = 3;
+        hFTSpread = 0.003;
 
         standardDelay = 6l;
 

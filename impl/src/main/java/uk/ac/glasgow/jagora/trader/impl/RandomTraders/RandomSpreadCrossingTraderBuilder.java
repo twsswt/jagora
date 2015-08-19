@@ -12,7 +12,7 @@ public class RandomSpreadCrossingTraderBuilder extends AbstractTraderBuilder {
 
 	private Map<Stock, TradeRange> tradeRanges;
 	
-	private Integer seed;
+	protected Integer seed;
 	
 	public RandomSpreadCrossingTraderBuilder(){
 		super ();

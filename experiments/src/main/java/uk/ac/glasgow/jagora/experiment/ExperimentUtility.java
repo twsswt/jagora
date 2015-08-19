@@ -231,13 +231,14 @@ public class ExperimentUtility {
 
             String name = createTraderName(RandomSpreadCrossingTrader.class,i);
 
-            RandomSpreadCrossingTrader trader =
-                        new RandomSpreadCrossingTraderBuilder()
+            RandomSpreadCrossingTraderPct trader =
+                        new RandomSpreadCrossingTraderPctBuilder()
                             .setName(name)
                             .addStock(lemons, stockQuantity)
                             .setSeed(seed)
                             .setCash(initialTraderCash)
-                            .addTradeRange(lemons,quantityTradeRangeLow,quantityTradeRangeHigh,4l)
+                            .addTradeRangePct(lemons,quantityTradeRangeLow,
+                                    quantityTradeRangeHigh,randomSpreadCrossingTraderSpread)
                             .build();
 
             level1Traders.add(trader);
