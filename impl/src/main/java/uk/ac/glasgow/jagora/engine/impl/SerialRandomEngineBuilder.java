@@ -12,9 +12,10 @@ import java.util.Set;
 public class SerialRandomEngineBuilder {
 
 	private World world;
+	private Integer seed;
+
 	private Set<StockExchange> stockExchanges;
 	private Set<Level1Trader> traders;
-	private Integer seed;
 	private Long standardDelay = 100l;
 	private Set<Level2Trader> privilegedTraders = new HashSet<>();
 
@@ -28,7 +29,7 @@ public class SerialRandomEngineBuilder {
 		return this;
 	}
 	
-	public SerialRandomEngineBuilder setSeed(Integer seed) {
+	public SerialRandomEngineBuilder setSeed (Integer seed){
 		this.seed = seed;
 		return this;
 	}
@@ -47,7 +48,7 @@ public class SerialRandomEngineBuilder {
 		this.traders.addAll(traders);
 		return this;
 	}
-
+	
 	public SerialRandomEngineBuilder addPrivilegedTrader(Level2Trader trader){
 		privilegedTraders.add(trader);
 		return this;

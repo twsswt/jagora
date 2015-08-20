@@ -23,19 +23,19 @@ public class MarketDatum {
 	public Boolean lastQuoteWasOffer(){return lastQuoteWasOffer;}
 	public Boolean lastQuoteWasBid(){return !lastQuoteWasOffer;}
 	
-	public void updateMarketInformationFollowingOrder(Long price, Boolean isOffer) {
+	public void updateMarketInformationFollowingOrder(Long price, Boolean isOffer){
 		lastPriceReportedOnTheMarket = price;
 		lastQuoteWasOffer = isOffer;
 		lastQuoteWasAccepted = false;
 		updateTargetPrices ();
 	}
 
-	public void updateMarketInformationFollowingTrade() {
+	public void updateMarketInformationFollowingTrade(){
 		lastQuoteWasAccepted = true;
 		updateTargetPrices ();
 	}
 	
-	private void updateTargetPrices() {
+	private void updateTargetPrices(){
 		zIPOrderJobs.stream().forEach(orderJob -> orderJob.updateTargetPrice());		
 	}
 

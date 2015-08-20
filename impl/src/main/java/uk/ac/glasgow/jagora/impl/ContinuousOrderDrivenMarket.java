@@ -1,7 +1,16 @@
 package uk.ac.glasgow.jagora.impl;
 
 import static java.lang.Math.min;
-import uk.ac.glasgow.jagora.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.Market;
+import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.pricer.TradePricer;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
@@ -54,7 +63,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 	public TickEvent<SellOrder> cancelSellOrder(SellOrder order) {
 		return sellBook.cancelOrder(order);
 	}
-
+		
 	@Override
 	public List<TickEvent<Trade>> doClearing (){
 		
@@ -121,7 +130,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 
 	@Override
 	public String toString() {
-		return String.format("best bid: %d, best offer: %d", getBestBidPrice(), getBestOfferPrice());
+		return String.format("best bid: %d, best offer: %d", getLastKnownBestBidPrice(), getLastKnownBestOfferPrice());
 	}
 
 	@Override

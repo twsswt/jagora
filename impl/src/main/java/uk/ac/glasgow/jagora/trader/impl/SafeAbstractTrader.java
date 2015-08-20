@@ -40,13 +40,27 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	
 	protected void cancelSafeSellOrder(	StockExchangeLevel1View stockExchangeLevel1View, SellOrder sellOrder) {
 		
-		stockExchangeLevel1View.cancelSellOrder(sellOrder);
+		stockExchangeLevel1View.cancelSellOrder(sellOrder);			
+		
+		Integer indexToCancel = null;
+		for (int i = 0 ; i < openSellOrders.size(); i++)
+			if (openSellOrders.get(i) == sellOrder)
+				indexToCancel = i;
+		if (indexToCancel != null)
+			openSellOrders.remove(indexToCancel.intValue());
 	}
 
 	protected void cancelSafeBuyOrder(StockExchangeLevel1View stockExchangeLevel1View, BuyOrder buyOrder) {
 		
 		stockExchangeLevel1View.cancelBuyOrder(buyOrder);
-
+		
+		Integer indexToCancel = null;
+		for (int i = 0 ; i < openBuyOrders.size(); i++)
+			if (openBuyOrders.get(i) == buyOrder)
+				indexToCancel = i;
+		
+		if (indexToCancel != null)
+			openBuyOrders.remove(indexToCancel.intValue());
 	}
 
 	/**

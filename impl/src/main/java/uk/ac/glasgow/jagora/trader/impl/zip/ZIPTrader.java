@@ -172,9 +172,8 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		return this.currentOrderJob;
 	}
 
-	//tobe implemented
 	@Override
 	public void orderCancelled(OrderEvent orderEvent) {
-
+		// TODO Should really factor in cancelled trades.
 	}
 }

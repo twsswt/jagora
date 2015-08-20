@@ -1,6 +1,15 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import uk.ac.glasgow.jagora.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.Order;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 
 import java.util.*;
@@ -31,21 +40,10 @@ public class InstitutionalInvestorTrader extends SafeAbstractTrader implements L
 		while (nextScheduledOrder != null && nextScheduledOrder.shouldBeExecuted() ){
 
 			scheduledOrders.poll();
-
-			Order order;
-			if (nextScheduledOrder.isBuyOrder())
-			 	order = nextScheduledOrder.createBuyOrder(this, getCash());
-			else
-				order = nextScheduledOrder.createSellOrder(this,traderMarketView);
-
-			if (order instanceof BuyOrder){
-				traderMarketView.placeBuyOrder((BuyOrder)order);	
-				placedOrders.add(order);
-
-			}else {
-				traderMarketView.placeSellOrder((SellOrder) order);
-				placedOrders.add(order);
-			}
+			BuyOrder order = nextScheduledOrder.createBuyOrder(this);
+			
+			traderMarketView.placeBuyOrder(order);	
+			placedOrders.add(order);
 			
 			nextScheduledOrder = scheduledOrders.peek();
 		}

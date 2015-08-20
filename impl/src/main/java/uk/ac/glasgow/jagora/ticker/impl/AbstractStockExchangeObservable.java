@@ -220,4 +220,34 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	public abstract void notifyOrderListenerOfCancelledOrder(
 			OrderEvent orderEvent, OrderListener orderListener);
 	
+	@Override
+	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderTickEvent) {
+
+		List<OrderListener> randomisedOrderListeners = getRandomisedOrderListeners();
+		
+		Order event = orderTickEvent.event;
+		
+		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
+		
+		OrderEvent orderEvent = 
+			new OrderEvent(
+				orderTickEvent.tick,
+				event.getTrader(), 
+				event.getStock(), 
+				event.getRemainingQuantity(),
+				event.getPrice(), 
+				direction);
+		
+		for (OrderListener orderListener : randomisedOrderListeners)
+			notifyOrderListenerOfOrder(orderEvent, orderListener);
+		
+	}
+	
+	private List<OrderListener> getRandomisedOrderListeners() {
+		List<OrderListener> randomisedOrderListeners = 
+			new ArrayList<OrderListener>(orderListeners);
+		
+		shuffle(randomisedOrderListeners);
+		return randomisedOrderListeners;
+	}
 }
