@@ -43,9 +43,7 @@ public class MarginalTraderTest extends EasyMockSupport {
 		mockExchange.placeBuyOrder(new LimitBuyOrder(alice, lemons, 5, 2l));
 		
 		replayAll();
-		https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html
-		alice.speak(mockExchange);
-		
+		alice.speak(mockExchange);		
 		verifyAll();
 		
 

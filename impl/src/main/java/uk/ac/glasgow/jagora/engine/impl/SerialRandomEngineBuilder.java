@@ -18,11 +18,19 @@ public class SerialRandomEngineBuilder {
 	private Long standardDelay = 100l;
 	private Set<Level2Trader> privilegedTraders = new HashSet<>();
 
-	public SerialRandomEngineBuilder(World world, Integer seed) {
-		this.world = world;
-		this.seed = seed;
+	public SerialRandomEngineBuilder() {
 		stockExchanges = new HashSet<StockExchange>();
 		traders = new HashSet<Level1Trader>();
+	}
+	
+	public SerialRandomEngineBuilder setWorld(World world) {
+		this.world = world;
+		return this;
+	}
+	
+	public SerialRandomEngineBuilder setSeed(Integer seed) {
+		this.seed = seed;
+		return this;
 	}
 	
 	public SerialRandomEngineBuilder addStockExchange(StockExchange stockExchange){
@@ -57,7 +65,10 @@ public class SerialRandomEngineBuilder {
 
 	public SerialRandomEngine build() {
 		return new SerialRandomEngine(
-				world, stockExchanges, traders, new Random(seed),standardDelay,privilegedTraders);
+				world, stockExchanges, traders, new Random(seed), standardDelay, privilegedTraders);
 	}
+
+
+
 	
 }

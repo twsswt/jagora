@@ -11,18 +11,15 @@ import uk.ac.glasgow.jagora.world.TickEvent;
 
 import java.util.*;
 
+import static java.util.Collections.shuffle;
 import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
 import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
-
-
 
 public abstract class AbstractStockExchangeObservable implements StockExchangeObservable {
 
 	private final Set<TradeListener> tradeListeners;
+	
 	private final Set<OrderListener> orderListeners;
-
-	private final Map<Stock, PriorityQueue<BuyTradePriceListener>> buyPriceListeners;
-	private final Map<Stock, PriorityQueue<SellTradePriceListener>> sellPriceListeners;
 
 	private final List<TickEvent<Trade>> executedTrades;
 
@@ -31,23 +28,19 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	private final List<OrderEntryEvent> cancelledSellOrders;
 	private final List<OrderEntryEvent> cancelledBuyOrders;
-
-
+	
 
 	public AbstractStockExchangeObservable() {
 		tradeListeners = new HashSet<TradeListener>();
 		orderListeners = new HashSet<OrderListener>();
 
-		buyPriceListeners = new HashMap<Stock, PriorityQueue<BuyTradePriceListener>>();
-		sellPriceListeners = new HashMap<Stock, PriorityQueue<SellTradePriceListener>>();
-
 		executedTrades = new ArrayList<TickEvent<Trade>>();
 
-		submittedSellOrders = new ArrayList();
-		submittedBuyOrders = new ArrayList<>();
+		submittedSellOrders = new ArrayList<OrderEntryEvent>();
+		submittedBuyOrders = new ArrayList<OrderEntryEvent>();
 		
-		cancelledBuyOrders = new ArrayList<>();
-		cancelledSellOrders= new ArrayList<>();
+		cancelledBuyOrders = new ArrayList<OrderEntryEvent>();
+		cancelledSellOrders= new ArrayList<OrderEntryEvent>();
 
 	}
 	
@@ -130,91 +123,24 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				executedTrade.event.getSeller(),
 				executedTrade.tick,
 				executedTrade.event.getPrice(),
-				executedTrade.event.getQuantity(),
-				executedTrade.event.isAggressiveSell());
+				executedTrade.event.getQuantity());
 		
 		List<TradeListener> randomisedTickerTapeListeners =
-			getRandomisedTicketTapeListeners();
+			getRandomisedTickerTapeListeners();
 		
 		for (TradeListener tradeListener: randomisedTickerTapeListeners)
 			notifyTradeListenerOfTrade(tradeExecutedEvent, tradeListener);
-
-		//notify the price listeners
-		notifyPriceTradeListeners(executedTrade.event.getStock(), executedTrade.event.getPrice());
 	}
 
-	private void notifyPriceTradeListeners(Stock stock, Long price) {
-
-		PriorityQueue queue = buyPriceListeners.get(stock);
-
-		if (queue != null && queue.size() != 0){
-
-			TradePriceListener listener = buyPriceListeners.get(stock).peek();
-			if (listener == null) return;
-			//check if one of the buyListeners is activated
-			if (listener.getPrice() <= price){
-				while (listener != null && listener.getPrice() <= price ) {
-					listener.priceReached(); //execute the order on the market
-					buyPriceListeners.get(stock).poll();
-					listener = buyPriceListeners.get(stock).peek();
-				}
-			}
-		}
-		else {
-
-			queue = sellPriceListeners.get(stock);
-			if (queue == null || queue.size() == 0) return;
-			//else check if one of the sellPriceListeners is activated
-			TradePriceListener listener = sellPriceListeners.get(stock).peek();
-			if (listener.getPrice() >= price){
-				while (listener != null && listener.getPrice() >= price ) {
-					listener.priceReached(); //execute the order on the market
-					sellPriceListeners.get(stock).poll();
-					listener = sellPriceListeners.get(stock).peek();
-				}
-			}
-		}
-		//currently the method doesn't support interfering PriceListeners(sell stop price higher than buy stop)
-	}
-
-	@Override
-	public void registerPriceListener(PriceListener tradePriceListener) {
-		//Maybe change implementation so that we don't use instanceof
-
-		if (tradePriceListener instanceof BuyTradePriceListener)
-			registerPriceTradeListener(buyPriceListeners, (TradePriceListener) tradePriceListener);
-
-		else if (tradePriceListener instanceof SellTradePriceListener)
-			registerPriceTradeListener(sellPriceListeners, (TradePriceListener) tradePriceListener);
-
-	}
-
-	private void registerPriceTradeListener  (Map map,TradePriceListener tradePriceListener){
-		PriorityQueue queue =
-				(PriorityQueue) map.get(( tradePriceListener).getStock());
-
-		if (queue == null) {
-			queue = new PriorityQueue<TradePriceListener>();
-		}
-
-		queue.add(tradePriceListener);
-		map.put(tradePriceListener.getStock(), queue);
-	}
-
-	/**
-	 * Left for implementation in child classes.
-	 * @param tradeExecutedEvent
-	 * @param tradeListener
-	 */
-	protected abstract void notifyTradeListenerOfTrade(
+	public abstract void notifyTradeListenerOfTrade(
 		TradeExecutionEvent tradeExecutedEvent, TradeListener tradeListener);
 
-
-	private List<TradeListener> getRandomisedTicketTapeListeners() {
+	
+	private List<TradeListener> getRandomisedTickerTapeListeners() {
 		List<TradeListener> randomisedTickerTapeListeners =
 			new ArrayList<TradeListener>(tradeListeners);
 
-		Collections.shuffle(randomisedTickerTapeListeners);
+		shuffle(randomisedTickerTapeListeners);
 		return randomisedTickerTapeListeners;
 	}
 	
@@ -231,11 +157,10 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	@Override
 	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent){
 
-
 		List<OrderListener> randomisedOrderListeners = 
 			new ArrayList<OrderListener>(orderListeners);
 		
-		Collections.shuffle(randomisedOrderListeners);//why don't you just call getRandomisedTicketTapeListeners?
+		shuffle(randomisedOrderListeners);//why don't you just call getRandomisedTicketTapeListeners?
 		
 		Order event = orderEvent.event;
 		
@@ -261,11 +186,6 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	}
 
-	/**
-	 * Left for implementation in child classes.
-	 * @param orderEntryEvent
-	 * @param orderListener
-	 */
 	public abstract void notifyOrderListenerOfOrder(
 			OrderEntryEvent orderEntryEvent, OrderListener orderListener);
 

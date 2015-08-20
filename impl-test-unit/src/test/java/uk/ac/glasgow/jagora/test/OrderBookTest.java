@@ -72,7 +72,7 @@ public class OrderBookTest {
 			SellOrder actual = sellBook.getBestOrder().event;
 			assertEquals(expected,actual);
 			
-			Trade satisfyingTrade = new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), actual, null,null);
+			Trade satisfyingTrade = new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), actual, null);
 			
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
@@ -115,7 +115,7 @@ public class OrderBookTest {
 			actualBestBuyOrders.add(actual);
 			
 			Trade satisfyingTrade =
-				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual,null);
+				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));

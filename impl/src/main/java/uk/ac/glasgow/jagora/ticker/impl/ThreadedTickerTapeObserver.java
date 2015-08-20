@@ -17,7 +17,7 @@ public class ThreadedTickerTapeObserver extends AbstractStockExchangeObservable 
 
 
 	
-	protected void notifyTradeListenerOfTrade(
+	public void notifyTradeListenerOfTrade(
 		TradeExecutionEvent tradeExecutedEvent, TradeListener tradeListener) {
 		
 		new Thread (){

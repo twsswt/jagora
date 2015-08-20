@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.impl;
 
+import static java.lang.Math.min;
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.pricer.TradePricer;
 import uk.ac.glasgow.jagora.trader.Trader;
@@ -15,7 +16,6 @@ import java.util.List;
  */
 public class ContinuousOrderDrivenMarket implements Market {
 
-
 	public final Stock stock;
 	public final World world;
 
@@ -24,69 +24,51 @@ public class ContinuousOrderDrivenMarket implements Market {
 	
 	private final TradePricer tradePricer;
 
-	private final StockWarehouse stockWarehouse;
-
-	private List <TickEvent<Order>> marketSellOrders = new ArrayList<>();
-	private List <TickEvent <Order>> marketBuyOrders = new ArrayList<>();
-
-	private Long lastUsedPrice;
-
-	public ContinuousOrderDrivenMarket (StockWarehouse stockWarehouse, World world, TradePricer tradePricer){
+	private OrderBook<SellOrder> marketSellOrders;
+	private OrderBook<BuyOrder> marketBuyOrders;
+	
+	public ContinuousOrderDrivenMarket (Stock stock, World world, TradePricer tradePricer){
 		this.world = world;
 		this.tradePricer = tradePricer;
 
 		sellBook = new OrderBook<SellOrder>(world);
 		buyBook = new OrderBook<BuyOrder>(world);
+		
+		marketSellOrders = new OrderBook<SellOrder>(world);
+		marketBuyOrders = new OrderBook<BuyOrder>(world);
 
-		lastUsedPrice = 0l;//very arbitrary
-
-		this.stockWarehouse = stockWarehouse;
-		this.stock = stockWarehouse.getStock();
+		this.stock = stock;
 	}
 
-	@Override
-	public StockWarehouse getStockWarehouse() {
-		return this.stockWarehouse;
-	}
 
 	@Override
-	public Integer getTotalQuantityOfStock() {
-		return stockWarehouse.getInitialQuantity();
-	}
-
-	@Override
-	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order) {
-		TickEvent <BuyOrder> toReturn;
-
-		if (order instanceof  MarketBuyOrder)
-			toReturn = recordMarketOrder(marketBuyOrders,order);
-		else toReturn = buyBook.recordOrder(order);
-
-		return toReturn;
+	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order) {		
+		return buyBook.recordOrder(order);
 	}
 	
 	@Override
 	public TickEvent<SellOrder> recordSellOrder(SellOrder order) {
-		TickEvent<SellOrder> toReturn;
-
-		if (order instanceof MarketSellOrder)
-			toReturn = recordMarketOrder(marketSellOrders,order);
-		else
-			toReturn = sellBook.recordOrder(order);
-
-		return toReturn ;
+		return sellBook.recordOrder(order);
 	}
 	
 	@Override
 	public TickEvent<BuyOrder> cancelBuyOrder(BuyOrder order) {
-		buyBook.cancelOrder(order);
-		return world.getTick(order);
+		return buyBook.cancelOrder(order);
 	}
 	
 	@Override
 	public TickEvent<SellOrder> cancelSellOrder(SellOrder order) {
-		sellBook.cancelOrder(order);
-		return world.getTick(order);
+		return sellBook.cancelOrder(order);
+	}
+	
+	@Override
+	public TickEvent<BuyOrder> recordMarketBuyOrder (MarketBuyOrder order){
+		return marketBuyOrders.recordOrder(order);
+	}
+	
+	@Override
+	public TickEvent<SellOrder> recordMarketSellOrder (MarketSellOrder order){
+		return marketSellOrders.recordOrder(order);
 	}
 
 
@@ -101,37 +83,27 @@ public class ContinuousOrderDrivenMarket implements Market {
 		
 		List<TickEvent<Trade>> executedTrades =
 			new ArrayList<TickEvent<Trade>>();
-
-		//procedure to find the best orders, giving market orders a priority
-		TickEvent<BuyOrder> highestBuyEvent = null;
-		TickEvent<SellOrder> lowestSellEvent = getBestMarketEvent(marketSellOrders);
-		if (lowestSellEvent == null) {
-			lowestSellEvent = sellBook.getBestOrder();
-			highestBuyEvent = getBestMarketEvent(marketBuyOrders);
-		}
-		if (highestBuyEvent == null) highestBuyEvent = buyBook.getBestOrder();
-
+		
+		TickEvent<SellOrder> lowestSellEvent = sellBook.getBestOrder();
+		TickEvent<BuyOrder> highestBuyEvent = buyBook.getBestOrder();
 
 		while (aTradeCanBeExecuted(lowestSellEvent, highestBuyEvent)){
 			SellOrder lowestSell = lowestSellEvent.event;
 			BuyOrder highestBid = highestBuyEvent.event;
 			Integer quantity = 
-				Math.min(
+				min(
 					lowestSell.getRemainingQuantity(), 
 					highestBid.getRemainingQuantity()
 				);
 			
-			Long price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);
-
-			//if BuyEvent is placed before sell event, then the sell event is considered to be aggressive
-			Boolean isAggressiveSell = lowestSellEvent.tick > highestBuyEvent.tick;
+			Long price = tradePricer.priceTrade(highestBuyEvent, lowestSellEvent);	
+			
 			Trade trade = 
-				new DefaultTrade (stock, quantity, price, lowestSell, highestBid, isAggressiveSell);
+				new DefaultTrade (stock, quantity, price, lowestSell, highestBid);
 			
 			try {
 				TickEvent<Trade> executedTrade = trade.execute(world);
 				executedTrades.add(executedTrade);
-				lastUsedPrice = price;
 											
 			} catch (TradeExecutionException e) {
 				Trader culprit = e.getCulprit();
@@ -143,20 +115,14 @@ public class ContinuousOrderDrivenMarket implements Market {
 				
 				//TODO Penalise the trader that caused the trade to fail.
 				e.printStackTrace();
-				System.out.println("Failed order " + highestBid);
-				System.exit(0);	
 			}
-
-			highestBuyEvent = null;
-			lowestSellEvent = getBestMarketEvent(marketSellOrders);
-			if (lowestSellEvent == null) {
-				lowestSellEvent = sellBook.getBestOrder();
-				highestBuyEvent = getBestMarketEvent(marketBuyOrders);
-			}
-			if (highestBuyEvent == null) highestBuyEvent = buyBook.getBestOrder();
+			
+			lowestSellEvent = sellBook.getBestOrder();
+			highestBuyEvent = buyBook.getBestOrder();
 			
 		}
 		return executedTrades;
+
 	}
 
 	private boolean aTradeCanBeExecuted(TickEvent<SellOrder> lowestSell, TickEvent<BuyOrder> highestBuy) {
@@ -182,7 +148,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 
 	@Override
-	public Long getBestBidPrice() {	return buyBook.getBestPrice();}
+	public Long getBestBidPrice() {return buyBook.getBestPrice();}
 
 	@Override
 	public Long getBestOfferPrice() {return sellBook.getBestPrice();}
@@ -195,27 +161,5 @@ public class ContinuousOrderDrivenMarket implements Market {
 	@Override
 	public Long getLastKnownBestOfferPrice() {
 		return sellBook.getLastKnownBestPrice();
-	}
-
-	public Long getLastUsedPrice() { return lastUsedPrice;}
-
-	private TickEvent getBestMarketEvent (List<TickEvent<Order>> list) {
-		if (list.isEmpty()) return null;
-
-		TickEvent <Order> order = list.get(0);
-		//TODO don't we just remove it after one try???
-		while (order != null && order.event.getRemainingQuantity() <= 0){
-			list.remove(0);
-			if (list.isEmpty()) return  null;
-			order = list.get(0);
-		}
-
-		return order;
-	}
-
-	private TickEvent recordMarketOrder (List list, Order order){
-		TickEvent event = world.getTick(order);
-		list.add(event);
-		return event;
 	}
 }

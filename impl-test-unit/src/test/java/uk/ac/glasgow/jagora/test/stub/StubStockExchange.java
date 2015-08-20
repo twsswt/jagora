@@ -2,7 +2,6 @@ package uk.ac.glasgow.jagora.test.stub;
 
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 import java.util.ArrayList;
@@ -29,16 +28,6 @@ public class StubStockExchange implements StockExchange {
 	@Override
 	public StockExchangeLevel1View createLevel1View() {
 		return new StubLevel1View ();
-	}
-
-	@Override
-	public StockWarehouse getStockWarehouse(Stock stock) {
-		return null;
-	}
-
-	@Override
-	public void createMarket(StockWarehouse stockWarehouse) {
-
 	}
 
 	protected class StubLevel1View implements StockExchangeLevel1View {
@@ -95,10 +84,6 @@ public class StubStockExchange implements StockExchange {
 		public void registerTradeListener(TradeListener tradeListener) {
 			// Does nothing as no trades are executed.
 			
-		}
-		@Override
-		public void registerPriceListener (PriceListener tradePriceListener){
-
 		}
 	}
 

@@ -16,9 +16,9 @@ import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasic;
-import uk.ac.glasgow.jagora.trader.impl.MarketMakerBasic.MarketMakerBasicBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.*;
+import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
+import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBasicBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.*;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -43,297 +43,287 @@ import static java.util.stream.IntStream.range;
  *  Experiments should be child classes.
  *  Methods can be overridden.
  *  Only works for a single stock
+ *  
+ *  @author Ivelin
  */
 public class ExperimentUtility {
 
+	// experimental parameters
 
-    // experimental parameters
+	protected Long numberOfTraderActions = 10000l;
+	protected Integer seed = 1;
+	protected Long standardDelay = 10l;
 
-    protected Long numberOfTraderActions = 10000l;
-    protected Integer seed = 1;
-    protected Long standardDelay = 10l;
+	protected Long initialTraderCash = 100000l;
+	protected Long initialLevel2TraderCash = 100000000l;
+	protected Integer lemonsQuantity = 1000000;
 
-    protected Long initialTraderCash = 100000l;
-    protected Long initialLevel2TraderCash = 100000000l;
-    protected Integer lemonsQuantity = 1000000;
+	protected Integer numberOfRandomTraders = 0;
+	protected Integer numberOfMarketMakers = 0;
+	protected Integer numberOfHighFrequencyTraders = 0;
+	protected Integer numberOfRandomSpreadCrossingTraders = 0;
+	protected Integer numberOfSimpleHistoricTraders = 0;
 
+	protected Double institutionalInvestorStockPercentage = 0.0;
+	protected Float   marketMakerShare = 0.05f;
+	protected Double marketMakerInventoryAdjustmentInfluence = 0.0;
+	protected Double marketMakerLiquidityAdjustmentInfluence = 0.0;
+	protected Double marketMakerSpread = 0.003;
+	protected Double hFTSpread = 0.001;
+	protected Double randomTradersSpread = 0.001;
+	protected Double randomSpreadCrossingTraderSpread = 0.001;
+	protected Integer quantityTradeRangeLow = 1;
+	protected Integer quantityTradeRangeHigh = 300;
 
+	protected Long firstTradePrice = 1000l;
 
-    protected Integer numberOfRandomTraders = 0;
-    protected Integer numberOfMarketMakers = 0;
-    protected Integer numberOfHighFrequencyTraders = 0;
-    protected Integer numberOfRandomSpreadCrossingTraders = 0;
-    protected Integer numberOfSimpleHistoricTraders = 0;
+	protected final String pricesDatFilePath = "reports/jagora/default/prices.dat";
 
-    protected Double institutionalInvestorStockPercentage = 0.0;
-    protected Float   marketMakerShare = 0.05f;
-    protected Double marketMakerInventoryAdjustmentInfluence = 0.0;
-    protected Double marketMakerLiquidityAdjustmentInfluence = 0.0;
-    protected Double marketMakerSpread = 0.003;
-    protected Double hFTSpread = 0.001;
-    protected Double randomTradersSpread = 0.001;
-    protected Double randomSpreadCrossingTraderSpread = 0.001;
-    protected Integer quantityTradeRangeLow = 1;
-    protected Integer quantityTradeRangeHigh = 300;
+	// experimental fixture
 
-    protected Long firstTradePrice = 1000l;
+	protected World world;
+	protected Stock lemons;
 
-    protected final String pricesDatFilePath = "reports/jagora/default/prices.dat";
+	protected StockExchange stockExchange;
+	protected TradingEngine engine;
 
+	protected SerialTickerTapeObserver tickerTapeObserver;
 
-    // experimental fixture
+	protected Random random;
 
-    protected World world;
-    protected Stock lemons;
-    protected StockWarehouse lemonsWarehouse;
-    protected StockExchange stockExchange;
-    protected TradingEngine engine;
+	protected Set<Level1Trader> level1Traders;
+	protected Set<Level2Trader> level2Traders;
 
-    protected SerialTickerTapeObserver tickerTapeObserver;
+	protected Map<Long,Integer> delayedBuyOrders = new HashMap<>();
+	protected Map<Long,Integer> delayedSellOrders = new HashMap<>();
 
-    protected Random random;
+	protected Integer stockQuantity = 0;
 
-    protected Set<Level1Trader> level1Traders;
-    protected Set<Level2Trader> level2Traders;
 
-    protected Map<Long,Integer> delayedBuyOrders = new HashMap<>();
-    protected Map<Long,Integer> delayedSellOrders = new HashMap<>();
+	public void createExperiment() throws Exception{
+		random = new Random(seed);
 
-    protected Integer stockQuantity = 0;
+		lemons = new Stock("lemons");
 
+		createStockExchange();
 
-    public void createExperiment() throws Exception{
-        random = new Random(seed);
+		calculateNumberOfShares();
 
-        lemons = new Stock("lemons");
-        lemonsWarehouse = new StockWarehouse(lemons,lemonsQuantity);
+		level1Traders = new HashSet<>();
+		level2Traders = new HashSet<>();
 
-        createStockExchange();
+		addRandomTraders(level1Traders);
+		addRandomSpreadCrossingTraders(level1Traders);
+		addSimpleHistoricTraders(level1Traders);
+		addInstitutionalInvestorTrader(level1Traders);
 
-        calculateNumberOfShares();
+		addHighFrequencyTraders (level2Traders);
+		addMarketMakers (level2Traders);
 
-        level1Traders = new HashSet<>();
-        level2Traders = new HashSet<>();
 
-        addRandomTraders(level1Traders);
-        addRandomSpreadCrossingTraders(level1Traders);
-        addSimpleHistoricTraders(level1Traders);
-        addInstitutionalInvestorTrader(level1Traders);
+		engine = new SerialRandomEngineBuilder()
+			.setWorld(world)
+			.setSeed(seed)
+			.addStockExchange(stockExchange)
+			.setStandartDelay(standardDelay)
+			.addTraders(level1Traders)
+			.addPrivilegedTraders(level2Traders)
+			.build();
 
-        addHighFrequencyTraders (level2Traders);
-        addMarketMakers (level2Traders);
+		configureFirstTrade();
+	}
 
 
-        engine = new SerialRandomEngineBuilder(world,seed)
-                .addStockExchange(stockExchange)
-                .setStandartDelay(standardDelay)
-                .addTraders(level1Traders)
-                .addPrivilegedTraders(level2Traders)
-                .build();
+	protected void calculateNumberOfShares() {
+		Double quantityForLevel1Traders = this.lemonsQuantity *
+				(1.0 - numberOfMarketMakers*marketMakerShare - institutionalInvestorStockPercentage);
 
-        configureFirstTrade();
-    }
+		Double quantityForLevel1Trader =
+				quantityForLevel1Traders/
+						(numberOfRandomTraders + numberOfSimpleHistoricTraders
+								+ numberOfRandomSpreadCrossingTraders);
+		stockQuantity = quantityForLevel1Trader.intValue();
 
+	}
 
-    protected void calculateNumberOfShares() {
-        Double quantityForLevel1Traders = lemonsWarehouse.getInitialQuantity()*
-                (1.0 - numberOfMarketMakers*marketMakerShare - institutionalInvestorStockPercentage);
+	protected void addMarketMakers(Set<Level2Trader> level2Traders) {
+		Integer marketMakerQuantity = Math.round(this.lemonsQuantity * marketMakerShare);
 
-        Double quantityForLevel1Trader =
-                quantityForLevel1Traders/
-                        (numberOfRandomTraders + numberOfSimpleHistoricTraders
-                                + numberOfRandomSpreadCrossingTraders);
-        stockQuantity = quantityForLevel1Trader.intValue();
+		for (Integer i : range(0,numberOfMarketMakers).toArray()) {
+			String name = createTraderName(MarketMaker.class,i);
+
+			Level2Trader trader =
+					new MarketMakerBasicBuilder()
+							.setName(name)
+							.setCash(initialLevel2TraderCash)
+							.setSeed(seed)
+							.setInventoryAdjustmentInfluence(marketMakerInventoryAdjustmentInfluence)
+							.setLiquidityAdjustmentInfluence(marketMakerLiquidityAdjustmentInfluence)
+							.setSpread(marketMakerSpread)
+							.setTargetStockQuantity(lemons, lemonsQuantity)
+							.addStock(lemons, marketMakerQuantity)
+							.build();
+
+			level2Traders.add(trader);
+
+		}
+	}
 
-    }
+	protected void addHighFrequencyTraders(Set<Level2Trader> level2Traders) {
+		for (Integer i: range(0,numberOfHighFrequencyTraders).toArray()){
+			String name = createTraderName(HighFrequencyRandomTrader.class,i);
 
-    protected void addMarketMakers(Set<Level2Trader> level2Traders) {
-        Integer marketMakerQuantity = Math.round(lemonsWarehouse.getInitialQuantity()*marketMakerShare);
-
-        for (Integer i : range(0,numberOfMarketMakers).toArray()) {
-            String name = createTraderName(MarketMakerBasic.class,i);
-
-            Level2Trader trader =
-                    new MarketMakerBasicBuilder(name)
-                            .setCash(initialLevel2TraderCash)
-                            .setSeed(seed)
-                            .setInventoryAdjustmentInfluence(marketMakerInventoryAdjustmentInfluence)
-                            .setLiquidityAdjustmentInfluence(marketMakerLiquidityAdjustmentInfluence)
-                            .setMarketShare(marketMakerShare)
-                            .setSpread(marketMakerSpread)
-                            .addStockWarehouse(lemonsWarehouse)
-                            .addStock(lemons, marketMakerQuantity)
-                            .build();
-
-            level2Traders.add(trader);
-
-        }
-    }
+			Level2Trader trader =
+					new HighFrequencyRandomTraderBuilder()
+							.addStock(lemons,0)
+							.setName(name)
+							.setCash(initialLevel2TraderCash)
+							.setSeed(seed)
+							.setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread, -hFTSpread,hFTSpread)
+							.build();
 
-    protected void addHighFrequencyTraders(Set<Level2Trader> level2Traders) {
-        for (Integer i: range(0,numberOfHighFrequencyTraders).toArray()){
-            String name = createTraderName(HighFrequencyRandomTrader.class,i);
+			level2Traders.add(trader);
+		}
+	}
 
-            Level2Trader trader =
-                    new HighFrequencyRandomTraderBuilder()
-                            .addStock(lemons,0)
-                            .setName(name)
-                            .setCash(initialLevel2TraderCash)
-                            .setSeed(seed)
-                            .setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread, -hFTSpread,hFTSpread)
-                            .build();
 
-            level2Traders.add(trader);
-        }
-    }
+	protected void addSimpleHistoricTraders(Set<Level1Trader> level1Traders) throws  Exception{
+		for (Integer i : range(0, numberOfSimpleHistoricTraders).toArray()){
 
+			String name = createTraderName(SimpleHistoricTrader.class, i);
 
-    protected void addSimpleHistoricTraders(Set<Level1Trader> level1Traders) throws  Exception{
-        for (Integer i : range(0, numberOfSimpleHistoricTraders).toArray()){
+			Level1Trader trader =
+					new SimpleHistoricTraderBuilder()
+							.setName(name)
+							.setCash(initialTraderCash)
+							.setSeed(seed)
+							.addStock(lemons, stockQuantity)
+							.monitorStockExchange(stockExchange)
+							.build();
+			level1Traders.add(trader);
+		}
+	}
 
-            String name = createTraderName(SimpleHistoricTrader.class, i);
 
-            Level1Trader trader =
-                    new SimpleHistoricTraderBuilder()
-                            .setName(name)
-                            .setCash(initialTraderCash)
-                            .setSeed(seed)
-                            .addStock(lemons, lemonsWarehouse.getStock(stockQuantity))
-                            .monitorStockExchange(stockExchange)
-                            .build();
-            level1Traders.add(trader);
-        }
-    }
+	protected void addRandomTraders(Set<Level1Trader> level1Traders) throws Exception{
+		for (Integer i : range(0, numberOfRandomTraders).toArray()){
 
+			String name = createTraderName(RandomTrader.class, i);
 
-    protected void addRandomTraders(Set<Level1Trader> level1Traders) throws Exception{
-        for (Integer i : range(0, numberOfRandomTraders).toArray()){
+			RandomTraderPercentage trader =
+					new RandomTraderPercentageBuilder()
+							.setName(name)
+							.setCash(initialTraderCash)
+							.setSeed(random.nextInt())
+							.addStock(lemons,stockQuantity)
+							.setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh,
+									-randomTradersSpread,randomTradersSpread, -randomTradersSpread,randomTradersSpread )
+							.build();
 
-            String name = createTraderName(RandomTrader.class, i);
+			level1Traders.add(trader);
+		}
+	}
 
-            RandomTraderPercentage trader =
-                    new RandomTraderPercentageBuilder()
-                            .setName(name)
-                            .setCash(initialTraderCash)
-                            .setSeed(random.nextInt())
-                            .addStock(lemons, lemonsWarehouse.getStock(stockQuantity))
-                            .setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh,
-                                    -randomTradersSpread,randomTradersSpread, -randomTradersSpread,randomTradersSpread )
-                            .build();
 
-            level1Traders.add(trader);
-        }
-    }
+	protected void addRandomSpreadCrossingTraders(Set<Level1Trader> level1Traders) {
+		for (Integer i : range(0, numberOfRandomSpreadCrossingTraders).toArray()) {
 
+			String name = createTraderName(RandomSpreadCrossingTrader.class,i);
 
-    protected void addRandomSpreadCrossingTraders(Set<Level1Trader> level1Traders) {
-        for (Integer i : range(0, numberOfRandomSpreadCrossingTraders).toArray()) {
+			RandomSpreadCrossingTraderPct trader =
+						new RandomSpreadCrossingTraderPctBuilder()
+							.setName(name)
+							.addStock(lemons, stockQuantity)
+							.setSeed(seed)
+							.setCash(initialTraderCash)
+							.addTradeRangePct(lemons,quantityTradeRangeLow,
+									quantityTradeRangeHigh,randomSpreadCrossingTraderSpread)
+							.build();
 
-            String name = createTraderName(RandomSpreadCrossingTrader.class,i);
+			level1Traders.add(trader);
+		}
+	}
 
-            RandomSpreadCrossingTraderPct trader =
-                        new RandomSpreadCrossingTraderPctBuilder()
-                            .setName(name)
-                            .addStock(lemons, stockQuantity)
-                            .setSeed(seed)
-                            .setCash(initialTraderCash)
-                            .addTradeRangePct(lemons,quantityTradeRangeLow,
-                                    quantityTradeRangeHigh,randomSpreadCrossingTraderSpread)
-                            .build();
+	protected void addInstitutionalInvestorTrader (Set<Level1Trader> level1Traders) throws Exception{
 
-            level1Traders.add(trader);
-        }
-    }
+			if (delayedBuyOrders.isEmpty() && delayedSellOrders.isEmpty())
+				return;
 
-    protected void addInstitutionalInvestorTrader (Set<Level1Trader> level1Traders) throws Exception{
+			String name = createTraderName(InstitutionalInvestorTrader.class, 1);
+			Integer quantity = Math.round(lemonsQuantity* institutionalInvestorStockPercentage.floatValue());
 
-            if (delayedBuyOrders.isEmpty() && delayedSellOrders.isEmpty())
-                return;
+			InstitutionalInvestorTraderBuilder traderBuilder =
+					new InstitutionalInvestorTraderBuilder()
+							.setName(name)
+							.setCash(initialLevel2TraderCash)
+							.addStock(lemons, quantity);
 
-            String name = createTraderName(InstitutionalInvestorTrader.class, 1);
-            Integer quantity = Math.round(lemonsQuantity* institutionalInvestorStockPercentage.floatValue());
+			for (Long delay : delayedBuyOrders.keySet())
+				traderBuilder.addScheduledLimitBuyOrder(
+						delay, world,lemons, delayedBuyOrders.get(delay) );
 
-            InstitutionalInvestorTraderBuilder traderBuilder =
-                    new InstitutionalInvestorTraderBuilder()
-                            .setName(name)
-                            .setCash(initialLevel2TraderCash)
-                            .addStock(lemons, lemonsWarehouse.getStock(quantity));
+			for (Long delay : delayedSellOrders.keySet())
+				traderBuilder.addScheduledLimitSellOrder(
+						delay, world, lemons, delayedSellOrders.get(delay));
 
-            for (Long delay : delayedBuyOrders.keySet())
-                traderBuilder.addScheduledLimitBuyOrder(
-                        delay, world,lemons, delayedBuyOrders.get(delay) );
 
-            for (Long delay : delayedSellOrders.keySet())
-                traderBuilder.addScheduledLimitSellOrder(
-                        delay, world, lemons, delayedSellOrders.get(delay));
 
+		level1Traders.add(traderBuilder.build());
 
+	}
 
-        level1Traders.add(traderBuilder.build());
+	protected String createTraderName(Class<? extends Trader> clazz, Integer i) {
+		String traderTypeName = clazz.getSimpleName();
+		String nameFormat = "%s[%d]";
+		return format(nameFormat, traderTypeName, i);
+	}
 
-    }
+	protected void createStockExchange() throws FileNotFoundException {
+		world = new SimpleSerialWorld(numberOfTraderActions);
 
-    protected String createTraderName(Class<? extends Trader> clazz, Integer i) {
-        String traderTypeName = clazz.getSimpleName();
-        String nameFormat = "%s[%d]";
-        return format(nameFormat, traderTypeName, i);
-    }
+		configureTickerTapeObserver();
 
-    protected void createStockExchange() throws FileNotFoundException {
-        world = new SimpleSerialWorld(numberOfTraderActions);
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestOrderPricer());
 
-        configureTickerTapeObserver();
+		stockExchange = new DefaultStockExchange(world,tickerTapeObserver,marketFactory);
 
-        MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestOrderPricer());
 
-        stockExchange = new DefaultStockExchange(world,tickerTapeObserver,marketFactory);
-        stockExchange.createMarket(lemonsWarehouse);
+	}
 
+	protected void configureFirstTrade () {
+		Trader dan = new StubTraderBuilder("stub", initialTraderCash)
+				.addStock(lemons, 10).build();
 
-    }
+		StockExchangeLevel1View danView = stockExchange.createLevel1View();
+		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, firstTradePrice + 1));
+		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 7, firstTradePrice));
 
-    protected void configureFirstTrade () {
-        Trader dan = new StubTraderBuilder("stub", initialTraderCash)
-                .addStock(lemons, 10).build();
+	}
 
-        StockExchangeLevel1View danView = stockExchange.createLevel1View();
-        danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, firstTradePrice + 1));
-        danView.placeSellOrder(new LimitSellOrder(dan, lemons, 7, firstTradePrice));
 
-    }
+	protected void configureTickerTapeObserver() throws FileNotFoundException {
 
+		tickerTapeObserver = new SerialTickerTapeObserver();
 
-    protected void configureTickerTapeObserver() throws FileNotFoundException {
+		//registerFilteredStdOutOrderListener(OrderDirection.BUY);
+		//registerFilteredStdOutOrderListener(OrderDirection.SELL);
 
-        tickerTapeObserver = new SerialTickerTapeObserver();
+		tickerTapeObserver.registerTradeListener(new StdOutTradeListener());
 
-        //registerFilteredStdOutOrderListener(OrderDirection.BUY);
-        //registerFilteredStdOutOrderListener(OrderDirection.SELL);
+		PrintStream pricesDatFileStream = createPrintStreamToFile(pricesDatFilePath);
 
-        tickerTapeObserver.registerTradeListener(new StdOutTradeListener());
+		GnuPlotPriceDATLogger priceTimeLogger =
+				new GnuPlotPriceDATLogger(pricesDatFileStream);
+		tickerTapeObserver.registerTradeListener(priceTimeLogger);
+		tickerTapeObserver.registerOrderListener(priceTimeLogger);
 
-        PrintStream pricesDatFileStream = createPrintStreamToFile(pricesDatFilePath);
+	}
 
-        GnuPlotPriceDATLogger priceTimeLogger =
-                new GnuPlotPriceDATLogger(pricesDatFileStream);
-        tickerTapeObserver.registerTradeListener(priceTimeLogger);
-        tickerTapeObserver.registerOrderListener(priceTimeLogger);
-
-    }
-
-    protected PrintStream createPrintStreamToFile(String filePath) throws FileNotFoundException {
-        File pricesDatFile = new File(filePath);
-        pricesDatFile.getParentFile().mkdirs();
-        PrintStream printStream = new PrintStream(new FileOutputStream(pricesDatFile));
-        return printStream;
-    }
-
-
-//
-//    @Test
-//    public void test() {
-//        engine.run();
-//    }
-
+	protected PrintStream createPrintStreamToFile(String filePath) throws FileNotFoundException {
+		File pricesDatFile = new File(filePath);
+		pricesDatFile.getParentFile().mkdirs();
+		PrintStream printStream = new PrintStream(new FileOutputStream(pricesDatFile));
+		return printStream;
+	}
 
 }

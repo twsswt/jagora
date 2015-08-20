@@ -28,11 +28,6 @@ public abstract class AbstractOrder implements Order {
 	}
 
 	@Override
-	public Integer getInitialQuantity() {
-		return initialQuantity;
-	}
-
-	@Override
 	public Trader getTrader (){
 		return trader;
 	}
@@ -88,7 +83,6 @@ public abstract class AbstractOrder implements Order {
 		Long price = getPrice();
 		Trader trader = getTrader();
 		Stock stock = getStock();
-		Integer initialQuantity = getInitialQuantity();
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -100,8 +94,6 @@ public abstract class AbstractOrder implements Order {
 			if (other.getPrice() != null)
 				return false;
 		} else if (!price.equals(other.getPrice()))
-			return false;
-		if (!initialQuantity.equals(other.getInitialQuantity()))
 			return false;
 		if (!stock.equals(other.getStock()))
 			return false;

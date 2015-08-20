@@ -1,4 +1,4 @@
-package uk.ac.glasgow.jagora.trader.impl.RandomTraders;
+package uk.ac.glasgow.jagora.trader.impl.random;
 
 import uk.ac.glasgow.jagora.Stock;
 

@@ -18,5 +18,4 @@ public interface Trade {
 
 	public Long getPrice() ;
 
-	public Boolean isAggressiveSell ();
 }

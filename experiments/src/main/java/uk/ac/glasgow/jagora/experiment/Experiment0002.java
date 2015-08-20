@@ -2,6 +2,7 @@ package uk.ac.glasgow.jagora.experiment;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
@@ -22,10 +23,10 @@ import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
@@ -166,7 +167,9 @@ public class Experiment0002 {
 		//stockExchange.addTickerTapeListener(
 		//	new StdOutTickerTapeListener());
 				
-		engine = new SerialRandomEngineBuilder(world, seed)
+		engine = new SerialRandomEngineBuilder()
+			.setWorld(world)
+			.setSeed(seed)
 			.addStockExchange(stockExchange)
 			.addTraders(traders)
 			.build();

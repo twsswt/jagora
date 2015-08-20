@@ -8,10 +8,9 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
 public class SerialTickerTapeObserver extends AbstractStockExchangeObservable {
 	
 	@Override
-	protected void notifyTradeListenerOfTrade(
+	public void notifyTradeListenerOfTrade(
 			TradeExecutionEvent tradeExecutionEvent, TradeListener tradeListener) {
 			tradeListener.tradeExecuted(tradeExecutionEvent);
-		
 	}
 
 	@Override

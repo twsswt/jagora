@@ -20,19 +20,13 @@ public interface StockExchangeObservable {
 	 * trade for a particular stock.
 	 *
 	 */
-	public abstract void notifyTradeListeners(List<TickEvent<Trade>> list);
+	public void notifyTradeListeners(List<TickEvent<Trade>> list);
 
-	public abstract void registerOrderListener(OrderListener orderListener);
+	public void registerOrderListener(OrderListener orderListener);
 	
-	public abstract void notifyOrderListeners(TickEvent<? extends Order> orderEvent);
+	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent);
 
-	void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderEvent);
-
-	void registerPriceListener (PriceListener tradePriceListener);
-
-
-
-	//notifyPriceTradeListener is left as a private method to be implemented
+	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderEvent);
 
 
 }

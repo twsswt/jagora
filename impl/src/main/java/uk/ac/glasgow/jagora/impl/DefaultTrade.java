@@ -15,21 +15,15 @@ public class DefaultTrade implements Trade {
 	
 	private final SellOrder sellOrder;
 	private final BuyOrder buyOrder;
-
-	private final Boolean isAggressiveSell;
 	
-	public DefaultTrade(Stock stock, Integer quantity, Long price,
-						SellOrder sellOrder, BuyOrder buyOrder, Boolean isAggressiveSell) {
+	public DefaultTrade(Stock stock, Integer quantity, Long price, SellOrder sellOrder, BuyOrder buyOrder) {
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;
 		this.sellOrder = sellOrder;
 		this.buyOrder = buyOrder;
-		this.isAggressiveSell = isAggressiveSell;
 	}
 
-	@Override
-	public Boolean isAggressiveSell() {return isAggressiveSell;}
 	@Override
 	public Trader getBuyer (){
 		return buyOrder.getTrader();

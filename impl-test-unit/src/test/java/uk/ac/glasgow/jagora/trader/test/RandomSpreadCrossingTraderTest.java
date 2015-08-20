@@ -6,15 +6,14 @@ import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTraderPct;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTraderPctBuilder;
-
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderPctBuilder;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 

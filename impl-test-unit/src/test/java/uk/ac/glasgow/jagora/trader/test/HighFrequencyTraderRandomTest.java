@@ -5,13 +5,13 @@ import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.HighFrequencyRandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.HighFrequencyRandomTraderBuilder;
-
+import uk.ac.glasgow.jagora.trader.impl.random.HighFrequencyRandomTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.HighFrequencyRandomTraderBuilder;
 import static org.easymock.EasyMock.*;
 
 

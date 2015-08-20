@@ -196,7 +196,7 @@ public class DefaultStockExchangeTest {
 		}
 		
 		TradeExecutionEvent expected = 
-			new TradeExecutionEvent(lemons, alice, bob, 2l, 1000l, 10,null);
+			new TradeExecutionEvent(lemons, alice, bob, 2l, 1000l, 10);
 		
 		assertEquals ("", expected, lastTradeExecutionEvent);
 	}

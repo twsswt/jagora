@@ -1,8 +1,8 @@
-package uk.ac.glasgow.jagora.trader.impl.RandomTraders;
+package uk.ac.glasgow.jagora.trader.impl.random;
 
 
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraders.RandomSpreadCrossingTraderPct.TradeRangePct;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderPct.TradeRangePct;
 import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;

@@ -1,5 +1,7 @@
 package uk.ac.glasgow.jagora;
 
+import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
+import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 import java.util.List;
@@ -14,10 +16,15 @@ public interface Market {
 	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order);
 
 	public TickEvent<SellOrder> recordSellOrder(SellOrder order);
-
+	
 	public TickEvent<BuyOrder> cancelBuyOrder(BuyOrder order);
 
 	public TickEvent <SellOrder> cancelSellOrder(SellOrder order);
+	
+	public TickEvent<BuyOrder> recordMarketBuyOrder(MarketBuyOrder order);
+
+	public TickEvent<SellOrder> recordMarketSellOrder(MarketSellOrder order);
+
 
 	public List<TickEvent<Trade>> doClearing();
 
@@ -32,10 +39,4 @@ public interface Market {
 	public Long getLastKnownBestBidPrice();
 	
 	public Long getLastKnownBestOfferPrice();
-
-	Integer getTotalQuantityOfStock();
-
-	StockWarehouse getStockWarehouse();
-
-	
 }

@@ -2,7 +2,6 @@ package uk.ac.glasgow.jagora.impl;
 
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.PriceListener;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.world.TickEvent;
@@ -29,42 +28,15 @@ public class DefaultStockExchange implements StockExchange{
 		markets = new HashMap<Stock,Market>();
 	}
 
-    /**
-     * Find the market of a stock,
-     * if it doesn't yet exist it creates one
-     * and saves it to the Exchange
-     * @param stock
-     * @return
-     */
 	private Market getMarket(Stock stock) {
 		Market market = markets.get(stock);
 		
 		if (market == null){
 			//implemented this way to keep old experiments working - market should not fail
-			market = marketFactory.createOrderDrivenMarket(
-					new StockWarehouse(stock,1000), world);
+			market = marketFactory.createOrderDrivenMarket(stock, world);
 			markets.put(stock, market);
 		}
 		return market;
-	}
-
-	@Override
-	public void createMarket(StockWarehouse stockWarehouse) {
-		Stock stock = stockWarehouse.getStock();
-		Market market = markets.get(stockWarehouse.getStock());
-		//just a check if there already is an exiting market
-		if (market == null){
-			market = marketFactory.createOrderDrivenMarket(
-					stockWarehouse, world);
-			markets.put(stock, market);
-		}
-
-	}
-
-	@Override
-	public StockWarehouse getStockWarehouse(Stock stock) {
-		Market market = getMarket(stock);
-		return market.getStockWarehouse();
 	}
 
 	@Override
@@ -143,12 +115,6 @@ public class DefaultStockExchange implements StockExchange{
 		@Override
 		public void registerTradeListener(TradeListener tradeListener) {
 			stockExchangeObservable.registerTradeListener(tradeListener);
-		}
-
-
-		@Override
-		public void registerPriceListener (PriceListener tradePriceListener){
-			stockExchangeObservable.registerPriceListener(tradePriceListener);
 		}
 		
 		@Override

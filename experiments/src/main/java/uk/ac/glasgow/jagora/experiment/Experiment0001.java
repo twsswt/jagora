@@ -78,7 +78,9 @@ public class Experiment0001 {
 		
 		stockExchange.createLevel1View().registerTradeListener(new StdOutTradeListener());
 		
-		engine = new SerialRandomEngineBuilder(world, seed)
+		engine = new SerialRandomEngineBuilder()
+			.setWorld(world)
+			.setSeed(seed)
 			.addStockExchange(stockExchange)
 			.addTraders(traders)
 			.build();

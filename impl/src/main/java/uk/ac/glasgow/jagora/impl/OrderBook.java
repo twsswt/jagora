@@ -51,8 +51,8 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		updateLastKnownBestPrice();
 		return event;
 	}
-	//silently cancels??
-	public void cancelOrder(O order) {
+
+	public TickEvent<O> cancelOrder(O order) {
 		TickEvent<O> toRemove = null;
 				
 		for (TickEvent<O> receivedOrder : receivedOrders)
@@ -64,8 +64,12 @@ public class OrderBook<O extends Order & Comparable<O>>  {
 		if (toRemove != null){
 			receivedOrders.remove(toRemove);
 			updateLastKnownBestPrice();
+			TickEvent<O> event = world.getTick(order);
+			return event;
+		} else {
+			return null;
 		}
-
+		
 	}
 
     /**

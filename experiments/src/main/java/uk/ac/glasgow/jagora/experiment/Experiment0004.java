@@ -4,7 +4,12 @@ package uk.ac.glasgow.jagora.experiment;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Experiment004 extends ExperimentUtility {
+/**
+ * 
+ * @author Ivelin
+ *
+ */
+public class Experiment0004 extends ExperimentUtility {
 
     @Before
     public void setUp() throws Exception{

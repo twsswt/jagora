@@ -14,18 +14,15 @@ public class TradeExecutionEvent {
 	public final Long tick;
 	public final Long price;
 	public final Integer quantity;
-
-	public final Boolean isAggressiveSell;
 	
 	public TradeExecutionEvent(Stock stock, Trader buyer, Trader seller, Long tick, Long price,
-							   Integer quantity, Boolean isAggressiveSell) {
+							   Integer quantity) {
 		this.stock = stock;
 		this.buyer = buyer;
 		this.seller = seller;
 		this.price = price;
 		this.tick = tick;
 		this.quantity = quantity;
-		this.isAggressiveSell = isAggressiveSell;
 		
 	}
 
