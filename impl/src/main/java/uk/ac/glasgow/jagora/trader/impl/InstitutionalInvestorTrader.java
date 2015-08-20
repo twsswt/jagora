@@ -22,20 +22,19 @@ import java.util.*;
  */
 public class InstitutionalInvestorTrader extends SafeAbstractTrader implements Level1Trader {
 	
-	private PriorityQueue<ScheduledLimitOrder> scheduledOrders;
+	private PriorityQueue<ScheduledLimitBuyOrder> scheduledOrders;	
 	
 	private Collection<Order> placedOrders = new ArrayList<Order>();
 	
 	public InstitutionalInvestorTrader(String name, Long cash, Map<Stock, Integer> inventory,
-			List<ScheduledLimitOrder> scheduledOrders) {
+			List<ScheduledLimitBuyOrder> scheduledOrders) {
 		super(name, cash, inventory);
-		this.scheduledOrders = new PriorityQueue<ScheduledLimitOrder>(scheduledOrders);
+		this.scheduledOrders = new PriorityQueue<ScheduledLimitBuyOrder>(scheduledOrders);		
 	}
-
 
 	@Override
 	public void speak(StockExchangeLevel1View traderMarketView) {
-		ScheduledLimitOrder nextScheduledOrder = scheduledOrders.peek();
+		ScheduledLimitBuyOrder nextScheduledOrder = scheduledOrders.peek();
 		
 		while (nextScheduledOrder != null && nextScheduledOrder.shouldBeExecuted() ){
 

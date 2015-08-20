@@ -8,7 +8,7 @@ import java.util.List;
 
 public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
 
-	private List<ScheduledLimitOrder> scheduledOrders = new ArrayList<ScheduledLimitOrder>();
+	private List<ScheduledLimitBuyOrder> scheduledOrders = new ArrayList<ScheduledLimitBuyOrder>();
 		
 	public InstitutionalInvestorTraderBuilder() {
 		super();
@@ -41,12 +41,5 @@ public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
 		scheduledOrders.add(new ScheduledLimitBuyOrder(delay, world, stock, quantity, limitPrice));
 		return this;
 	}
-
-	public InstitutionalInvestorTraderBuilder addScheduledLimitSellOrder
-			(Long delay,World world,Stock stock, Integer quantity, Long limitPrice){
-		scheduledOrders.add(new ScheduledLimitSellOrder(delay,world,stock,quantity,limitPrice));
-		return this;
-	}
 	
-
 }
