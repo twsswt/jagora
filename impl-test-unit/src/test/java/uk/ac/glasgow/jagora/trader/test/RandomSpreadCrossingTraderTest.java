@@ -13,8 +13,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTrader;
-import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderBuilder;
 
 public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
 	

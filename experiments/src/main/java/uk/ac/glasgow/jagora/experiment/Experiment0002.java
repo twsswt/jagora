@@ -29,7 +29,7 @@ import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.RandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
