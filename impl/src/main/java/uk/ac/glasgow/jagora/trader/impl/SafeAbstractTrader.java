@@ -71,12 +71,4 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		
 		return inventory.getOrDefault(stock, 0) - committedQuantity;
 	}
-
-	@Override
-	public void notifyOfCancellation(Order order) {
-		if (order instanceof BuyOrder)
-			openBuyOrders.remove(order);
-		else
-			openSellOrders.remove(order);
-	}
 }

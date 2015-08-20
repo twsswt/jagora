@@ -28,10 +28,9 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	private StockExchangeLevel1View wrappedView;
 
 
-	public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long standartDelay,
-									 Long currentTick, Long delayDecrease) {
+	public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long delay, Long currentTick) {
 		this.wrappedView = wrappedView;
-		this.delayedTick = standartDelay + currentTick - delayDecrease;
+		this.delayedTick = delay + currentTick;
 	}
 
 
@@ -108,7 +107,6 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 		);
 	}
 
-	//Possibility to i
 	@Override
 	public Long getBestOfferPrice(Stock stock) {
 		return wrappedView.getBestOfferPrice(stock);

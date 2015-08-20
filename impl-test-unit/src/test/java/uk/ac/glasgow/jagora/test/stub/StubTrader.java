@@ -38,17 +38,7 @@ public class StubTrader extends AbstractTrader implements Level1Trader {
 		
 	}
 
-	@Override
-	public Long getDelayDecrease() {
-		return 0l;
-	}
-
 	public void supplyOrder (Order order){
 		orders.offer(order);
-	}
-
-	@Override
-	public void notifyOfCancellation(Order order) {
-
 	}
 }

@@ -1,6 +1,6 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -14,12 +14,12 @@ public class SerialTickerTapeObserver extends AbstractStockExchangeObservable {
 	}
 
 	@Override
-	public void notifyOrderListenerOfOrder(OrderEntryEvent orderEntryEvent, OrderListener orderListener) {
-		orderListener.orderEntered(orderEntryEvent);
+	public void notifyOrderListenerOfOrder(OrderEvent orderEvent, OrderListener orderListener) {
+		orderListener.orderEntered(orderEvent);
 	}
 
 	@Override
-	public void notifyOrderListenerOfCancelledOrder(OrderEntryEvent orderEntryEvent, OrderListener orderListener) {
-		orderListener.orderCancelled(orderEntryEvent);
+	public void notifyOrderListenerOfCancelledOrder(OrderEvent orderEvent, OrderListener orderListener) {
+		orderListener.orderCancelled(orderEvent);
 	}
 }

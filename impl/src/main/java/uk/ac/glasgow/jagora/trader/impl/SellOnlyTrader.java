@@ -34,8 +34,4 @@ public class SellOnlyTrader extends SafeAbstractTrader implements Level1Trader {
 		this.placeSafeSellOrder(traderView, limitSellOrder);
 	}
 
-	@Override
-	public Long getDelayDecrease() {
-		return 0l;
-	}
 }

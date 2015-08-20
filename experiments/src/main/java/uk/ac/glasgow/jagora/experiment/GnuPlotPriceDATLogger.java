@@ -1,6 +1,6 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -8,7 +8,7 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
 import java.io.PrintStream;
 
 import static java.lang.String.format;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
 
 /**
  * 
@@ -31,7 +31,7 @@ public class GnuPlotPriceDATLogger implements TradeListener, OrderListener {
 	}
 
 	@Override
-	public void orderEntered(OrderEntryEvent orderEntryEvent) {
+	public void orderEntered(OrderEvent orderEntryEvent) {
 		String template = null;
 		Long price = orderEntryEvent.price;
 		if (orderEntryEvent.orderDirection == SELL)
@@ -44,7 +44,7 @@ public class GnuPlotPriceDATLogger implements TradeListener, OrderListener {
 	}
 
 	@Override
-	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+	public void orderCancelled(OrderEvent orderEntryEvent) {
 
 	}
 }

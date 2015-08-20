@@ -7,7 +7,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -111,12 +111,12 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 	}
 
 	@Override
-	public void orderEntered(OrderEntryEvent orderEntryEvent) {
+	public void orderEntered(OrderEvent orderEvent) {
 
 	}
 
 	@Override
-	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
+	public void orderCancelled(OrderEvent orderEvent) {
 
 	}
 

@@ -75,11 +75,6 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 			placeSellOrder(traderMarketView, randomStock, bestBidPrice);		
 	}
 
-	@Override
-	public Long getDelayDecrease() {
-		return 0l;
-	}
-
 	private void placeBuyOrder(
 		StockExchangeLevel1View traderMarketView, Stock randomStock, Long bestOfferPrice) {
 		

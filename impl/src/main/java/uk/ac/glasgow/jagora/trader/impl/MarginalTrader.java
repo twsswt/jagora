@@ -1,6 +1,5 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -81,13 +80,4 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 	}
 
-	@Override
-	public void notifyOfCancellation(Order order) {
-
-	}
-
-	@Override
-	public Long getDelayDecrease() {
-		return 0l;
-	}
 }

@@ -4,7 +4,7 @@ import static java.lang.Math.round;
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -200,21 +200,21 @@ public class MarketMaker extends SafeAbstractTrader implements Level2Trader,Trad
 	}
 
 	@Override
-	public void orderEntered(OrderEntryEvent orderEntryEvent) {
-		if (orderEntryEvent.orderDirection == OrderEntryEvent.OrderDirection.BUY) {
-			marketDatum.addBuySideLiquidity(orderEntryEvent.quantity,orderEntryEvent.price);
+	public void orderEntered(OrderEvent orderEvent) {
+		if (orderEvent.orderDirection == OrderEvent.OrderDirection.BUY) {
+			marketDatum.addBuySideLiquidity(orderEvent.quantity,orderEvent.price);
 		}
 		else {
-			marketDatum.addSellSideLiquidity(orderEntryEvent.quantity,orderEntryEvent.price);
+			marketDatum.addSellSideLiquidity(orderEvent.quantity,orderEvent.price);
 		}
 	}
 
 	@Override
-	public void orderCancelled(OrderEntryEvent orderEntryEvent) {
-		if (orderEntryEvent.orderDirection == OrderEntryEvent.OrderDirection.SELL)
-			marketDatum.removeSellSideLiquidity(orderEntryEvent.quantity, orderEntryEvent.price);
+	public void orderCancelled(OrderEvent orderEvent) {
+		if (orderEvent.orderDirection == OrderEvent.OrderDirection.SELL)
+			marketDatum.removeSellSideLiquidity(orderEvent.quantity, orderEvent.price);
 		else
-			marketDatum.removeBuySideLiquidity(orderEntryEvent.quantity, orderEntryEvent.price);
+			marketDatum.removeBuySideLiquidity(orderEvent.quantity, orderEvent.price);
 	}
 
 	@Override

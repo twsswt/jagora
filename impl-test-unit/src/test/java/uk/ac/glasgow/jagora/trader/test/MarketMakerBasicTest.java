@@ -13,7 +13,7 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -138,17 +138,17 @@ public class MarketMakerBasicTest {
 		//Need to execute the following block to have the observer view of liquidity
 		Integer realBuySideLiquidity = 0;
 		Integer realSellSideLiquidity = 0;
-		for (OrderEntryEvent event :tickerTapeObserver.getBuyOrderHistory(lemons))
+		for (OrderEvent event :tickerTapeObserver.getBuyOrderHistory(lemons))
 			realBuySideLiquidity += event.quantity;
 
-		for (OrderEntryEvent event: tickerTapeObserver.getSellOrderHistory(lemons))
+		for (OrderEvent event: tickerTapeObserver.getSellOrderHistory(lemons))
 			realSellSideLiquidity += event.quantity;
 
 
-		for (OrderEntryEvent event : tickerTapeObserver.getCancelledBuyOrderHistory(lemons))
+		for (OrderEvent event : tickerTapeObserver.getCancelledBuyOrderHistory(lemons))
 			realBuySideLiquidity -= event.quantity;
 
-		for (OrderEntryEvent event: tickerTapeObserver.getCancelledSellOrderHistory(lemons))
+		for (OrderEvent event: tickerTapeObserver.getCancelledSellOrderHistory(lemons))
 			realSellSideLiquidity -= event.quantity;
 
 		for (TickEvent<Trade> event :tickerTapeObserver.getTradeHistory(lemons)){

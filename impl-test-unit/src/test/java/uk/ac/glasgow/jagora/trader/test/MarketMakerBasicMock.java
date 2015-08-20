@@ -10,7 +10,7 @@ import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.impl.DefaultTrade;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBasicBuilder;
@@ -79,8 +79,8 @@ public class MarketMakerBasicMock {
 
 
 		//Put some orders in the marketMaker so that liquidity calculations are not affected
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.BUY));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.SELL));
 
 		//Put at least one trade executed so the pricing algorithm can function properly
 		marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500));
@@ -132,15 +132,15 @@ public class MarketMakerBasicMock {
 
 		replay(mockExchange);
 
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.BUY));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.SELL));
 
 		//Algorithm for spread increase will work only if last trade was
 		marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500));
 
 		marketMaker.speak(mockExchange);
 
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 1000l, OrderEntryEvent.OrderDirection.BUY));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 1000l, OrderEvent.OrderDirection.BUY));
 
 		//Now that there is imbalance in liquidity - more buy desire, spread should increase
 		// Sell price should be going up
@@ -180,14 +180,14 @@ public class MarketMakerBasicMock {
 
 		replay(mockExchange);
 
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.BUY));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.SELL));
 
 		marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500));
 
 		marketMaker.speak(mockExchange);
 
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 1000l, OrderEntryEvent.OrderDirection.SELL));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 1000l, OrderEvent.OrderDirection.SELL));
 
 		//Now that there is imbalance in liquidity - more buy desire, spread should increase
 		// Buy  price should be going down
@@ -233,14 +233,14 @@ public class MarketMakerBasicMock {
 
 		replay(mockExchange);
 
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.BUY));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.SELL));
 
 		marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500));
 
 		marketMaker.speak(mockExchange);
 
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 1000l, OrderEntryEvent.OrderDirection.SELL));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 1000l, OrderEvent.OrderDirection.SELL));
 
 		marketMaker.speak(mockExchange);
 
@@ -282,8 +282,8 @@ public class MarketMakerBasicMock {
 
 		replay(mockExchange);
 
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.BUY));
-		marketMaker.orderEntered(new OrderEntryEvent(null, null, lemons, 1000, 10000l, OrderEntryEvent.OrderDirection.SELL));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.BUY));
+		marketMaker.orderEntered(new OrderEvent(null, null, lemons, 1000, 10000l, OrderEvent.OrderDirection.SELL));
 
 		marketMaker.tradeExecuted(new TradeExecutionEvent(lemons, null, null, null, 10000l, 500));
 

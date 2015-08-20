@@ -24,15 +24,8 @@ public class SerialRandomEngine implements TradingEngine {
 
 	private Queue<DelayedOrderExecutor> orderExecutors;
 
-	private Long standardDelay;
+	private Long delay;
 
-	/**
-	 *
-	 * @param world - set up the world
-	 * @param exchanges - pass a set of exchanges
-	 * @param traders - a fixed set of traders
-	 * @param random - seed
-	 */
 	SerialRandomEngine(World world, Set<StockExchange> exchanges,
 						   Set<Level1Trader> traders, Random random,
 						   Long standardDelay, Set<Level2Trader> level2Traders){
@@ -41,7 +34,7 @@ public class SerialRandomEngine implements TradingEngine {
 		this.traders = new HashSet<Level1Trader>(traders);
 		this.random = random;
 		this.orderExecutors = new PriorityQueue<DelayedOrderExecutor>();
-		this.standardDelay = standardDelay;
+		this.delay = standardDelay;
 		this.privilegedTraders.addAll(level2Traders);
 	}
 
@@ -52,9 +45,8 @@ public class SerialRandomEngine implements TradingEngine {
 			StockExchange exchange = random.chooseElement(exchanges);
 			Level1Trader trader = random.chooseElement(traders);
 			DelayedExchangeLevel1View delayedView =
-					new DelayedExchangeLevel1View(exchange.createLevel1View(),
-							standardDelay,world.getCurrentTick(),trader.getDelayDecrease());
-
+				new DelayedExchangeLevel1View(exchange.createLevel1View(),
+					delay, world.getCurrentTick());
 
 			trader.speak(delayedView);
 			for(DelayedOrderExecutor executor: delayedView.getOrderExecutors()) {

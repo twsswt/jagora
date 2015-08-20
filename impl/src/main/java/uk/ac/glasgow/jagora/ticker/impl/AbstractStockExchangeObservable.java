@@ -6,14 +6,14 @@ import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.ticker.*;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
+import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 import java.util.*;
 
 import static java.util.Collections.shuffle;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
 
 public abstract class AbstractStockExchangeObservable implements StockExchangeObservable {
 
@@ -23,11 +23,11 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	private final List<TickEvent<Trade>> executedTrades;
 
-	private final List<OrderEntryEvent> submittedSellOrders;
-	private final List<OrderEntryEvent> submittedBuyOrders;
+	private final List<OrderEvent> submittedSellOrders;
+	private final List<OrderEvent> submittedBuyOrders;
 
-	private final List<OrderEntryEvent> cancelledSellOrders;
-	private final List<OrderEntryEvent> cancelledBuyOrders;
+	private final List<OrderEvent> cancelledSellOrders;
+	private final List<OrderEvent> cancelledBuyOrders;
 	
 
 	public AbstractStockExchangeObservable() {
@@ -36,11 +36,11 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		executedTrades = new ArrayList<TickEvent<Trade>>();
 
-		submittedSellOrders = new ArrayList<OrderEntryEvent>();
-		submittedBuyOrders = new ArrayList<OrderEntryEvent>();
+		submittedSellOrders = new ArrayList<OrderEvent>();
+		submittedBuyOrders = new ArrayList<OrderEvent>();
 		
-		cancelledBuyOrders = new ArrayList<OrderEntryEvent>();
-		cancelledSellOrders= new ArrayList<OrderEntryEvent>();
+		cancelledBuyOrders = new ArrayList<OrderEvent>();
+		cancelledSellOrders= new ArrayList<OrderEvent>();
 
 	}
 	
@@ -56,10 +56,10 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		return result;
 	}
 
-	public List<OrderEntryEvent> getSellOrderHistory(Stock stock){
-		List<OrderEntryEvent> result = new ArrayList<>();
+	public List<OrderEvent> getSellOrderHistory(Stock stock){
+		List<OrderEvent> result = new ArrayList<>();
 
-		for (OrderEntryEvent event: submittedSellOrders){
+		for (OrderEvent event: submittedSellOrders){
 			if (event.stock.equals(stock))
 				result.add(event);
 		}
@@ -67,10 +67,10 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		return result;
 	}
 
-	public List<OrderEntryEvent> getBuyOrderHistory(Stock stock){
-		List<OrderEntryEvent> result = new ArrayList<>();
+	public List<OrderEvent> getBuyOrderHistory(Stock stock){
+		List<OrderEvent> result = new ArrayList<>();
 
-		for (OrderEntryEvent event: submittedBuyOrders){
+		for (OrderEvent event: submittedBuyOrders){
 			if (event.stock.equals(stock))
 				result.add(event);
 		}
@@ -79,18 +79,18 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		return result;
 	}
 
-	public List<OrderEntryEvent> getCancelledBuyOrderHistory(Stock stock){
+	public List<OrderEvent> getCancelledBuyOrderHistory(Stock stock){
 		return getCancelledHistory(stock,cancelledBuyOrders);
 	}
 
-	public List<OrderEntryEvent> getCancelledSellOrderHistory(Stock stock){
+	public List<OrderEvent> getCancelledSellOrderHistory(Stock stock){
 		return getCancelledHistory(stock, cancelledSellOrders);
 	}
 
-	private List<OrderEntryEvent> getCancelledHistory(Stock stock, List<OrderEntryEvent> list){
-		List<OrderEntryEvent> result = new ArrayList<>();
+	private List<OrderEvent> getCancelledHistory(Stock stock, List<OrderEvent> list){
+		List<OrderEvent> result = new ArrayList<>();
 
-		for (OrderEntryEvent event: list) {
+		for (OrderEvent event: list) {
 			if (event != null && event.stock.equals(stock))
 				result.add(event);
 		}
@@ -155,20 +155,20 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 
 	@Override
-	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent){
+	public void notifyOrderListeners(TickEvent<? extends Order> orderTickEvent){
 
 		List<OrderListener> randomisedOrderListeners = 
 			new ArrayList<OrderListener>(orderListeners);
 		
 		shuffle(randomisedOrderListeners);//why don't you just call getRandomisedTicketTapeListeners?
 		
-		Order event = orderEvent.event;
+		Order event = orderTickEvent.event;
 		
 		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
 		
-		OrderEntryEvent orderEntryEvent = 
-			new OrderEntryEvent(
-				orderEvent.tick,
+		OrderEvent orderEvent = 
+			new OrderEvent(
+				orderTickEvent.tick,
 				event.getTrader(), 
 				event.getStock(), 
 				event.getRemainingQuantity(),
@@ -176,29 +176,29 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				direction);
 
 		for (OrderListener orderListener : randomisedOrderListeners)
-			notifyOrderListenerOfOrder(orderEntryEvent, orderListener);
+			notifyOrderListenerOfOrder(orderEvent, orderListener);
 
 		//add submitted orders in the book
-		if (orderEvent.event instanceof SellOrder)
-			submittedSellOrders.add(orderEntryEvent);
+		if (orderTickEvent.event instanceof SellOrder)
+			submittedSellOrders.add(orderEvent);
 		else
-			submittedBuyOrders.add(orderEntryEvent);
+			submittedBuyOrders.add(orderEvent);
 
 	}
 
 	public abstract void notifyOrderListenerOfOrder(
-			OrderEntryEvent orderEntryEvent, OrderListener orderListener);
+			OrderEvent orderEvent, OrderListener orderListener);
 
 	@Override
-	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderEvent) {
+	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderTickEvent) {
 
-		Order event = orderEvent.event;
+		Order event = orderTickEvent.event;
 
 		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
 
-		OrderEntryEvent orderEntryEvent =
-				new OrderEntryEvent(
-						orderEvent.tick,
+		OrderEvent orderEvent =
+				new OrderEvent(
+						orderTickEvent.tick,
 						event.getTrader(),
 						event.getStock(),
 						event.getRemainingQuantity(),
@@ -207,17 +207,17 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 
 		if (event instanceof SellOrder) {
-			cancelledSellOrders.add(orderEntryEvent);
+			cancelledSellOrders.add(orderEvent);
 		}
 		else {
-			cancelledBuyOrders.add(orderEntryEvent);
+			cancelledBuyOrders.add(orderEvent);
 		}
 
 		for (OrderListener orderListener: orderListeners)
-			notifyOrderListenerOfCancelledOrder(orderEntryEvent, orderListener);
+			notifyOrderListenerOfCancelledOrder(orderEvent, orderListener);
 	}
 
 	public abstract void notifyOrderListenerOfCancelledOrder(
-			OrderEntryEvent orderEntryEvent, OrderListener orderListener);
+			OrderEvent orderEvent, OrderListener orderListener);
 	
 }
