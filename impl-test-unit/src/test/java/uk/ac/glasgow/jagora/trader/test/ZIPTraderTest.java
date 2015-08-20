@@ -1,7 +1,7 @@
 package uk.ac.glasgow.jagora.trader.test;
 
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
 
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
@@ -14,7 +14,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
@@ -70,7 +70,7 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, BUY));		
+		trader.orderEntered(new OrderEvent(0l, mockTrader, lemons, 1, limitPrice, BUY));		
 		trader.speak(mockExchange);
 
 		verifyAll();
@@ -99,7 +99,7 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		replayAll();
 		
-		trader.orderEntered(new OrderEntryEvent(0l, mockTrader, lemons, 1, limitPrice, SELL));		
+		trader.orderEntered(new OrderEvent(0l, mockTrader, lemons, 1, limitPrice, SELL));		
 		trader.speak(mockExchange);
 
 		verifyAll();

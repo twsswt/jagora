@@ -1,10 +1,10 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.BUY;
-import static uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection.SELL;
+import static java.util.Collections.shuffle;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,8 +13,8 @@ import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
@@ -46,7 +46,6 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 		return result;
 	}
-
 
 	@Override
 	public void registerTradeListener(TradeListener tradeListener) {
@@ -85,7 +84,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		List<TradeListener> randomisedTickerTapeListeners = 
 			new ArrayList<TradeListener>(tradeListeners);
 		
-		Collections.shuffle(randomisedTickerTapeListeners);
+		shuffle(randomisedTickerTapeListeners);
 		return randomisedTickerTapeListeners;
 	}
 	
@@ -95,19 +94,16 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	}
 	
 	@Override
-	public void notifyOrderListeners(TickEvent<? extends Order> orderEvent){
-		List<OrderListener> randomisedOrderListeners = 
-			new ArrayList<OrderListener>(orderListeners);
+	public void notifyOrderListeners(TickEvent<? extends Order> orderTickEvent){
+		List<OrderListener> randomisedOrderListeners = getRandomisedOrderListeners();
 		
-		Collections.shuffle(randomisedOrderListeners);
-		
-		Order event = orderEvent.event;
+		Order event = orderTickEvent.event;
 		
 		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
 		
-		OrderEntryEvent orderEntryEvent = 
-			new OrderEntryEvent(
-				orderEvent.tick,
+		OrderEvent orderEvent = 
+			new OrderEvent(
+				orderTickEvent.tick,
 				event.getTrader(), 
 				event.getStock(), 
 				event.getRemainingQuantity(),
@@ -115,10 +111,40 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				direction);
 		
 		for (OrderListener orderListener : randomisedOrderListeners)
-			notifyOrderListenerOfOrder(orderEntryEvent, orderListener);
+			notifyOrderListenerOfOrder(orderEvent, orderListener);
 	}
 
 	public abstract void notifyOrderListenerOfOrder(
-		OrderEntryEvent orderEntryEvent, OrderListener orderListener);
+		OrderEvent orderEvent, OrderListener orderListener);
 	
+	@Override
+	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderTickEvent) {
+
+		List<OrderListener> randomisedOrderListeners = getRandomisedOrderListeners();
+		
+		Order event = orderTickEvent.event;
+		
+		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
+		
+		OrderEvent orderEvent = 
+			new OrderEvent(
+				orderTickEvent.tick,
+				event.getTrader(), 
+				event.getStock(), 
+				event.getRemainingQuantity(),
+				event.getPrice(), 
+				direction);
+		
+		for (OrderListener orderListener : randomisedOrderListeners)
+			notifyOrderListenerOfOrder(orderEvent, orderListener);
+		
+	}
+	
+	private List<OrderListener> getRandomisedOrderListeners() {
+		List<OrderListener> randomisedOrderListeners = 
+			new ArrayList<OrderListener>(orderListeners);
+		
+		shuffle(randomisedOrderListeners);
+		return randomisedOrderListeners;
+	}
 }

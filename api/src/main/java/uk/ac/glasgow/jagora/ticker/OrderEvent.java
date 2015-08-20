@@ -1,10 +1,11 @@
 package uk.ac.glasgow.jagora.ticker;
 
-import static java.lang.String.format;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.Trader;
 
-public class OrderEntryEvent {
+import static java.lang.String.format;
+
+public class OrderEvent {
 	
 	public enum OrderDirection {BUY, SELL}
 	
@@ -15,7 +16,7 @@ public class OrderEntryEvent {
 	public final Long price;
 	public final OrderDirection orderDirection;
 	
-	public OrderEntryEvent(Long tick, Trader trader, Stock stock, Integer quantity, Long price, OrderDirection orderDirection) {
+	public OrderEvent(Long tick, Trader trader, Stock stock, Integer quantity, Long price, OrderDirection orderDirection) {
 		this.tick = tick;
 		this.trader = trader;
 		this.stock = stock;

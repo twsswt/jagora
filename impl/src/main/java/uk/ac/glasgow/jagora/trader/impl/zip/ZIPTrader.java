@@ -14,8 +14,8 @@ import java.util.Set;
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -155,12 +155,12 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 
 
 	@Override
-	public void orderEntered(OrderEntryEvent orderEntryEvent) {
-		MarketDatum marketDatum = getMarketDatum(orderEntryEvent.stock);
+	public void orderEntered(OrderEvent orderEvent) {
+		MarketDatum marketDatum = getMarketDatum(orderEvent.stock);
 		
-		Boolean wasOffer = orderEntryEvent.orderDirection == OrderDirection.SELL;
+		Boolean wasOffer = orderEvent.orderDirection == OrderDirection.SELL;
 		
-		marketDatum.updateMarketInformationFollowingOrder(orderEntryEvent.price, wasOffer);
+		marketDatum.updateMarketInformationFollowingOrder(orderEvent.price, wasOffer);
 	}
 
 	@Override
@@ -177,5 +177,10 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	
 	public ZIPOrderJob<? extends Order> getCurrentOrderJob() {
 		return this.currentOrderJob;
+	}
+
+	@Override
+	public void orderCancelled(OrderEvent orderEvent) {
+		// TODO Should really factor in cancelled trades.
 	}
 }

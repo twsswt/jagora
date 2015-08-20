@@ -12,5 +12,5 @@ public interface StockExchange {
 	public StockExchangeLevel1View createLevel1View();
 	
 	public StockExchangeLevel2View createLevel2View();
-
+	
 }

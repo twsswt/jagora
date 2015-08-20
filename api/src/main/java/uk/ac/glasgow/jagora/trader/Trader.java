@@ -33,7 +33,7 @@ public interface Trader {
 	 * 
 	 * @param trade
 	 *            specifies the amount of and price for stock to be sold.
-	 * @throws TradeExecutioException
+	 * @throws TradeExecutionException
 	 *             if the trader cannot satisfy the trade.
 	 */
 	public abstract void sellStock(Trade trade) throws TradeExecutionException;

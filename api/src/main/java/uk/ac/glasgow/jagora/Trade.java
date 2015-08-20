@@ -17,4 +17,5 @@ public interface Trade {
 	public Integer getQuantity() ;
 
 	public Long getPrice() ;
+
 }

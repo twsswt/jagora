@@ -7,7 +7,7 @@ public class Stock {
 	public Stock(String identifier) {
 		this.name = identifier;
 	}
-	
+
 	@Override
 	public String toString (){
 		return name;
@@ -39,6 +39,4 @@ public class Stock {
 		return true;
 	}
 	
-	
-
 }

@@ -1,8 +1,8 @@
 package uk.ac.glasgow.jagora;
 
-import java.util.List;
-
 import uk.ac.glasgow.jagora.world.TickEvent;
+
+import java.util.List;
 
 /**
  * Defines features of a market for a single stock.
@@ -14,10 +14,10 @@ public interface Market {
 	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order);
 
 	public TickEvent<SellOrder> recordSellOrder(SellOrder order);
+	
+	public TickEvent<BuyOrder> cancelBuyOrder(BuyOrder order);
 
-	public void cancelBuyOrder(BuyOrder order);
-
-	public void cancelSellOrder(SellOrder order);
+	public TickEvent <SellOrder> cancelSellOrder(SellOrder order);
 
 	public List<TickEvent<Trade>> doClearing();
 

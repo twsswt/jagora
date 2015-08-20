@@ -3,7 +3,7 @@ package uk.ac.glasgow.jagora.experiment;
 import java.io.PrintStream;
 import java.util.Set;
 
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPBuyOrderJob;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPSellOrderJob;
@@ -25,7 +25,7 @@ public class ZIPTraderTargetPriceGnuPlotDATLogger implements OrderListener {
 		this.zipTraders = zipTraders;
 	}
 
-	public void orderEntered(OrderEntryEvent orderEntryEvent) {
+	public void orderEntered(OrderEvent orderEvent) {
 				
 		Long averageBid = 
 			(long) zipTraders
@@ -47,7 +47,12 @@ public class ZIPTraderTargetPriceGnuPlotDATLogger implements OrderListener {
 		
 		String template = "%d, %d, %d";
 			
-		printStream.println(String.format(template, orderEntryEvent.tick, averageBid, averageOffer));
+		printStream.println(String.format(template, orderEvent.tick, averageBid, averageOffer));
+	}
+
+	@Override
+	public void orderCancelled(OrderEvent orderEvent) {
+		// Does nothing.
 	}
 
 } 

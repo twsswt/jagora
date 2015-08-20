@@ -1,8 +1,9 @@
 package uk.ac.glasgow.jagora.ticker;
 
-import static java.lang.String.format;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.Trader;
+
+import static java.lang.String.format;
 
 public class TradeExecutionEvent {
 	
@@ -14,7 +15,8 @@ public class TradeExecutionEvent {
 	public final Long price;
 	public final Integer quantity;
 	
-	public TradeExecutionEvent(Stock stock, Trader buyer, Trader seller, Long tick, Long price,  Integer quantity) {
+	public TradeExecutionEvent(Stock stock, Trader buyer, Trader seller, Long tick, Long price,
+							   Integer quantity) {
 		this.stock = stock;
 		this.buyer = buyer;
 		this.seller = seller;

@@ -29,7 +29,7 @@ import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
-import uk.ac.glasgow.jagora.ticker.OrderEntryEvent.OrderDirection;
+import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
