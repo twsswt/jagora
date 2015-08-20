@@ -23,9 +23,6 @@ public class ContinuousOrderDrivenMarket implements Market {
 	private final OrderBook<BuyOrder> buyBook;
 	
 	private final TradePricer tradePricer;
-
-	private OrderBook<SellOrder> marketSellOrders;
-	private OrderBook<BuyOrder> marketBuyOrders;
 	
 	public ContinuousOrderDrivenMarket (Stock stock, World world, TradePricer tradePricer){
 		this.world = world;
@@ -34,9 +31,6 @@ public class ContinuousOrderDrivenMarket implements Market {
 		sellBook = new OrderBook<SellOrder>(world);
 		buyBook = new OrderBook<BuyOrder>(world);
 		
-		marketSellOrders = new OrderBook<SellOrder>(world);
-		marketBuyOrders = new OrderBook<BuyOrder>(world);
-
 		this.stock = stock;
 	}
 
@@ -60,24 +54,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 	public TickEvent<SellOrder> cancelSellOrder(SellOrder order) {
 		return sellBook.cancelOrder(order);
 	}
-	
-	@Override
-	public TickEvent<BuyOrder> recordMarketBuyOrder (MarketBuyOrder order){
-		return marketBuyOrders.recordOrder(order);
-	}
-	
-	@Override
-	public TickEvent<SellOrder> recordMarketSellOrder (MarketSellOrder order){
-		return marketSellOrders.recordOrder(order);
-	}
 
-
-	/**
-	 * The operation executes trades,
-	 * if the lowest offer is lower than the highest bid.
-     * There is a possibility of failed offer if one of the sides
-     * cancels its order.
-	 */
 	@Override
 	public List<TickEvent<Trade>> doClearing (){
 		
