@@ -14,7 +14,6 @@ public class SimpleHistoricTraderBuilder extends AbstractTraderBuilder {
 	private Set<StockExchange> stockExchanges;
 		
 	public SimpleHistoricTraderBuilder(){
-		this.inventory = new HashMap<Stock,Integer>();
 		this.stockExchanges = new HashSet<StockExchange>();
 	}
 	@Override

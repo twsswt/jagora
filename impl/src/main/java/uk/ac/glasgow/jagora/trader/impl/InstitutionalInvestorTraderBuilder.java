@@ -43,8 +43,8 @@ public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
 	}
 
 	public InstitutionalInvestorTraderBuilder addScheduledLimitSellOrder
-			(Long delay,World world,Stock stock, Integer quantity){
-		scheduledOrders.add(new ScheduledLimitOrder(delay,world,stock,quantity,false));
+			(Long delay,World world,Stock stock, Integer quantity, Long limitPrice){
+		scheduledOrders.add(new ScheduledLimitSellOrder(delay,world,stock,quantity,limitPrice));
 		return this;
 	}
 	
