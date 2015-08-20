@@ -1,7 +1,5 @@
 package uk.ac.glasgow.jagora;
 
-import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
-import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 import java.util.List;
@@ -20,11 +18,6 @@ public interface Market {
 	public TickEvent<BuyOrder> cancelBuyOrder(BuyOrder order);
 
 	public TickEvent <SellOrder> cancelSellOrder(SellOrder order);
-	
-	public TickEvent<BuyOrder> recordMarketBuyOrder(MarketBuyOrder order);
-
-	public TickEvent<SellOrder> recordMarketSellOrder(MarketSellOrder order);
-
 
 	public List<TickEvent<Trade>> doClearing();
 

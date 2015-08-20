@@ -16,9 +16,9 @@ public interface StockExchangeLevel1View {
 	
 	public void placeSellOrder (SellOrder sellOrder);
 	
-	public void cancelBuyOrder(BuyOrder buyOrder) ;
+	public void cancelBuyOrder(BuyOrder buyOrder);
 	
-	public void cancelSellOrder(SellOrder sellOrder) ;
+	public void cancelSellOrder(SellOrder sellOrder);
 	
 	public void registerTradeListener(TradeListener tradeListener);
 
