@@ -1,16 +1,16 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
+import uk.ac.glasgow.jagora.Stock;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import uk.ac.glasgow.jagora.Stock;
 
 public abstract class AbstractTraderBuilder {
 
 	private String name;
 	private Long cash;
 	
-	private Map<Stock, Integer> inventory;
+	protected Map<Stock, Integer> inventory;
 		
 	public AbstractTraderBuilder() {	
 		this.inventory = new HashMap<Stock,Integer>();

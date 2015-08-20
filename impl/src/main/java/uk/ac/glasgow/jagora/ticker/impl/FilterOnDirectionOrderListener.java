@@ -15,15 +15,15 @@ public class FilterOnDirectionOrderListener implements OrderListener {
 	}
 
 	@Override
-	public void orderEntered(OrderEvent orderEvent) {
-		if (orderEvent.orderDirection == this.direction)
-			downStreamOrderListener.orderEntered(orderEvent);
+	public void orderEntered(OrderEvent orderEntryEvent) {
+		if (orderEntryEvent.orderDirection == this.direction)
+			downStreamOrderListener.orderEntered(orderEntryEvent);
 
 	}
 
 	@Override
-	public void orderCancelled(OrderEvent orderEvent) {
-		if (orderEvent.orderDirection == this.direction)
-			downStreamOrderListener.orderEntered(orderEvent);
+	public void orderCancelled(OrderEvent orderEntryEvent) {
+		if (orderEntryEvent.orderDirection == this.direction)
+			downStreamOrderListener.orderCancelled(orderEntryEvent);
 	}
 }

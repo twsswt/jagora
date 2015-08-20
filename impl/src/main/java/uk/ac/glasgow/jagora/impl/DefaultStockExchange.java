@@ -1,22 +1,15 @@
 package uk.ac.glasgow.jagora.impl;
 
+import uk.ac.glasgow.jagora.*;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
+import uk.ac.glasgow.jagora.world.TickEvent;
+import uk.ac.glasgow.jagora.world.World;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.Market;
-import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
-import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
-import uk.ac.glasgow.jagora.world.TickEvent;
-import uk.ac.glasgow.jagora.world.World;
 
 public class DefaultStockExchange implements StockExchange{
 
@@ -27,23 +20,25 @@ public class DefaultStockExchange implements StockExchange{
 	
 	private final StockExchangeObservable stockExchangeObservable;
 		
-	public DefaultStockExchange (World world, StockExchangeObservable stockExchangeObservable, MarketFactory marketFactory){	
+	public DefaultStockExchange (World world, StockExchangeObservable stockExchangeObservable,
+								 MarketFactory marketFactory){
 		this.world = world;
 		this.marketFactory = marketFactory;
 		this.stockExchangeObservable = stockExchangeObservable;
 		markets = new HashMap<Stock,Market>();
 	}
-	
+
 	private Market getMarket(Stock stock) {
 		Market market = markets.get(stock);
 		
 		if (market == null){
+			//implemented this way to keep old experiments working - market should not fail
 			market = marketFactory.createOrderDrivenMarket(stock, world);
 			markets.put(stock, market);
 		}
 		return market;
 	}
-	
+
 	@Override
 	public void doClearing() {
 		for (Market market: markets.values())
@@ -63,7 +58,7 @@ public class DefaultStockExchange implements StockExchange{
 	public StockExchangeLevel1View createLevel1View() {
 		return new DefaultLevel1View ();
 	}
-	
+	//can't this be static?
 	private class DefaultLevel1View implements StockExchangeLevel1View {
 
 		@Override
@@ -100,14 +95,19 @@ public class DefaultStockExchange implements StockExchange{
 			stockExchangeObservable.notifyOrderListeners(orderEvent);
 		}
 
+        //Important if we want to implement the hypothetical crash
 		@Override
 		public void cancelBuyOrder(BuyOrder buyOrder) {
-			getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);			
+			TickEvent<BuyOrder> orderEvent =
+					getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);
+			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
 		}
 
 		@Override
-		public void cancelSellOrder(SellOrder sellOrder) {
-			getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
+		public void cancelSellOrder(SellOrder sellOrder){
+			TickEvent<SellOrder> orderEvent =
+				getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
+			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
 		}
 		
 		@Override

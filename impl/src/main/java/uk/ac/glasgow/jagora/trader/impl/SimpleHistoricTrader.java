@@ -1,10 +1,5 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.OptionalDouble;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -13,6 +8,11 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.util.Random;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.OptionalDouble;
 
 /**
  * A trader that places a bid if the current best offer is below the historic
@@ -25,7 +25,7 @@ import uk.ac.glasgow.jagora.util.Random;
  */
 public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Trader, TradeListener {
 	
-	private Collection<TradeExecutionEvent> tradeExecutionEvents;
+	private static Collection<TradeExecutionEvent> tradeExecutionEvents = new ArrayList<TradeExecutionEvent>();
 
 	private Random random;
 	
@@ -33,10 +33,15 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 		String name, Long cash, Map<Stock, Integer> inventory, Random random) {
 		
 		super(name, cash, inventory);
-		this.random = random;
-		tradeExecutionEvents = new ArrayList<TradeExecutionEvent>();
-	}
 
+		this.random = random;
+    }
+
+    /**
+     * By adding TradeExecutionEvent to the trader it gains
+     * information to the market(not very efficient or practical)
+     * @param tradeExecutionEvent
+     */
 	@Override
 	public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
 		synchronized(tradeExecutionEvents){
@@ -44,6 +49,12 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 		}
 	}
 
+    /**
+     * Places a Buy Order on a random stock if its offer price
+     * is lower than averageTradePrice, and a Sell Order if its best
+     * bid price is higher than averageTradePrice
+     * @param traderMarketView
+     */
 	@Override
 	public void speak(StockExchangeLevel1View traderMarketView) {
 		Stock randomStock = random.chooseElement(inventory.keySet());
@@ -84,7 +95,12 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 		placeSafeSellOrder(traderMarketView, limitSellOrder);
 	}
 
-	
+    /**
+     * It just computes the average from the executed trades
+     * of that particular trader?
+     * @param randomStock
+     * @return
+     */
 	private Long computeAverageTradePrice(Stock randomStock) {
 		// TODO Recalculating the average like this each time isn't very efficient.  
 		// It would be better to maintain a running average.
@@ -100,8 +116,6 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 	}
 	
 	private Integer computeAverageQuantity(Stock stock) {
-		// TODO Recalculating the average like this each time isn't very efficient.  
-		// It would be better to maintain a running average.
 		
 		synchronized (tradeExecutionEvents){
 			OptionalDouble average = 

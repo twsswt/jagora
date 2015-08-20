@@ -1,40 +1,34 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.util.Random;
 
-public class SimpleHistoricTraderBuilder {
-	
-	private String name;
-	private Long cash;
+import java.util.HashSet;
+import java.util.Set;
+
+public class SimpleHistoricTraderBuilder extends AbstractTraderBuilder {
+
 	private Integer seed;
-	
-	private Map<Stock, Integer> inventory;
+
 	private Set<StockExchange> stockExchanges;
 		
 	public SimpleHistoricTraderBuilder(){
-		this.inventory = new HashMap<Stock,Integer>();
 		this.stockExchanges = new HashSet<StockExchange>();
 	}
-	
+	@Override
 	public SimpleHistoricTraderBuilder addStock(Stock stock, Integer quantity){
-		inventory.put(stock, quantity);
+		super.addStock(stock, quantity);
 		return this;
 	}
-	
+	@Override
 	public SimpleHistoricTraderBuilder setName(String name) {
-		this.name = name;
+		super.setName(name);
 		return this;
 	}
-	
+	@Override
 	public SimpleHistoricTraderBuilder setCash(Long cash){
-		this.cash = cash;
+		super.setCash(cash);
 		return this;
 	}
 	
@@ -51,7 +45,7 @@ public class SimpleHistoricTraderBuilder {
 	public SimpleHistoricTrader build(){
 		SimpleHistoricTrader trader =  
 			new SimpleHistoricTrader(
-				name, cash, inventory, new Random(seed));
+				getName(), getCash(), getInventory(), new Random(seed));
 		for (StockExchange stockExchange: stockExchanges)
 			stockExchange.createLevel1View().registerTradeListener(trader);
 		return trader;

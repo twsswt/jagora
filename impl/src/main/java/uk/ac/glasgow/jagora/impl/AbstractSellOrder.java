@@ -30,6 +30,6 @@ public abstract class AbstractSellOrder extends AbstractOrder implements SellOrd
 		return this.getPrice().compareTo(order.getPrice());
 	}
 
-	public abstract Long getPrice();
+
 
 }

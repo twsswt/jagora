@@ -2,8 +2,8 @@ package uk.ac.glasgow.jagora.ticker.impl;
 
 import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 /**
  * Ordering of notification is randomised to prevent early registrants from
@@ -15,11 +15,9 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
  */
 public class ThreadedTickerTapeObserver extends AbstractStockExchangeObservable {
 
-	public ThreadedTickerTapeObserver() {
-		super();
-	}
+
 	
-	protected void notifyTradeListenerOfTrade(
+	public void notifyTradeListenerOfTrade(
 		TradeExecutionEvent tradeExecutedEvent, TradeListener tradeListener) {
 		
 		new Thread (){
@@ -41,5 +39,15 @@ public class ThreadedTickerTapeObserver extends AbstractStockExchangeObservable 
 			}
 		}.start();
 		
+	}
+
+	@Override
+	public void notifyOrderListenerOfCancelledOrder(OrderEvent orderEvent, OrderListener orderListener) {
+		new Thread (){
+			@Override
+			public void run (){
+				orderListener.orderCancelled(orderEvent);
+			}
+		}.start();
 	}
 }

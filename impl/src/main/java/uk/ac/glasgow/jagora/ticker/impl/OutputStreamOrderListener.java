@@ -1,9 +1,9 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import java.io.PrintStream;
-
 import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
+
+import java.io.PrintStream;
 
 public class OutputStreamOrderListener implements OrderListener {
 
@@ -22,5 +22,4 @@ public class OutputStreamOrderListener implements OrderListener {
 	public void orderCancelled(OrderEvent orderEvent) {
 		printStream.println(orderEvent);
 	}
-
 }

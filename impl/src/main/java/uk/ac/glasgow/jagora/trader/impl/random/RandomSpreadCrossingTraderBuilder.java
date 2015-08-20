@@ -1,17 +1,18 @@
-package uk.ac.glasgow.jagora.trader.impl;
+package uk.ac.glasgow.jagora.trader.impl.random;
+
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader.TradeRange;
+import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.trader.impl.RandomSpreadCrossingTrader.TradeRange;
-import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomSpreadCrossingTraderBuilder extends AbstractTraderBuilder {
 
 	private Map<Stock, TradeRange> tradeRanges;
 	
-	private Integer seed;
+	protected Integer seed;
 	
 	public RandomSpreadCrossingTraderBuilder(){
 		super ();

@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ *  A class for randomising elements of collection
+ */
 public class Random extends java.util.Random {
 
 	/****/

@@ -17,7 +17,7 @@ public class SimpleSerialWorld implements World{
 		
 	@Override
 	public <T> TickEvent<T> getTick(T event) {
-		synchronized(syncObject){
+		synchronized(syncObject){ //used to syncronise for multi-threading
 			return new TickEvent<T>(event, tickCount++);
 		}
 	}

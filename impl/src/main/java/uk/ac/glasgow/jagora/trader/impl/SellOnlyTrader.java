@@ -1,12 +1,12 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SellOnlyTrader extends SafeAbstractTrader implements Level1Trader {
 

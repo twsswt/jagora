@@ -1,16 +1,16 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import static java.lang.String.format;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.TradeExecutionException;
+import uk.ac.glasgow.jagora.trader.Trader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.TradeExecutionException;
-import uk.ac.glasgow.jagora.trader.Trader;
+import static java.lang.String.format;
 
 /**
  * Implements basic trader functionality. Sub-classes implement trader specific
@@ -32,6 +32,12 @@ public abstract class AbstractTrader implements Trader {
 	private List<Trade> mySellTrades;
 	private List<Trade> myBuyTrades;
 
+	/**
+	 *
+	 * @param name
+	 * @param cash
+	 * @param inventory - can it not be just a list?
+	 */
 	public AbstractTrader(String name, Long cash, Map<Stock,Integer> inventory) {
 		this.name = name;
 		this.cash = cash;
@@ -71,9 +77,14 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void sellStock(Trade trade) throws TradeExecutionException {
-		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0);
+		if (trade.getSeller() != this)
+			throw  new TradeExecutionException("Trader is not the  same", trade, this);
+
+		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0); //
 		if (currentQuantity < trade.getQuantity()){ 
-			String message = format("Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].", name, trade, currentQuantity);
+			String message = format(
+					"Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].",
+					name, trade, currentQuantity);
 			throw new TradeExecutionException (message, trade, this);
 		} else {
 			inventory.put(trade.getStock(), currentQuantity - trade.getQuantity());
@@ -87,8 +98,11 @@ public abstract class AbstractTrader implements Trader {
 	 */
 	@Override
 	public void buyStock(Trade trade) throws TradeExecutionException {
+		if(trade.getBuyer() != this && trade.getSeller() != this)
+			throw  new TradeExecutionException("Trader not the same", trade, this);
+
 		Long totalPrice = trade.getPrice() * trade.getQuantity();
-		
+
 		if (totalPrice > cash){
 			String message = format("Buyer [%s] cannot satisfy trade [%s] with remaining cash [%d].", name, trade, getCash());
 			throw new TradeExecutionException (message, trade, this);		

@@ -1,10 +1,10 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
 
@@ -42,6 +42,4 @@ public class InstitutionalInvestorTraderBuilder extends AbstractTraderBuilder {
 		return this;
 	}
 	
-	
-
 }

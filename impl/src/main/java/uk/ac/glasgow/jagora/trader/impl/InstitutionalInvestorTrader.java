@@ -12,6 +12,15 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 
+/**
+ * Follows a fixed trading schedule, typically placing very
+ * large 'strategic' (i.e. obvious, stupid) orders onto the
+ * market. This agent represents the detectable behaviour of
+ * a very large institutional investor, such as a pension
+ * fund.
+ * 
+ * @author Tim
+ */
 public class InstitutionalInvestorTrader extends SafeAbstractTrader implements Level1Trader {
 	
 	private PriorityQueue<ScheduledLimitBuyOrder> scheduledOrders;	

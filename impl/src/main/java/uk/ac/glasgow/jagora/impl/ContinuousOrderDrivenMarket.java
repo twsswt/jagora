@@ -21,7 +21,7 @@ import uk.ac.glasgow.jagora.world.World;
  *
  */
 public class ContinuousOrderDrivenMarket implements Market {
-	
+
 	public final Stock stock;
 	public final World world;
 
@@ -29,18 +29,20 @@ public class ContinuousOrderDrivenMarket implements Market {
 	private final OrderBook<BuyOrder> buyBook;
 	
 	private final TradePricer tradePricer;
-			
+	
 	public ContinuousOrderDrivenMarket (Stock stock, World world, TradePricer tradePricer){
-		this.stock = stock;
 		this.world = world;
 		this.tradePricer = tradePricer;
 
 		sellBook = new OrderBook<SellOrder>(world);
 		buyBook = new OrderBook<BuyOrder>(world);
+		
+		this.stock = stock;
 	}
-	
+
+
 	@Override
-	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order) {
+	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order) {		
 		return buyBook.recordOrder(order);
 	}
 	
@@ -103,6 +105,7 @@ public class ContinuousOrderDrivenMarket implements Market {
 			
 		}
 		return executedTrades;
+
 	}
 
 	private boolean aTradeCanBeExecuted(TickEvent<SellOrder> lowestSell, TickEvent<BuyOrder> highestBuy) {
@@ -128,14 +131,10 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 
 	@Override
-	public Long getBestBidPrice() {
-		return buyBook.getBestPrice();
-	}
+	public Long getBestBidPrice() {return buyBook.getBestPrice();}
 
 	@Override
-	public Long getBestOfferPrice() {
-		return sellBook.getBestPrice();
-	}
+	public Long getBestOfferPrice() {return sellBook.getBestPrice();}
 
 	@Override
 	public Long getLastKnownBestBidPrice() {

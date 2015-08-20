@@ -1,15 +1,4 @@
 package uk.ac.glasgow.jagora.trader.impl.zip;
-import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.INCREASE;
-import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.REDUCE;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
 
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
@@ -22,6 +11,11 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction;
+
+import java.util.*;
+
+import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.INCREASE;
+import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.REDUCE;
 
 public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, TradeListener, OrderListener {
 		
@@ -40,8 +34,6 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	private ZIPOrderJob<? extends Order> currentOrderJob;
 	
 	private Queue<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>> zIPOrderJobSpecifications;
-
-	private Set<StockExchangeLevel2View> registered;
 
 	private Map<Stock, MarketDatum> marketData;
 
@@ -73,9 +65,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		
 		this.zIPOrderJobSpecifications =
 			new LinkedList<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>>(orderJobSpecifications);
-		
-		registered = new HashSet<StockExchangeLevel2View>();
-		
+				
 		marketData = new HashMap<Stock,MarketDatum>();
 		
 		updateCurrentOrderJob();
@@ -83,7 +73,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 
 	@Override
 	public void speak(StockExchangeLevel2View level2View) {
-		if (!registered.contains(level2View)) register (level2View);
+		register (level2View);
 		
 		updateCurrentOrderJob ();
 		if (!currentOrderJobIsFinished())
@@ -94,7 +84,6 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	private void register(StockExchangeLevel2View level2View) {
 		level2View.registerOrderListener(this);
 		level2View.registerTradeListener(this);
-		registered.add(level2View);
 	}
 
 	private void updateCurrentOrderJob() {

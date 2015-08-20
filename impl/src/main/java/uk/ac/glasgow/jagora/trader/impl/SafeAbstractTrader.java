@@ -1,13 +1,10 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
+import uk.ac.glasgow.jagora.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 
 public abstract class SafeAbstractTrader extends AbstractTrader {
 
@@ -19,21 +16,26 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		this.openBuyOrders = new ArrayList<BuyOrder>();
 		this.openSellOrders = new ArrayList<SellOrder>();
 	}
-	
-	protected void placeSafeBuyOrder(StockExchangeLevel1View traderView, BuyOrder buyOrder) {
-		
+
+	protected Boolean placeSafeBuyOrder(StockExchangeLevel1View traderView, BuyOrder buyOrder) {
+		//if you have enough money, you can place the order(that's safe)
+
 		if (buyOrder.getPrice() * buyOrder.getRemainingQuantity() <= getAvailableCash()){
-			traderView.placeBuyOrder(buyOrder);
+			traderView.placeBuyOrder(buyOrder); //put it in the exchange book as order
 			openBuyOrders.add(buyOrder);
+			return true;
 		}
+		return false;
 	}
-	
-	protected void placeSafeSellOrder(StockExchangeLevel1View traderView, SellOrder sellOrder) {
+
+	protected Boolean placeSafeSellOrder(StockExchangeLevel1View traderView, SellOrder sellOrder) {
 		if (sellOrder.getRemainingQuantity() <= getAvailableQuantity(sellOrder.getStock())){
 			openSellOrders.add(sellOrder);
 			
 			traderView.placeSellOrder(sellOrder);
+			return true;
 		}
+		return false;
 	}
 	
 	protected void cancelSafeSellOrder(	StockExchangeLevel1View stockExchangeLevel1View, SellOrder sellOrder) {
@@ -61,6 +63,10 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 			openBuyOrders.remove(indexToCancel.intValue());
 	}
 
+	/**
+	 *
+	 * @return Available cash after cash committed for openBuyOrders is taken out
+	 */
 	protected Long getAvailableCash() {
 		Long committedCash =
 			openBuyOrders.stream()
@@ -71,7 +77,7 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	}
 
 	protected Integer getAvailableQuantity(Stock stock) {
-		
+		//bug?? just works if you have one stock only?
 		Integer committedQuantity = 
 			openSellOrders.stream()
 			.mapToInt(sellOrder -> sellOrder.getRemainingQuantity())

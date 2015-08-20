@@ -25,8 +25,6 @@ public abstract class AbstractBuyOrder extends AbstractOrder implements BuyOrder
 			getTrader().sellStock(executedTrade.event);
 	}
 	
-	public abstract Long getPrice();
-	
 	@Override
 	public int compareTo(BuyOrder order) {
 		return order.getPrice().compareTo(this.getPrice());

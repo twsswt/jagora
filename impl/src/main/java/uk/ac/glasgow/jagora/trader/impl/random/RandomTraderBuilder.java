@@ -1,21 +1,21 @@
-package uk.ac.glasgow.jagora.trader.impl;
+package uk.ac.glasgow.jagora.trader.impl.random;
+
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
+import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.trader.impl.RandomTrader.RangeData;
-import uk.ac.glasgow.jagora.util.Random;
-
-public class RandomTraderBuilder {
-	private String name;
-	private Long cash;
+public class RandomTraderBuilder extends AbstractTraderBuilder {
+	protected String name;
+	protected Long cash;
 	
-	private Map<Stock, Integer> inventory;
+	protected Map<Stock, Integer> inventory;
 	
-	private Integer seed;
-	private Map<Stock, RangeData> sellRangeData;
-	private Map<Stock, RangeData> buyRangeData;
+	protected Integer seed;
+	protected Map<Stock, RangeData> sellRangeData;
+	protected Map<Stock, RangeData> buyRangeData;
 	
 	public RandomTraderBuilder(){
 		this.inventory = new HashMap<Stock,Integer>();
@@ -23,31 +23,34 @@ public class RandomTraderBuilder {
 		buyRangeData = new HashMap<Stock,RangeData>();
 
 	}
-	
+	@Override
 	public RandomTraderBuilder addStock(Stock stock, Integer quantity){
 		inventory.put(stock, quantity);
 		return this;
 	}
-	
+
 	public RandomTraderBuilder setSellOrderRange(
-		Stock stock, Integer minQuantity, Integer maxQuantity, Long sellLowVariance, Long sellHighVariance){
-		
-		sellRangeData.put(stock, new RangeData(stock, sellLowVariance, sellHighVariance, minQuantity, maxQuantity));
+		Stock stock, Integer minQuantity, Integer maxQuantity,
+		Long sellLow, Long sellHigh) {
+				
+		sellRangeData.put(stock, new RangeData(stock, sellLow, sellHigh, minQuantity, maxQuantity));
 		return this;
 	}
 	
 	public RandomTraderBuilder setBuyOrderRange(
-		Stock stock, Integer minQuantity, Integer maxQuantity, Long buyLowVariance, Long buyHighVariance){
+		Stock stock, Integer minQuantity, Integer maxQuantity, Long buyLow, Long buyHigh){
 		
-		buyRangeData.put(stock, new RangeData(stock, buyLowVariance, buyHighVariance, minQuantity, maxQuantity));
+		buyRangeData.put(stock, new RangeData(stock, buyLow, buyHigh, minQuantity, maxQuantity));
 		return this;
 	}
+
 	
+	@Override
 	public RandomTraderBuilder setName(String name) {
 		this.name = name;
 		return this;
 	}
-	
+	@Override
 	public RandomTraderBuilder setCash(Long cash){
 		this.cash = cash;
 		return this;
@@ -61,4 +64,6 @@ public class RandomTraderBuilder {
 		this.seed = seed;
 		return this;
 	}
+
+
 }
