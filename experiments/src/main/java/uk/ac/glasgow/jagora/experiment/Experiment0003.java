@@ -32,8 +32,8 @@ import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
 import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTraderListener;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
 import uk.ac.glasgow.jagora.util.Random;
@@ -146,8 +146,8 @@ public class Experiment0003 {
 		//registerFilteredStdOutOrderListener(OrderDirection.BUY);
 		//registerFilteredStdOutOrderListener(OrderDirection.SELL);
 				
-		OutputStreamTraderListener outputStreamTradeListener =
-			new OutputStreamTraderListener(System.out);
+		OutputStreamTradeListener outputStreamTradeListener =
+			new OutputStreamTradeListener(System.out);
 		tickerTapeObserver.registerTradeListener(outputStreamTradeListener);
 		
 		PrintStream pricesDatFileStream = createPrintStreamToFile(pricesDatFilePath);

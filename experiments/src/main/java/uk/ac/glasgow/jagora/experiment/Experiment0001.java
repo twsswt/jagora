@@ -24,8 +24,8 @@ import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTraderListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
@@ -83,8 +83,8 @@ public class Experiment0001 {
 				.setSeed(r.nextInt())
 				.build());*/
 		
-		OutputStreamTraderListener tradeListener = 
-			new OutputStreamTraderListener(System.out);
+		OutputStreamTradeListener tradeListener = 
+			new OutputStreamTradeListener(System.out);
 		
 		OutputStreamOrderListener orderListener = 
 			new OutputStreamOrderListener(System.out);
@@ -99,7 +99,8 @@ public class Experiment0001 {
 			.addTraders(traders)
 			.build();
 		
-		Trader dan = new StubTraderBuilder("stub")
+		Trader dan = new StubTraderBuilder()
+		.setName("stub")
 		.setCash(200l)
 		.addStock(lemons, 1).build();
 	

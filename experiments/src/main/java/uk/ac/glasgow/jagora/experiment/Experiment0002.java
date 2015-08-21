@@ -73,7 +73,8 @@ public class Experiment0002 {
 
 		Set<Level1Trader> traders = new HashSet<Level1Trader>();
 						
-		Level1Trader stubTrader = new StubTraderBuilder("stub")
+		Level1Trader stubTrader = new StubTraderBuilder()
+			.setName("stub")
 			.setCash(200l)
 			.addStock(lemons, 1)
 			.build();
@@ -123,6 +124,7 @@ public class Experiment0002 {
 	@Test
 	public void test() {
 		engine.run();
+
 	}
 
 }
