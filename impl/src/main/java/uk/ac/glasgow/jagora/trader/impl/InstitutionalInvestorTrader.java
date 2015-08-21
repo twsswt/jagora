@@ -12,13 +12,14 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 
-import java.util.*;
-
 /**
- * This type of trader implements ScheduledLimitOrder,
- * which means that a couple of orders are first scheduled and will
- * execute if their time is right, otherwise it's just a normal
- * SafeAbstractTrader?
+ * Follows a fixed trading schedule, typically placing very
+ * large 'strategic' (i.e. obvious, stupid) orders onto the
+ * market. This agent represents the detectable behaviour of
+ * a very large institutional investor, such as a pension
+ * fund.
+ * 
+ * @author Tim
  */
 public class InstitutionalInvestorTrader extends SafeAbstractTrader implements Level1Trader {
 	

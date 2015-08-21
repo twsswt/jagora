@@ -35,8 +35,6 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	
 	private Queue<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>> zIPOrderJobSpecifications;
 
-	private Set<StockExchangeLevel2View> registered;
-
 	private Map<Stock, MarketDatum> marketData;
 
 	public ZIPTrader(
@@ -67,9 +65,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 		
 		this.zIPOrderJobSpecifications =
 			new LinkedList<ZIPOrderJobSpecification<? extends ZIPOrderJob<?>>>(orderJobSpecifications);
-		
-		registered = new HashSet<StockExchangeLevel2View>();
-		
+				
 		marketData = new HashMap<Stock,MarketDatum>();
 		
 		updateCurrentOrderJob();

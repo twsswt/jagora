@@ -1,50 +1,60 @@
 package uk.ac.glasgow.jagora.trader.impl.random;
 
 
+import java.util.Map;
+
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
 import uk.ac.glasgow.jagora.util.Random;
 
-public class RandomTraderPercentageBuilder extends RandomTraderBuilder {
-    private final Long LongChange = 0l;
+public class RandomTraderPercentageBuilder extends AbstractTraderBuilder {
+		
+	protected Integer seed;
+	protected Map<Stock, PercentageRangeData> sellRangeData;
+	protected Map<Stock, PercentageRangeData> buyRangeData;
+	
+	public RandomTraderPercentageBuilder() {
+		super();
+	}
+	
+	public RandomTraderPercentageBuilder setSellOrderRange(Stock stock, Integer minQuantity, Integer maxQuantity,
+		Double sellLow, Double sellHigh) {
+				
+		sellRangeData.put(stock, new PercentageRangeData(stock, minQuantity, maxQuantity, sellLow, sellHigh));
+		return this;
+	}
+	
+	public RandomTraderPercentageBuilder setBuyOrderRange(
+		Stock stock, Integer minQuantity, Integer maxQuantity, Double buyLow, Double buyHigh){
+		
+		buyRangeData.put(stock, new PercentageRangeData(stock, minQuantity, maxQuantity, buyLow, buyHigh));
+		return this;
+	}
 
-    public RandomTraderPercentageBuilder() {
-        super();
-    }
+	public RandomTraderPercentageBuilder setSeed(Integer seed) {
+		this.seed = seed;
+		return this;
+	}
 
-    public RandomTraderPercentageBuilder setTradeRange(
-            Stock stock, Integer minQuantity, Integer maxQuantity,
-            Double sellLow, Double sellHigh, Double buyLow, Double buyHigh) {
-        sellRangeData.put(stock, new RangeData(stock, LongChange, LongChange, minQuantity, maxQuantity,sellLow,sellHigh));
-        buyRangeData.put(stock, new RangeData(stock, LongChange, LongChange, minQuantity, maxQuantity,buyLow, buyHigh));
-        return this;
-    }
+	@Override
+	public RandomTraderPercentageBuilder addStock(Stock stock, Integer quantity) {
+		super.addStock(stock,quantity);
+		return this;
+	}
 
-    @Override
-    public RandomTraderPercentageBuilder setSeed(Integer seed) {
-        this.seed = seed;
-        return this;
-    }
+	@Override
+	public RandomTraderPercentageBuilder setName(String name) {
+		super.setName(name);
+		return this;
+	}
 
-    @Override
-    public RandomTraderPercentageBuilder addStock(Stock stock, Integer quantity) {
-        inventory.put(stock,quantity);
-        return this;
-    }
+	@Override
+	public RandomTraderPercentageBuilder setCash(Long cash) {
+		super.setCash(cash);
+		return this;
+	}
 
-    @Override
-    public RandomTraderPercentageBuilder setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    @Override
-    public RandomTraderPercentageBuilder setCash(Long cash) {
-        this.cash = cash;
-        return this;
-    }
-
-    @Override
-    public RandomTraderPercentage build() {
-        return new RandomTraderPercentage(name, cash, inventory, new Random(seed), sellRangeData, buyRangeData);
-    }
+	public RandomTraderPercentage build() {
+		return new RandomTraderPercentage(getName(), getCash(), getInventory(), new Random(seed), sellRangeData, buyRangeData);
+	}
 }

@@ -2,15 +2,15 @@ package uk.ac.glasgow.jagora.experiment;
 
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
-import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
+import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
@@ -121,11 +121,11 @@ public class ExperimentUtility {
 		addMarketMakers (level2Traders);
 
 
-		engine = new SerialRandomEngineBuilder()
+		engine = new DelayableSerialRandomEngineBuilder()
 			.setWorld(world)
 			.setSeed(seed)
 			.addStockExchange(stockExchange)
-			.setStandartDelay(standardDelay)
+			.setStandardDelay(standardDelay)
 			.addTraders(level1Traders)
 			.addPrivilegedTraders(level2Traders)
 			.build();
@@ -179,13 +179,13 @@ public class ExperimentUtility {
 							.setName(name)
 							.setCash(initialLevel2TraderCash)
 							.setSeed(seed)
-							.setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread, -hFTSpread,hFTSpread)
+							.setBuyRangeDatum(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread)
+							.setSellRangeDatum(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread)							
 							.build();
 
 			level2Traders.add(trader);
 		}
 	}
-
 
 	protected void addSimpleHistoricTraders(Set<Level1Trader> level1Traders) throws  Exception{
 		for (Integer i : range(0, numberOfSimpleHistoricTraders).toArray()){
@@ -211,14 +211,14 @@ public class ExperimentUtility {
 			String name = createTraderName(RandomTrader.class, i);
 
 			RandomTraderPercentage trader =
-					new RandomTraderPercentageBuilder()
-							.setName(name)
-							.setCash(initialTraderCash)
-							.setSeed(random.nextInt())
-							.addStock(lemons,stockQuantity)
-							.setTradeRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh,
-									-randomTradersSpread,randomTradersSpread, -randomTradersSpread,randomTradersSpread )
-							.build();
+				new RandomTraderPercentageBuilder()
+					.setName(name)
+					.setCash(initialTraderCash)
+					.setSeed(random.nextInt())
+					.addStock(lemons,stockQuantity)
+					.setBuyOrderRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -randomTradersSpread,randomTradersSpread)
+					.setSellOrderRange(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -randomTradersSpread,randomTradersSpread)							
+					.build();
 
 			level1Traders.add(trader);
 		}
@@ -260,12 +260,7 @@ public class ExperimentUtility {
 
 			for (Long delay : delayedBuyOrders.keySet())
 				traderBuilder.addScheduledLimitBuyOrder(
-						delay, world,lemons, delayedBuyOrders.get(delay) );
-
-			for (Long delay : delayedSellOrders.keySet())
-				traderBuilder.addScheduledLimitSellOrder(
-						delay, world, lemons, delayedSellOrders.get(delay));
-
+						delay, world,lemons, delayedBuyOrders.get(delay), 100l );
 
 
 		level1Traders.add(traderBuilder.build());
@@ -291,8 +286,11 @@ public class ExperimentUtility {
 	}
 
 	protected void configureFirstTrade () {
-		Trader dan = new StubTraderBuilder("stub", initialTraderCash)
-				.addStock(lemons, 10).build();
+		Trader dan = new StubTraderBuilder()
+			.setName("stub")
+			.setCash(initialTraderCash)
+			.addStock(lemons, 10)
+			.build();
 
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
 		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, firstTradePrice + 1));
@@ -308,7 +306,7 @@ public class ExperimentUtility {
 		//registerFilteredStdOutOrderListener(OrderDirection.BUY);
 		//registerFilteredStdOutOrderListener(OrderDirection.SELL);
 
-		tickerTapeObserver.registerTradeListener(new StdOutTradeListener());
+		tickerTapeObserver.registerTradeListener(new OutputStreamTradeListener(System.out));
 
 		PrintStream pricesDatFileStream = createPrintStreamToFile(pricesDatFilePath);
 

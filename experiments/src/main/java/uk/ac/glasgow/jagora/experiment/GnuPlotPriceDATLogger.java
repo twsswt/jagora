@@ -1,14 +1,14 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
+import static java.lang.String.format;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
 
 import java.io.PrintStream;
 
-import static java.lang.String.format;
-import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
+import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 
 /**
  * 
@@ -31,20 +31,21 @@ public class GnuPlotPriceDATLogger implements TradeListener, OrderListener {
 	}
 
 	@Override
-	public void orderEntered(OrderEvent orderEntryEvent) {
+	public void orderEntered(OrderEvent orderEvent) {
 		String template = null;
-		Long price = orderEntryEvent.price;
-		if (orderEntryEvent.orderDirection == SELL)
-			template = "%d,%d";
+		Long price = orderEvent.price;
+		if (orderEvent.orderDirection == SELL)
+			template = "%d,%d,,";
 		 else 
-			template = "%d,,%d";
+			template = "%d,,%d,";
 
 		printStream.println(
-			format(template,orderEntryEvent.tick, price));
+			format(template,orderEvent.tick, price));
 	}
 
 	@Override
-	public void orderCancelled(OrderEvent orderEntryEvent) {
-
+	public void orderCancelled(OrderEvent orderEvent) {
+		// TODO Auto-generated method stub
 	}
-}
+
+} 

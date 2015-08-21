@@ -1,23 +1,13 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import org.junit.Before;
-import org.junit.Test;
-import uk.ac.glasgow.jagora.*;
-import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
-import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
-import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
-import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
-import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
-import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
-import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
-import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
-import uk.ac.glasgow.jagora.util.Random;
-import uk.ac.glasgow.jagora.world.TickEvent;
-import uk.ac.glasgow.jagora.world.World;
-import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
+import static java.lang.String.format;
+import static java.util.Collections.shuffle;
+import static java.util.stream.IntStream.range;
+import static org.hamcrest.Matchers.closeTo;
+import static org.junit.Assert.assertThat;
+import static uk.ac.glasgow.jagora.experiment.ExperimentalReportsPathsUtil.experimentalPricesDatFilePath;
+import static uk.ac.glasgow.jagora.experiment.ExperimentalReportsPathsUtil.experimentalReportDirectory;
+import static uk.ac.glasgow.jagora.experiment.MarketCalculationsUtil.calculateEquilibriumPrice;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -27,12 +17,29 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static java.lang.String.format;
-import static java.util.Collections.shuffle;
-import static java.util.stream.IntStream.range;
-import static org.hamcrest.Matchers.closeTo;
-import static org.junit.Assert.assertThat;
-import static uk.ac.glasgow.jagora.experiment.MarketCalculationsUtil.calculateEquilibriumPrice;
+import org.junit.Before;
+import org.junit.Test;
+
+import uk.ac.glasgow.jagora.MarketFactory;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.StockExchange;
+import uk.ac.glasgow.jagora.StockExchangeLevel2View;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
+import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
+import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
+import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
+import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
+import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
+import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
+import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
+import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
+import uk.ac.glasgow.jagora.util.Random;
+import uk.ac.glasgow.jagora.world.TickEvent;
+import uk.ac.glasgow.jagora.world.World;
+import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
 /**
  * Reproduce's Cliff (1997)'s experimental results for Zero Intelligence Traders.
@@ -44,9 +51,9 @@ public class Experiment0003 {
 	// Experimental constants
 
 	private final Integer seed = 1;
-	private final Integer permittedError = 100;
+	private final Integer permittedEquilibriumError = 100;
 
-	private final Long maxTickCount = 50000l;
+	private final Long maxTickCount = 500000l;
 	private final Double priceAveragingPortion = 0.5;
 	
 	private final Double maximumRelativePriceChange = 0.05;
@@ -59,21 +66,23 @@ public class Experiment0003 {
 	private final Double minMomentum = 0.2;
 	
 	private final Long buyerTraderCash = 100000000l;
-	private final Integer jobQuantity = 100;
+	private final Integer jobQuantity = 1;
 	
 	private final Long maxPrice = 5000l;
 	private final Long minPrice = 0l;
 	
 	private final Long minOfferLimit = 0l;
 	private final Long maxBidLimit = 5000l;
+			
+	private final String experimentalReportDirectory = experimentalReportDirectory(this.getClass());
 	
-	private final String pricesDatFilePath = "reports/jagora/prices.dat";
-	private final String zipTradersDatFilePath = "reports/jagora/zip-targets.dat";
+	private final String pricesDatFilePath = experimentalPricesDatFilePath(this.getClass());
+	private final String zipTradersDatFilePath = experimentalReportDirectory + "/zip-targets.dat";
 	
 	// Experimental parameters.
 	
-	private final Integer numberOfBuyers = 50;
-	private final Integer numberOfSellers = 50;
+	private final Integer numberOfBuyers = 50000;
+	private final Integer numberOfSellers = 50000;
 	
 	// Experimental fixture
 	
@@ -137,7 +146,9 @@ public class Experiment0003 {
 		//registerFilteredStdOutOrderListener(OrderDirection.BUY);
 		//registerFilteredStdOutOrderListener(OrderDirection.SELL);
 				
-		tickerTapeObserver.registerTradeListener(new StdOutTradeListener());
+		OutputStreamTradeListener outputStreamTradeListener =
+			new OutputStreamTradeListener(System.out);
+		tickerTapeObserver.registerTradeListener(outputStreamTradeListener);
 		
 		PrintStream pricesDatFileStream = createPrintStreamToFile(pricesDatFilePath);
 		
@@ -223,7 +234,7 @@ public class Experiment0003 {
 	@Test
 	public void runExperiment() {
 				
-		Double expectedEquilibriumPrice = 
+		Double expectedTradePrice = 
 			calculateEquilibriumPrice(maxPrice, minPrice, maxBidLimit, minOfferLimit, numberOfBuyers, numberOfSellers); 
 						
 		while (world.isAlive()){	
@@ -236,7 +247,7 @@ public class Experiment0003 {
 		
 		Long lastTradeTick = tradeEvents.get(tradeEvents.size() - 1).tick;
 		
-		Double averagePrice = 
+		Double averageTradePrice = 
 			tradeEvents
 				.stream()
 				.filter(tradeEvent -> tradeEvent.tick >= lastTradeTick * priceAveragingPortion)
@@ -244,7 +255,7 @@ public class Experiment0003 {
 				.average()
 				.getAsDouble();
 				
-		assertThat (averagePrice, closeTo(expectedEquilibriumPrice, permittedError));		
+		assertThat (averageTradePrice, closeTo(expectedTradePrice, permittedEquilibriumError));		
 	}
 
 }

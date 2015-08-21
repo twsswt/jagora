@@ -4,73 +4,54 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
 import uk.ac.glasgow.jagora.util.Random;
 
-import java.util.HashMap;
-import java.util.Map;
-
-
 public class HighFrequencyRandomTraderBuilder extends AbstractTraderBuilder {
-    private String name;
-    private Long cash;
 
-    private Map <Stock, Integer> inventory;
+	private Integer seed;
 
-    private Integer seed;
+	private PercentageRangeData buyRangeDatum;
+	private PercentageRangeData sellRangeDatum;
 
-    private RangeData buyRangeDatum;
-    private RangeData sellRangeDatum;
+	public HighFrequencyRandomTraderBuilder() {}
 
-    private final Long LongChange = 0l;
+	@Override
+	public HighFrequencyRandomTraderBuilder setName(String name) {
+		super.setName(name);
+		return this;
+	}
 
-    public HighFrequencyRandomTraderBuilder() {
-        this.inventory = new HashMap<>();
-    }
+	@Override
+	public HighFrequencyRandomTraderBuilder setCash(Long cash) {
+		super.setCash(cash);
+		return this;
+	}
 
-    @Override
-    public HighFrequencyRandomTraderBuilder setName(String name) {
-        this.name = name;
-        return this;
-    }
+	public HighFrequencyRandomTraderBuilder addStock(Stock stock,Integer quantity) {
+		super.addStock(stock,quantity);
+		return this;
+	}
 
-    @Override
-    public HighFrequencyRandomTraderBuilder setCash(Long cash) {
-        this.cash = cash;
-        return this;
-    }
+	public HighFrequencyRandomTraderBuilder setSeed(Integer seed) {
+		this.seed = seed;
+		return this;
+	}
 
-    public HighFrequencyRandomTraderBuilder addStock(Stock stock,Integer quantity) {
-        this.inventory.put(stock,quantity);
-        return this;
-    }
+	public HighFrequencyRandomTraderBuilder setBuyRangeDatum(
+		Stock stock, Integer minQuantity, Integer maxQuantity, Double low, Double high) {
 
-    public HighFrequencyRandomTraderBuilder setSeed(Integer seed) {
-        this.seed = seed;
-        return this;
-    }
+		this.buyRangeDatum = new PercentageRangeData(stock, minQuantity, maxQuantity, low, high);
+		return this;
+	}
 
-    public HighFrequencyRandomTraderBuilder setTradeRange(
-            Stock stock, Integer minQuantity, Integer maxQuantity,
-             Double sellLow, Double sellHigh, Double buyLow, Double buyHigh) {
-        this.buyRangeDatum = new RangeData(stock, LongChange, LongChange, minQuantity, maxQuantity,buyLow,buyHigh);
-        this.sellRangeDatum = new RangeData(stock, LongChange, LongChange, minQuantity, maxQuantity,sellLow,sellHigh);
-        return  this;
-    }
+	public HighFrequencyRandomTraderBuilder setSellRangeDatum(
+		Stock stock, Integer minQuantity, Integer maxQuantity, Double low, Double high) {
+		
+		this.sellRangeDatum = new PercentageRangeData(stock, minQuantity, maxQuantity, low, high);
+		return this;
+	}
 
-    public HighFrequencyRandomTraderBuilder setBuyRangeDatum(
-            Stock stock, Integer minQuantity, Integer maxQuantity,
-            Double sellLow, Double sellHigh, Double buyLow, Double buyHigh) {
-        this.buyRangeDatum = new RangeData(stock, LongChange, LongChange, minQuantity, maxQuantity,sellLow,sellHigh);
-        return this;
-    }
-
-    public HighFrequencyRandomTraderBuilder setSellRangeDatum(
-            Stock stock, Integer minQuantity, Integer maxQuantity,
-            Double sellLow, Double sellHigh, Double buyLow, Double buyHigh) {
-        this.sellRangeDatum = new RangeData(stock, LongChange, LongChange, minQuantity, maxQuantity,sellLow,sellHigh);
-        return this;
-    }
-
-    public HighFrequencyRandomTrader build () {
-        return  new HighFrequencyRandomTrader(name,cash, inventory,
-                buyRangeDatum, sellRangeDatum, new Random(seed));
-    }
+	public HighFrequencyRandomTrader build () {
+		return  new HighFrequencyRandomTrader(
+			getName(), getCash(), getInventory(),
+			buyRangeDatum, sellRangeDatum, new Random(seed));
+	}
 }

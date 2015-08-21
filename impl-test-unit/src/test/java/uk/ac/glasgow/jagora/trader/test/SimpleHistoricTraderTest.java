@@ -40,11 +40,11 @@ public class SimpleHistoricTraderTest extends EasyMockSupport {
 		lemons = new Stock("lemons");
 				
 		alice = new SimpleHistoricTraderBuilder()
-				.setSeed(22)
-				.setName("alice")
-				.setCash(100l)
-			    .addStock(lemons, 10)
-			    .build();
+			.setName("alice")
+			.setCash(100l)
+			.setSeed(1)
+			.addStock(lemons, 10)
+			.build();
 	}
 
 	@Test

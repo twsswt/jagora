@@ -36,11 +36,15 @@ public class StockExchangeObservableTest {
 	public void setUp() {
 		stockExchangeObservable = new SerialTickerTapeObserver();
 
-		alice = new StubTraderBuilder("alice",50000l)
+		alice = new StubTraderBuilder()
+				.setName("alice")
+				.setCash(50000l)
 				.addStock(lemons,1000)
 				.build();
 
-		bruce = new StubTraderBuilder("bruce",50000l)
+		bruce = new StubTraderBuilder()
+				.setName("bruce")
+				.setCash(50000l)
 				.addStock(lemons,1000)
 				.build();
 

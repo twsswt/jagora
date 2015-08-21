@@ -16,9 +16,6 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author tws
  *

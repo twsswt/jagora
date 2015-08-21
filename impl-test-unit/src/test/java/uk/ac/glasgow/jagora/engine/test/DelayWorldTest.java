@@ -8,15 +8,15 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
-import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
+import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomTrader;
@@ -54,7 +54,9 @@ public class DelayWorldTest {
 
 		Random r = new Random(seed);
 
-		Trader dan = new StubTraderBuilder("stub", initialTraderCash)
+		Trader dan = new StubTraderBuilder()
+			.setName("stub")
+			.setCash(initialTraderCash)
 			.addStock(lemons, 10).build();
 
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
@@ -66,24 +68,25 @@ public class DelayWorldTest {
 		for (int i = 0 ; i < numberOfTraders ; i++){
 			RandomTrader randomTrader =
 					new RandomTraderBuilder()
-							.setName("trader["+i+"]")
-							.setCash(initialTraderCash)
-							.setSeed(r.nextInt())
-							.setTradeRange(lemons, 1, 100,  -5l, +5l, -5l, +5l)
-							.addStock(lemons, 1000)
-							.build();
+						.setName("trader["+i+"]")
+						.setCash(initialTraderCash)
+						.setSeed(r.nextInt())
+						.setBuyOrderRange(lemons, 1, 100, -5l, +5l)
+						.setSellOrderRange(lemons, 1, 100, -5l, +5l)
+						.addStock(lemons, 1000)
+						.build();
 
 			traders.add(randomTrader);
 		}
 
-		stockExchange.createLevel1View().registerTradeListener(new StdOutTradeListener());
+		stockExchange.createLevel1View().registerTradeListener(new OutputStreamTradeListener(System.out));
 
-		engine = new SerialRandomEngineBuilder()
+		engine = new DelayableSerialRandomEngineBuilder()
 				.setWorld(world)
 				.setSeed(seed)
 				.addStockExchange(stockExchange)
 				.addTraders(traders)
-				.setStandartDelay(5l)
+				.setStandardDelay(5l)
 				.build();
 	}
 

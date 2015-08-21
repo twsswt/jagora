@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.*;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
-import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
+import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
@@ -14,8 +14,8 @@ import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.StdOutTradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketDatum;
@@ -64,7 +64,9 @@ public class MarketMakerBasicTest {
 
 		Random r = new Random(1);
 
-		Trader dan = new StubTraderBuilder("stub", 100000000l)
+		Trader dan = new StubTraderBuilder()
+				.setName("stub")
+				.setCash(100000000l)
 				.addStock(lemons, 10).build();
 
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
@@ -80,7 +82,8 @@ public class MarketMakerBasicTest {
 					.setName("trader["+i+"]")
 					.setCash(100000000l)
 					.setSeed(r.nextInt())
-					.setTradeRange(lemons, 1, 100, -0.005,+0.005,-0.005,0.005)
+					.setBuyOrderRange(lemons, 1, 100, -0.005,0.005)
+					.setSellOrderRange(lemons, 1, 100, -0.005,0.005)
 					.addStock(lemons, 100)
 					.build();
 
@@ -97,15 +100,15 @@ public class MarketMakerBasicTest {
 			.setSpread(0.003)
 			.build();
 
-		stockExchange.createLevel1View().registerTradeListener(new StdOutTradeListener());
+		stockExchange.createLevel1View().registerTradeListener(new OutputStreamTradeListener(System.out));
 
-		engine = new SerialRandomEngineBuilder()
+		engine = new DelayableSerialRandomEngineBuilder()
 			.setWorld(world)
 			.setSeed(1)
 			.addStockExchange(stockExchange)
 			.addTraders(traders)
 			.addPrivilegedTrader(marketMaker)
-			.setStandartDelay(6l)
+			.setStandardDelay(6l)
 			.build();
 	}
 

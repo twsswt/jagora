@@ -7,13 +7,13 @@ import java.io.PrintStream;
 
 public class OutputStreamTradeListener implements TradeListener {
 
-    private PrintStream printStream;
+	private PrintStream printStream;
 
-    public OutputStreamTradeListener(PrintStream printStream){this.printStream = printStream;}
+	public OutputStreamTradeListener(PrintStream printStream){this.printStream = printStream;}
 
-    @Override
-    public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
-        System.out.println(tradeExecutionEvent);
-    }
+	@Override
+	public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
+		printStream.println(tradeExecutionEvent);
+	}
 
 }

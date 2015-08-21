@@ -1,13 +1,13 @@
 package uk.ac.glasgow.jagora.experiment;
 
+import java.io.PrintStream;
+import java.util.Set;
+
 import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPBuyOrderJob;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPSellOrderJob;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
-
-import java.io.PrintStream;
-import java.util.Set;
 
 /**
  * 
@@ -52,6 +52,7 @@ public class ZIPTraderTargetPriceGnuPlotDATLogger implements OrderListener {
 
 	@Override
 	public void orderCancelled(OrderEvent orderEvent) {
-
+		// Does nothing.
 	}
-}
+
+} 

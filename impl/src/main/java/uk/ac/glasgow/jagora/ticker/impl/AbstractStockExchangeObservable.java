@@ -158,9 +158,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	public void notifyOrderListeners(TickEvent<? extends Order> orderTickEvent){
 
 		List<OrderListener> randomisedOrderListeners = 
-			new ArrayList<OrderListener>(orderListeners);
-		
-		shuffle(randomisedOrderListeners);//why don't you just call getRandomisedTicketTapeListeners?
+			getRandomisedOrderListeners();
 		
 		Order event = orderTickEvent.event;
 		
