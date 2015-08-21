@@ -1,7 +1,5 @@
 package uk.ac.glasgow.jagora.trader.test;
 
-import static org.easymock.EasyMock.expect;
-
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
 import org.easymock.Mock;
@@ -15,6 +13,7 @@ import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomTraderBuilder;
+import static org.easymock.EasyMock.expect;
 
 public class RandomTraderTest extends EasyMockSupport {
 		

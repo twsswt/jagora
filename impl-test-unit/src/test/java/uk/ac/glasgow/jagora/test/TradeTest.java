@@ -1,11 +1,7 @@
 package uk.ac.glasgow.jagora.test;
 
-import static java.lang.Integer.valueOf;
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
@@ -13,10 +9,13 @@ import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.DefaultTrade;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.world.TickEvent;
+
+import static java.lang.Integer.valueOf;
+import static org.junit.Assert.assertEquals;
 
 public class TradeTest {
 	
@@ -35,12 +34,14 @@ public class TradeTest {
 
 	@Before
 	public void setUp() throws Exception {
-		alice = new StubTraderBuilder("alice")
+		alice = new StubTraderBuilder()
+			.setName("alice")
 			.setCash(100000000l)
 			.addStock(lemons, 10000)
 			.build();
 		
-		bob = new StubTraderBuilder("alice")
+		bob = new StubTraderBuilder()
+			.setName("bob")
 			.setCash(100000000l)
 			.addStock(lemons, 10000)
 			.build();

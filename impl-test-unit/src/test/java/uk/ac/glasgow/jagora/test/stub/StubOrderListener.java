@@ -14,7 +14,6 @@ public class StubOrderListener implements OrderListener {
 
 	@Override
 	public void orderCancelled(OrderEvent orderEvent) {
-		// TODO Auto-generated method stub	
-	}
 
+	}
 }

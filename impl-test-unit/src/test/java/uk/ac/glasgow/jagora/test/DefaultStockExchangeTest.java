@@ -1,9 +1,5 @@
 package uk.ac.glasgow.jagora.test;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,12 +15,17 @@ import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTickerTapeListener;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.ticker.impl.ThreadedTickerTapeObserver;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class DefaultStockExchangeTest {
 
@@ -43,14 +44,16 @@ public class DefaultStockExchangeTest {
 	public void setUp() throws Exception {
 	
 		bob   = 
-			new StubTraderBuilder("bob")
+			new StubTraderBuilder()
+				.setName("bob")
 				.setCash(50000l)
 				.addStock(lemons, 200)
 				.addStock(oranges,400)
 				.build();
 		
 		alice = 
-			new StubTraderBuilder("alice")
+			new StubTraderBuilder()
+				.setName("alice")
 				.setCash(1000000l)
 				.addStock(lemons, 100)
 				.addStock(oranges, 2000)
@@ -135,6 +138,15 @@ public class DefaultStockExchangeTest {
 		assertEquals("", 265, secondOrangeTrade.getPrice(), 0.0);
 		assertEquals("", 10, secondOrangeTrade.getQuantity()+0);
 
+		List<OrderEvent> SellOrderHistory = tickerTapeObserver.getSellOrderHistory(oranges);
+		assertEquals("",2,SellOrderHistory.size());
+		assertEquals("", (Long) 265l,SellOrderHistory.get(0).price);
+		assertEquals("", (Long) 250l,SellOrderHistory.get(1).price);
+
+		List<OrderEvent> buyOrderHistory = tickerTapeObserver.getBuyOrderHistory(oranges);
+		assertEquals("", 1,buyOrderHistory.size());
+		assertEquals("", (Long) 270l,buyOrderHistory.get(0).price);
+
 		List<SellOrder> orangeSellOrders = 
 			defaultStockExchange.getSellOrders(oranges);
 		
@@ -158,7 +170,7 @@ public class DefaultStockExchangeTest {
 	 */
 	@Test(timeout=20000)
 	public void testTickerTapeNotification () throws Exception {
-		
+
 		StockExchangeObservable stockExchangeObservable = new ThreadedTickerTapeObserver ();
 
 		DefaultStockExchange defaultStockExchange = 

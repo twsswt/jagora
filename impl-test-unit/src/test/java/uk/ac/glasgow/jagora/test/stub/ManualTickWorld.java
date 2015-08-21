@@ -1,10 +1,10 @@
 package uk.ac.glasgow.jagora.test.stub;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ManualTickWorld implements World {
 	

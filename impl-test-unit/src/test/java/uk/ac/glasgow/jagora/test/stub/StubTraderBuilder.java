@@ -1,9 +1,9 @@
 package uk.ac.glasgow.jagora.test.stub;
 
+import uk.ac.glasgow.jagora.Stock;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import uk.ac.glasgow.jagora.Stock;
 
 public class StubTraderBuilder {
 	
@@ -12,8 +12,7 @@ public class StubTraderBuilder {
 	
 	private Map<Stock, Integer> inventory;
 		
-	public StubTraderBuilder(String name){
-		this.name = name;
+	public StubTraderBuilder(){
 		this.inventory = new HashMap<Stock,Integer>();
 	}
 	

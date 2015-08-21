@@ -10,7 +10,7 @@ public abstract class AbstractTraderBuilder {
 	private String name;
 	private Long cash;
 	
-	protected Map<Stock, Integer> inventory;
+	private Map<Stock, Integer> inventory;
 		
 	public AbstractTraderBuilder() {	
 		this.inventory = new HashMap<Stock,Integer>();

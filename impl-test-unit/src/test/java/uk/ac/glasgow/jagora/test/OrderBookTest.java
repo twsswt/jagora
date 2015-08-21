@@ -1,15 +1,7 @@
 package uk.ac.glasgow.jagora.test;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.BuyOrder;
 import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
@@ -21,6 +13,13 @@ import uk.ac.glasgow.jagora.impl.OrderBook;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class OrderBookTest {
 	
@@ -38,12 +37,14 @@ public class OrderBookTest {
 	@Before
 	public void setUp() throws Exception {
 	
-		alice = new StubTraderBuilder("alice")
+		alice = new StubTraderBuilder()
+			.setName("alice")
 			.setCash(100000000l)
 			.addStock(lemons, 10000)
 			.build();
 		
-		bob   = new StubTraderBuilder("bob")
+		bob   = new StubTraderBuilder()
+			.setName("bob")
 			.setCash(5000000l)
 			.addStock(lemons, 200)
 			.build();
@@ -123,7 +124,7 @@ public class OrderBookTest {
 			actualBestBuyOrders.add(actual);
 			
 			Trade satisfyingTrade =
-				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);	
+				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));

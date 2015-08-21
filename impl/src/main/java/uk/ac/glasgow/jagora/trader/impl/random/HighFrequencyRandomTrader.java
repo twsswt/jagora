@@ -19,11 +19,12 @@ import java.util.Map;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.Math.round;
 
 public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Level2Trader,TradeListener, OrderListener {
 
-	private final RangeData buyRangeData;
-	private final RangeData sellRangeData;
+	private final PercentageRangeData buyRangeData;
+	private final PercentageRangeData sellRangeData;
 
 	protected final Random random;
 
@@ -32,11 +33,11 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 	private BuyOrder currentBuyOrder;
 	private SellOrder currentSellOrder;
 
-	private Long lastPriceTraded =0l;
+	private Long lastPriceTraded = null;
 
 	HighFrequencyRandomTrader(
 		String name, Long cash, Map<Stock, Integer> inventory,
-		RangeData buyRangeData, RangeData sellRangeData,
+		PercentageRangeData buyRangeData, PercentageRangeData sellRangeData,
 		Random random) {
 		
 		super(name, cash, inventory);
@@ -89,23 +90,23 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 		currentSellOrder = placeSafeSellOrder(level2View,sellOrder) ? sellOrder :null;
 	}
 
-	private Integer createRandomQuantity(Integer upperLimit, RangeData rangeData) {
+	private Integer createRandomQuantity(Integer upperLimit, PercentageRangeData percentageRangeData) {
 		Integer relativeRange =
-				rangeData.maxQuantity-rangeData.minQuantity;
+				percentageRangeData.maxQuantity-percentageRangeData.minQuantity;
 
 		Integer randomQuantity =
-				random.nextInt(relativeRange) + rangeData.minQuantity;
+				random.nextInt(relativeRange) + percentageRangeData.minQuantity;
 
 		return min(randomQuantity, upperLimit);
 	}
 
-	private Long createRandomPrice(Long midPoint, RangeData rangeData) {
+	private Long createRandomPrice(Long midPoint, PercentageRangeData percentageRangeData) {
 		Double relativePriceRange =
-				(rangeData.highPct - rangeData.lowPct)*midPoint;
-		relativePriceRange *= random.nextDouble();
+				(percentageRangeData.high - percentageRangeData.low) * midPoint * random.nextDouble();		
+		
 		Long randomPrice =
-				Math.round(relativePriceRange) + midPoint +
-						Math.round(rangeData.lowPct*midPoint);
+				round(relativePriceRange) + midPoint +
+						round(percentageRangeData.low * midPoint);
 
 		return max(randomPrice, 0l);
 	}

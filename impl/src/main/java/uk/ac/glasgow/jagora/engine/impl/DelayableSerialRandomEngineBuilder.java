@@ -59,7 +59,7 @@ public class DelayableSerialRandomEngineBuilder {
 		return this;
 	}
 
-	public DelayableSerialRandomEngineBuilder setStandartDelay(Long delay){
+	public DelayableSerialRandomEngineBuilder setStandardDelay(Long delay){
 		this.standardDelay = delay;
 		return this;
 	}

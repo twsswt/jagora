@@ -8,24 +8,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RandomTraderBuilder extends AbstractTraderBuilder {
-	protected String name;
-	protected Long cash;
-	
-	protected Map<Stock, Integer> inventory;
 	
 	protected Integer seed;
-	protected Map<Stock, RangeData> sellRangeData;
-	protected Map<Stock, RangeData> buyRangeData;
+	protected Map<Stock, RelativeRangeData> sellRangeData;
+	protected Map<Stock, RelativeRangeData> buyRangeData;
 	
 	public RandomTraderBuilder(){
-		this.inventory = new HashMap<Stock,Integer>();
-		sellRangeData = new HashMap<Stock,RangeData>();
-		buyRangeData = new HashMap<Stock,RangeData>();
+		sellRangeData = new HashMap<Stock,RelativeRangeData>();
+		buyRangeData = new HashMap<Stock,RelativeRangeData>();
 
 	}
 	@Override
 	public RandomTraderBuilder addStock(Stock stock, Integer quantity){
-		inventory.put(stock, quantity);
+		super.addStock(stock, quantity);
 		return this;
 	}
 
@@ -33,31 +28,31 @@ public class RandomTraderBuilder extends AbstractTraderBuilder {
 		Stock stock, Integer minQuantity, Integer maxQuantity,
 		Long sellLow, Long sellHigh) {
 				
-		sellRangeData.put(stock, new RangeData(stock, sellLow, sellHigh, minQuantity, maxQuantity));
+		sellRangeData.put(stock, new RelativeRangeData(stock, minQuantity, maxQuantity, sellLow, sellHigh));
 		return this;
 	}
 	
 	public RandomTraderBuilder setBuyOrderRange(
 		Stock stock, Integer minQuantity, Integer maxQuantity, Long buyLow, Long buyHigh){
 		
-		buyRangeData.put(stock, new RangeData(stock, buyLow, buyHigh, minQuantity, maxQuantity));
+		buyRangeData.put(stock, new RelativeRangeData(stock, minQuantity, maxQuantity,  buyLow, buyHigh));
 		return this;
 	}
 
 	
 	@Override
 	public RandomTraderBuilder setName(String name) {
-		this.name = name;
+		super.setName(name);
 		return this;
 	}
 	@Override
 	public RandomTraderBuilder setCash(Long cash){
-		this.cash = cash;
+		super.setCash(cash);
 		return this;
 	}
 	
 	public RandomTrader build(){
-		return new RandomTrader(name, cash, inventory, new Random(seed), sellRangeData, buyRangeData);
+		return new RandomTrader(getName(), getCash(), getInventory(), new Random(seed), sellRangeData, buyRangeData);
 	}
 
 	public RandomTraderBuilder setSeed(Integer seed) {

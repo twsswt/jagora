@@ -1,14 +1,13 @@
 package uk.ac.glasgow.jagora.test;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
 import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class BuyOrderTest {
 	

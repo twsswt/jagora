@@ -1,18 +1,13 @@
 package uk.ac.glasgow.jagora.test.stub;
 
+import uk.ac.glasgow.jagora.*;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 public class StubStockExchange implements StockExchange {
 
@@ -34,9 +29,7 @@ public class StubStockExchange implements StockExchange {
 	public StockExchangeLevel1View createLevel1View() {
 		return new StubLevel1View ();
 	}
-		
-		
-		
+
 	protected class StubLevel1View implements StockExchangeLevel1View {
 		@Override
 		public Long getBestOfferPrice(Stock stock) {
@@ -92,7 +85,6 @@ public class StubStockExchange implements StockExchange {
 			// Does nothing as no trades are executed.
 			
 		}
-			
 	}
 
 
@@ -125,7 +117,7 @@ public class StubStockExchange implements StockExchange {
 		@Override
 		public void registerOrderListener(
 			OrderListener orderListener) {
-			// TODO Auto-generated method stub
+
 
 		}
 
