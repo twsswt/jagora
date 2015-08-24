@@ -16,8 +16,6 @@ public interface Order {
 
 	public abstract void rollBackTrade(TickEvent<Trade> trade)
 			throws TradeExecutionException;
-
-	public abstract Long getPrice();
 	
 	public Boolean isFilled();
 

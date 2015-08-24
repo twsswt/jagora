@@ -1,14 +1,12 @@
 package uk.ac.glasgow.jagora.trader.impl.random;
 
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
@@ -21,7 +19,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.round;
 
-public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Level2Trader,TradeListener, OrderListener {
+public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Level2Trader,TradeListener {
 
 	private final PercentageRangeData buyRangeData;
 	private final PercentageRangeData sellRangeData;
@@ -30,8 +28,8 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 
 	private final Stock stock;
 
-	private BuyOrder currentBuyOrder;
-	private SellOrder currentSellOrder;
+	private LimitBuyOrder currentBuyOrder;
+	private LimitSellOrder currentSellOrder;
 
 	private Long lastPriceTraded = null;
 
@@ -77,8 +75,8 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 		Long price = createRandomPrice(level2View.getLastKnownBestBidPrice(stock),buyRangeData);
 		Integer quantity = createRandomQuantity( (int) (getAvailableCash()/price),buyRangeData);
 
-		BuyOrder buyOrder = new LimitBuyOrder(this,stock, quantity, price);
-		currentBuyOrder = placeSafeBuyOrder(level2View,buyOrder) ? buyOrder : null;
+		LimitBuyOrder limitBuyOrder = new DefaultLimitBuyOrder(this,stock, quantity, price);
+		currentBuyOrder = placeSafeBuyOrder(level2View,limitBuyOrder) ? limitBuyOrder : null;
 	}
 
 	private void performRandomSellAction( StockExchangeLevel2View level2View) {
@@ -86,8 +84,8 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 		Long price = createRandomPrice(level2View.getLastKnownBestOfferPrice(stock),sellRangeData);
 		Integer quantity = createRandomQuantity(inventory.get(stock), sellRangeData);
 
-		SellOrder sellOrder = new LimitSellOrder(this,stock,quantity,price);
-		currentSellOrder = placeSafeSellOrder(level2View,sellOrder) ? sellOrder :null;
+		LimitSellOrder limitSellOrder = new DefaultLimitSellOrder(this,stock,quantity,price);
+		currentSellOrder = placeSafeSellOrder(level2View,limitSellOrder) ? limitSellOrder :null;
 	}
 
 	private Integer createRandomQuantity(Integer upperLimit, PercentageRangeData percentageRangeData) {
@@ -112,17 +110,9 @@ public class HighFrequencyRandomTrader extends SafeAbstractTrader implements Lev
 	}
 
 	@Override
-	public void orderEntered(OrderEvent orderEvent) {
-
-	}
-
-	@Override
-	public void orderCancelled(OrderEvent orderEvent) {
-
-	}
-
-	@Override
 	public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
 		lastPriceTraded = tradeExecutionEvent.price;
 	}
+
+
 }

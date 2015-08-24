@@ -1,6 +1,7 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
+import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 
@@ -15,15 +16,15 @@ public class FilterOnDirectionOrderListener implements OrderListener {
 	}
 
 	@Override
-	public void orderEntered(OrderEvent orderEntryEvent) {
-		if (orderEntryEvent.orderDirection == this.direction)
-			downStreamOrderListener.orderEntered(orderEntryEvent);
+	public void limitOrderEvent(LimitOrderEvent limitOrderEvent) {
+		if (limitOrderEvent.orderDirection == this.direction)
+			downStreamOrderListener.limitOrderEvent(limitOrderEvent);
 
 	}
 
 	@Override
-	public void orderCancelled(OrderEvent orderEntryEvent) {
-		if (orderEntryEvent.orderDirection == this.direction)
-			downStreamOrderListener.orderCancelled(orderEntryEvent);
+	public void marketOrderEntered(MarketOrderEvent marketOrderEvent) {
+		if (marketOrderEvent.orderDirection == this.direction)
+			downStreamOrderListener.marketOrderEntered(marketOrderEvent);		
 	}
 }

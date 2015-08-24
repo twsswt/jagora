@@ -3,7 +3,8 @@ package uk.ac.glasgow.jagora.experiment;
 import java.io.PrintStream;
 import java.util.Set;
 
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
+import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPBuyOrderJob;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.ZIPSellOrderJob;
@@ -25,8 +26,18 @@ public class ZIPTraderTargetPriceGnuPlotDATLogger implements OrderListener {
 		this.zipTraders = zipTraders;
 	}
 
-	public void orderEntered(OrderEvent orderEvent) {
-				
+	@Override
+	public void limitOrderEvent(LimitOrderEvent limitOrderEvent) {
+		logAverageLimitOrderPrices(limitOrderEvent.tick);
+	}
+	
+	@Override
+	public void marketOrderEntered(MarketOrderEvent limitOrderEvent) {
+		logAverageLimitOrderPrices(limitOrderEvent.tick);
+	}
+
+
+	private void logAverageLimitOrderPrices(Long tick) {
 		Long averageBid = 
 			(long) zipTraders
 				.stream()
@@ -47,12 +58,7 @@ public class ZIPTraderTargetPriceGnuPlotDATLogger implements OrderListener {
 		
 		String template = "%d, %d, %d";
 			
-		printStream.println(String.format(template, orderEvent.tick, averageBid, averageOffer));
-	}
-
-	@Override
-	public void orderCancelled(OrderEvent orderEvent) {
-		// Does nothing.
+		printStream.println(String.format(template, tick, averageBid, averageOffer));
 	}
 
 } 

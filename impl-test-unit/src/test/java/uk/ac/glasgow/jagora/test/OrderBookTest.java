@@ -2,14 +2,15 @@ package uk.ac.glasgow.jagora.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
+
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.DefaultTrade;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.impl.OrderBook;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.impl.orderbook.LimitOrderBook;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
@@ -30,8 +31,8 @@ public class OrderBookTest {
 		
 	private ManualTickWorld manualTickWorld;
 
-	private OrderBook<SellOrder> sellBook;
-	private OrderBook<BuyOrder> buyBook;
+	private LimitOrderBook<LimitSellOrder> sellBook;
+	private LimitOrderBook<LimitBuyOrder> buyBook;
 	
 	
 	@Before
@@ -51,8 +52,8 @@ public class OrderBookTest {
 		
 		manualTickWorld = new ManualTickWorld();
 				
-		sellBook = new OrderBook<SellOrder>(manualTickWorld);
-		buyBook = new OrderBook<BuyOrder>(manualTickWorld);
+		sellBook = new LimitOrderBook<LimitSellOrder>(manualTickWorld);
+		buyBook = new LimitOrderBook<LimitBuyOrder>(manualTickWorld);
 	}
 
 	@Test
@@ -77,11 +78,11 @@ public class OrderBookTest {
 		
 		Integer tradeTick = limitSellOrders.size();
 
-		for (SellOrder expected : limitSellOrders){
-			SellOrder actual = sellBook.getBestOrder().event;
+		for (LimitSellOrder expected : limitSellOrders){
+			LimitSellOrder actual = sellBook.getBestOrder().event;
 			assertEquals(expected,actual);
 			
-			Trade satisfyingTrade = new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), actual, null);
+			Trade satisfyingTrade = new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getLimitPrice(), actual, null);
 			
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
@@ -89,7 +90,7 @@ public class OrderBookTest {
 	}
 
 	private LimitSellOrder createSellOrder(AbstractTrader trader, Stock stock, Integer quantity, Long price, Long tick) {
-		LimitSellOrder limitSellOrder = new LimitSellOrder(trader, stock, quantity, price);
+		LimitSellOrder limitSellOrder = new DefaultLimitSellOrder(trader, stock, quantity, price);
 		manualTickWorld.setTickForEvent(tick, limitSellOrder);
 		return limitSellOrder;
 	}
@@ -112,19 +113,19 @@ public class OrderBookTest {
 			
 		Collections.shuffle(randomisedbuyOrders);
 			
-		for (BuyOrder limitBuyOrder : randomisedbuyOrders)
+		for (LimitBuyOrder limitBuyOrder : randomisedbuyOrders)
 			buyBook.recordOrder(limitBuyOrder);
 		
-		List<BuyOrder> actualBestBuyOrders = new ArrayList<BuyOrder>();
+		List<LimitBuyOrder> actualBestBuyOrders = new ArrayList<LimitBuyOrder>();
 		
 		Integer tradeTick = limitBuyOrders.size();
 		
-		for (BuyOrder expected : limitBuyOrders){
-			BuyOrder actual = buyBook.getBestOrder().event;
+		for (LimitBuyOrder expected : limitBuyOrders){
+			LimitBuyOrder actual = buyBook.getBestOrder().event;
 			actualBestBuyOrders.add(actual);
 			
 			Trade satisfyingTrade =
-				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getPrice(), null, actual);
+				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getLimitPrice(), null, actual);
 			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
 
 			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
@@ -136,7 +137,7 @@ public class OrderBookTest {
 	private LimitBuyOrder createBuyOrder(
 		AbstractTrader trader, Stock stock, Integer quantity, Long price, Long tick) {
 		
-		LimitBuyOrder limitBuyOrder = new LimitBuyOrder(trader, stock, quantity, price);
+		LimitBuyOrder limitBuyOrder = new DefaultLimitBuyOrder(trader, stock, quantity, price);
 		manualTickWorld.setTickForEvent(tick, limitBuyOrder);
 		return limitBuyOrder;
 	}

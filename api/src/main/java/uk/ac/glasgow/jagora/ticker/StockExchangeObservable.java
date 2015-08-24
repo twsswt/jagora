@@ -1,32 +1,45 @@
 package uk.ac.glasgow.jagora.ticker;
 
-import uk.ac.glasgow.jagora.Order;
+import java.util.List;
+
+import uk.ac.glasgow.jagora.LimitOrder;
+import uk.ac.glasgow.jagora.MarketOrder;
+import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-import java.util.List;
-
-
+/**
+ * A stock exchange observable manages the distribution of
+ * stock exchange event notifications on behalf of a stock
+ * exchange. The types of event are- orders events and trade
+ * executions.
+ * 
+ * Implementations of StockExchangeObservable provide for
+ * variation in the way events are distributed to listeners.
+ * Ordering of listeners may be randomised or threaded, for
+ * example.
+ * 
+ * @author tws
+ *
+ */
 public interface StockExchangeObservable {
 
-	/**
-	 * Registers the listener to receive notifications of trades 
-	 * @param tradeListener
-	 */
-	public abstract void registerTradeListener(TradeListener tradeListener);
+	public void registerTradeListener(TradeListener tradeListener);
 
-	/**
-	 * Notifies all registered ticker tape listeners of the occurrence of a new
-	 * trade for a particular stock.
-	 *
-	 */
-	public void notifyTradeListeners(List<TickEvent<Trade>> list);
+	public void notifyTradeListeners(List<TickEvent<Trade>> orderEvents);
 
 	public void registerOrderListener(OrderListener orderListener);
 	
-	public void notifyOrderListeners(TickEvent<? extends Order> orderTickEvent);
+	public void notifyOrderListenersOfLimitOrder(TickEvent<? extends LimitOrder> orderEvent);
 
-	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderTickEvent);
+	public void notifyOrderListenersOfLimitOrderCancellation(TickEvent<? extends LimitOrder> orderEvent);
 
+	public void notifyOrderListenersOfMarketOrder(TickEvent<? extends MarketOrder> orderEvent);
+
+	public List<TickEvent<Trade>> getTradeHistory(Stock stock);
+
+	public List<LimitOrderEvent> getLimitSellOrderHistory(Stock stock);
+
+	public List<LimitOrderEvent> getLimitBuyOrderHistory(Stock stock);
 
 }

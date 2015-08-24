@@ -1,5 +1,7 @@
 package uk.ac.glasgow.jagora;
 
+import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
+import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 import java.util.List;
@@ -10,20 +12,24 @@ import java.util.List;
  *
  */
 public interface Market {
-
-	public TickEvent<BuyOrder> recordBuyOrder(BuyOrder order);
-
-	public TickEvent<SellOrder> recordSellOrder(SellOrder order);
 	
-	public TickEvent<BuyOrder> cancelBuyOrder(BuyOrder order);
+	public TickEvent<MarketBuyOrder> recordMarketBuyOrder(MarketBuyOrder marketBuyOrder);
+	
+	public TickEvent<MarketSellOrder> recordMarketSellOrder(MarketSellOrder marketSellOrder);
 
-	public TickEvent <SellOrder> cancelSellOrder(SellOrder order);
+	public TickEvent<LimitBuyOrder> recordLimitBuyOrder(LimitBuyOrder order);
 
+	public TickEvent<LimitSellOrder> recordLimitSellOrder(LimitSellOrder order);
+	
+	public TickEvent<LimitBuyOrder> cancelLimitBuyOrder(LimitBuyOrder order);
+
+	public TickEvent <LimitSellOrder> cancelLimitSellOrder(LimitSellOrder order);
+	
 	public List<TickEvent<Trade>> doClearing();
 
-	public List<BuyOrder> getBuyOrders();
+	public List<LimitBuyOrder> getBuyOrders();
 
-	public List<SellOrder> getSellOrders();
+	public List<LimitSellOrder> getSellOrders();
 
 	public Long getBestBidPrice();
 	
@@ -32,4 +38,5 @@ public interface Market {
 	public Long getLastKnownBestBidPrice();
 	
 	public Long getLastKnownBestOfferPrice();
+
 }

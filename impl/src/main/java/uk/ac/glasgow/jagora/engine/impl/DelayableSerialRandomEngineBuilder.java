@@ -64,8 +64,8 @@ public class DelayableSerialRandomEngineBuilder {
 		return this;
 	}
 
-	public DelayableSerialRandomEngine build() {
-		return new DelayableSerialRandomEngine(
+	public SerialDelayEngine build() {
+		return new SerialDelayEngine(
 				world, stockExchanges, traders, new Random(seed), standardDelay, privilegedTraders);
 	}
 

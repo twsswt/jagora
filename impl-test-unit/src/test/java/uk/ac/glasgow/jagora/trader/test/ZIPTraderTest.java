@@ -2,6 +2,7 @@ package uk.ac.glasgow.jagora.trader.test;
 
 import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.BUY;
 import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
+import static uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action.PLACED;
 
 import org.easymock.EasyMockRule;
 import org.easymock.EasyMockSupport;
@@ -11,9 +12,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
@@ -64,12 +65,12 @@ public class ZIPTraderTest extends EasyMockSupport {
 		
 		mockExchange.registerOrderListener(trader);
 		mockExchange.registerTradeListener(trader);
-		mockExchange.cancelBuyOrder(new LimitBuyOrder(trader, lemons, 1, 672l));
-		mockExchange.placeBuyOrder(new LimitBuyOrder(trader, lemons, 1, 865l));
+		mockExchange.cancelLimitBuyOrder(new DefaultLimitBuyOrder(trader, lemons, 1, 672l));
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(trader, lemons, 1, 865l));
 		
 		replayAll();
 		
-		trader.orderEntered(new OrderEvent(0l, mockTrader, lemons, 1, limitPrice, BUY));		
+		trader.limitOrderEvent(new LimitOrderEvent(0l, mockTrader, lemons, 1, BUY, limitPrice, PLACED));		
 		trader.speak(mockExchange);
 
 		verifyAll();
@@ -93,12 +94,12 @@ public class ZIPTraderTest extends EasyMockSupport {
 				
 		mockExchange.registerOrderListener(trader);
 		mockExchange.registerTradeListener(trader);
-		mockExchange.cancelSellOrder(new LimitSellOrder(trader, lemons, 1, 4192l));
-		mockExchange.placeSellOrder(new LimitSellOrder(trader, lemons, 1, 3964l));
+		mockExchange.cancelLimitSellOrder(new DefaultLimitSellOrder(trader, lemons, 1, 4192l));
+		mockExchange.placeLimitSellOrder(new DefaultLimitSellOrder(trader, lemons, 1, 3964l));
 		
 		replayAll();
 		
-		trader.orderEntered(new OrderEvent(0l, mockTrader, lemons, 1, limitPrice, SELL));		
+		trader.limitOrderEvent(new LimitOrderEvent(0l, mockTrader, lemons, 1, SELL, limitPrice, PLACED));		
 		trader.speak(mockExchange);
 
 		verifyAll();

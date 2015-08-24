@@ -1,12 +1,11 @@
 package uk.ac.glasgow.jagora.trader.impl.zip;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.Order;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -18,7 +17,7 @@ import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction
  *
  * @param <T>
  */
-public abstract class ZIPOrderJob<T extends Order> {
+public abstract class ZIPOrderJob<T extends LimitOrder> {
 	
 	protected enum TargetPriceAction {REDUCE, INCREASE, NOTHING}
 
@@ -52,7 +51,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 			
 	protected void updateOrder (StockExchangeLevel1View level1View) {
 		
-		Long unconstrainedPrice = zipTrader.getNextOrderPrice(lastTargetPrice, targetPrice, managedOrder.getPrice());
+		Long unconstrainedPrice = zipTrader.getNextOrderPrice(lastTargetPrice, targetPrice, managedOrder.getLimitPrice());
 
 		Long constrainedPrice = max (lowLimit,  min (unconstrainedPrice, highLimit));
 		
@@ -96,7 +95,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 			template, managedOrder, targetPrice);
 	}
 
-	public static class ZIPBuyOrderJob extends ZIPOrderJob<BuyOrder> {
+	public static class ZIPBuyOrderJob extends ZIPOrderJob<LimitBuyOrder> {
 
 		protected ZIPBuyOrderJob(
 			ZIPTrader zipTrader, MarketDatum marketDatum, Long floorPrice, Long limitPrice, Long initialTargetPrice) {
@@ -106,7 +105,7 @@ public abstract class ZIPOrderJob<T extends Order> {
 		@Override
 		protected TargetPriceAction getTargetPriceAction() {
 			Boolean priceIsCompetitive = 
-				managedOrder.getPrice() >= marketDatum.lastPriceReportedOnTheMarket;
+				managedOrder.getLimitPrice() >= marketDatum.lastPriceReportedOnTheMarket;
 						
 			if (marketDatum.lastQuoteWasAccepted){
 				if (priceIsCompetitive)
@@ -121,20 +120,20 @@ public abstract class ZIPOrderJob<T extends Order> {
 		}
 
 		@Override
-		protected BuyOrder createNewOrder(Long price) {
-			return new LimitBuyOrder(zipTrader, marketDatum.stock, 1, price);			
+		protected LimitBuyOrder createNewOrder(Long price) {
+			return new DefaultLimitBuyOrder(zipTrader, marketDatum.stock, 1, price);			
 		}
 
 		@Override
-		protected void placeOrder(BuyOrder order, StockExchangeLevel1View level1View) {
+		protected void placeOrder(LimitBuyOrder order, StockExchangeLevel1View level1View) {
 			if (managedOrder != null) 
-				level1View.cancelBuyOrder(managedOrder);
-			level1View.placeBuyOrder(order);	
+				level1View.cancelLimitBuyOrder(managedOrder);
+			level1View.placeLimitBuyOrder(order);	
 		}
 
 	}
 
-	public static class ZIPSellOrderJob extends ZIPOrderJob<SellOrder> {
+	public static class ZIPSellOrderJob extends ZIPOrderJob<LimitSellOrder> {
 
 		protected ZIPSellOrderJob(
 			ZIPTrader zipTrader, MarketDatum marketDatum, Long limitPrice, Long ceilPrice, Long initialTargetPrice) {
@@ -142,15 +141,15 @@ public abstract class ZIPOrderJob<T extends Order> {
 		}
 
 		@Override
-		protected SellOrder createNewOrder(Long price) {
-			return new LimitSellOrder(zipTrader, marketDatum.stock, 1, price);
+		protected LimitSellOrder createNewOrder(Long price) {
+			return new DefaultLimitSellOrder(zipTrader, marketDatum.stock, 1, price);
 		}
 
 		@Override
 		protected TargetPriceAction getTargetPriceAction() {
 						
 			Boolean priceIsCompetitive = 
-				managedOrder.getPrice() <= marketDatum.lastPriceReportedOnTheMarket;
+				managedOrder.getLimitPrice() <= marketDatum.lastPriceReportedOnTheMarket;
 						
 			if (marketDatum.lastQuoteWasAccepted){
 				
@@ -166,10 +165,10 @@ public abstract class ZIPOrderJob<T extends Order> {
 		}
 
 		@Override
-		protected void placeOrder(SellOrder order, StockExchangeLevel1View level1View) {
+		protected void placeOrder(LimitSellOrder order, StockExchangeLevel1View level1View) {
 			if (managedOrder != null)
-				level1View.cancelSellOrder(managedOrder);			
-			level1View.placeSellOrder(order);
+				level1View.cancelLimitSellOrder(managedOrder);			
+			level1View.placeLimitSellOrder(order);
 		}
 	}
 

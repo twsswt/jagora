@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
-import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
@@ -40,9 +40,9 @@ public class InstitutionalInvestorTrader extends SafeAbstractTrader implements L
 		while (nextScheduledOrder != null && nextScheduledOrder.shouldBeExecuted() ){
 
 			scheduledOrders.poll();
-			BuyOrder order = nextScheduledOrder.createBuyOrder(this);
+			LimitBuyOrder order = nextScheduledOrder.createBuyOrder(this);
 			
-			traderMarketView.placeBuyOrder(order);	
+			traderMarketView.placeLimitBuyOrder(order);	
 			placedOrders.add(order);
 			
 			nextScheduledOrder = scheduledOrders.peek();

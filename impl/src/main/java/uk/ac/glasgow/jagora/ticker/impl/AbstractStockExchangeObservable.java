@@ -1,19 +1,33 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
 
-import uk.ac.glasgow.jagora.Order;
-import uk.ac.glasgow.jagora.SellOrder;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.ticker.*;
-import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
-import uk.ac.glasgow.jagora.world.TickEvent;
-
-import java.util.*;
-
 import static java.util.Collections.shuffle;
+import static java.util.stream.Collectors.toList;
+import static uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action.CANCELLED;
+import static uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action.PLACED;
 import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.BUY;
 import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import uk.ac.glasgow.jagora.LimitOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
+import uk.ac.glasgow.jagora.MarketOrder;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.impl.MarketSellOrder;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action;
+import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
+import uk.ac.glasgow.jagora.ticker.OrderListener;
+import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
+import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
+import uk.ac.glasgow.jagora.ticker.TradeListener;
+import uk.ac.glasgow.jagora.world.TickEvent;
 
 public abstract class AbstractStockExchangeObservable implements StockExchangeObservable {
 
@@ -23,27 +37,21 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	private final List<TickEvent<Trade>> executedTrades;
 
-	private final List<OrderEvent> submittedSellOrders;
-	private final List<OrderEvent> submittedBuyOrders;
+	private final List<LimitOrderEvent> limitOrderEvents;
 
-	private final List<OrderEvent> cancelledSellOrders;
-	private final List<OrderEvent> cancelledBuyOrders;
-	
+	private final List<MarketOrderEvent> marketOrderEvents;	
 
 	public AbstractStockExchangeObservable() {
+
 		tradeListeners = new HashSet<TradeListener>();
 		orderListeners = new HashSet<OrderListener>();
 
 		executedTrades = new ArrayList<TickEvent<Trade>>();
-
-		submittedSellOrders = new ArrayList<OrderEvent>();
-		submittedBuyOrders = new ArrayList<OrderEvent>();
-		
-		cancelledBuyOrders = new ArrayList<OrderEvent>();
-		cancelledSellOrders= new ArrayList<OrderEvent>();
-
+		limitOrderEvents = new ArrayList<LimitOrderEvent>();
+		marketOrderEvents = new ArrayList<MarketOrderEvent>();
 	}
 	
+	@Override
 	public List<TickEvent<Trade>> getTradeHistory(Stock stock) {
 		
 		List<TickEvent<Trade>> result = new ArrayList<TickEvent<Trade>>();
@@ -56,48 +64,31 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 		return result;
 	}
 
-	public List<OrderEvent> getSellOrderHistory(Stock stock){
-		List<OrderEvent> result = new ArrayList<>();
-
-		for (OrderEvent event: submittedSellOrders){
-			if (event.stock.equals(stock))
-				result.add(event);
-		}
-
-		return result;
+	@Override
+	public List<LimitOrderEvent> getLimitSellOrderHistory(Stock stock){
+		return filterEvents(stock, PLACED, SELL);
+	}
+	
+	public List<LimitOrderEvent> getCancelledSellOrderHistory(Stock stock){
+		return filterEvents(stock, CANCELLED, SELL);
 	}
 
-	public List<OrderEvent> getBuyOrderHistory(Stock stock){
-		List<OrderEvent> result = new ArrayList<>();
-
-		for (OrderEvent event: submittedBuyOrders){
-			if (event.stock.equals(stock))
-				result.add(event);
-		}
-
-
-		return result;
+	@Override
+	public List<LimitOrderEvent> getLimitBuyOrderHistory(Stock stock){
+		return filterEvents(stock, PLACED, BUY);
 	}
 
-	public List<OrderEvent> getCancelledBuyOrderHistory(Stock stock){
-		return getCancelledHistory(stock,cancelledBuyOrders);
+	public List<LimitOrderEvent> getCancelledBuyOrderHistory(Stock stock){
+		return filterEvents(stock, CANCELLED, BUY);
 	}
-
-	public List<OrderEvent> getCancelledSellOrderHistory(Stock stock){
-		return getCancelledHistory(stock, cancelledSellOrders);
+	
+	private List<LimitOrderEvent> filterEvents (Stock stock, Action action, OrderDirection orderDirection){
+		return limitOrderEvents.stream()
+			.filter(limitOrderEvent -> limitOrderEvent.orderDirection.equals(orderDirection))
+			.filter(limitOrderEvent -> limitOrderEvent.action.equals(action))
+			.filter(limitOrderEvent -> limitOrderEvent.stock.equals(stock))
+			.collect(toList());
 	}
-
-	private List<OrderEvent> getCancelledHistory(Stock stock, List<OrderEvent> list){
-		List<OrderEvent> result = new ArrayList<>();
-
-		for (OrderEvent event: list) {
-			if (event != null && event.stock.equals(stock))
-				result.add(event);
-		}
-
-		return result;
-	}
-
 
 	@Override
 	public void registerTradeListener(TradeListener tradeListener) {
@@ -116,6 +107,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	}
 
 	private void notifyTradeListenersOfTrade(TickEvent<Trade> executedTrade) {
+		
 		TradeExecutionEvent tradeExecutedEvent = 
 			new TradeExecutionEvent(
 				executedTrade.event.getStock(),
@@ -126,7 +118,7 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 				executedTrade.event.getQuantity());
 		
 		List<TradeListener> randomisedTickerTapeListeners =
-			getRandomisedTickerTapeListeners();
+			getRandomisedTradeListeners();
 		
 		for (TradeListener tradeListener: randomisedTickerTapeListeners)
 			notifyTradeListenerOfTrade(tradeExecutedEvent, tradeListener);
@@ -134,9 +126,8 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	public abstract void notifyTradeListenerOfTrade(
 		TradeExecutionEvent tradeExecutedEvent, TradeListener tradeListener);
-
 	
-	private List<TradeListener> getRandomisedTickerTapeListeners() {
+	private List<TradeListener> getRandomisedTradeListeners() {
 		List<TradeListener> randomisedTickerTapeListeners =
 			new ArrayList<TradeListener>(tradeListeners);
 
@@ -150,74 +141,88 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 			return;
 
 		orderListeners.add(orderListener);
-		
+
 	}
 
-
 	@Override
-	public void notifyOrderListeners(TickEvent<? extends Order> orderTickEvent){
+	public void notifyOrderListenersOfLimitOrder(TickEvent<? extends LimitOrder> orderEvent){
 
 		List<OrderListener> randomisedOrderListeners = 
 			getRandomisedOrderListeners();
 		
-		Order event = orderTickEvent.event;
+		LimitOrder order = orderEvent.event;
 		
-		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
+		OrderDirection direction = order instanceof LimitSellOrder ? SELL : BUY;
 		
-		OrderEvent orderEvent = 
-			new OrderEvent(
-				orderTickEvent.tick,
-				event.getTrader(), 
-				event.getStock(), 
-				event.getRemainingQuantity(),
-				event.getPrice(), 
-				direction);
+		LimitOrderEvent limitOrderEvent =
+			new LimitOrderEvent(
+				orderEvent.tick,
+				order.getTrader(), 
+				order.getStock(), 
+				order.getRemainingQuantity(),
+				direction, 
+				order.getLimitPrice(),
+				PLACED);
+		
+		limitOrderEvents.add(limitOrderEvent);
 
 		for (OrderListener orderListener : randomisedOrderListeners)
-			notifyOrderListenerOfOrder(orderEvent, orderListener);
-
-		//add submitted orders in the book
-		if (orderTickEvent.event instanceof SellOrder)
-			submittedSellOrders.add(orderEvent);
-		else
-			submittedBuyOrders.add(orderEvent);
-
+			notifyOrderListenerOfOrderEvent(limitOrderEvent, orderListener);
 	}
-
-	public abstract void notifyOrderListenerOfOrder(
-			OrderEvent orderEvent, OrderListener orderListener);
 
 	@Override
-	public void notifyOrderListenersOfCancellation(TickEvent<? extends Order> orderTickEvent) {
+	public void notifyOrderListenersOfLimitOrderCancellation(
+		TickEvent<? extends LimitOrder> orderEvent) {
 
-		Order event = orderTickEvent.event;
+		LimitOrder order = orderEvent.event;
 
-		OrderDirection direction = event instanceof SellOrder ? SELL : BUY;
+		OrderDirection direction = 
+			order instanceof LimitSellOrder ? SELL : BUY;
 
-		OrderEvent orderEvent =
-				new OrderEvent(
-						orderTickEvent.tick,
-						event.getTrader(),
-						event.getStock(),
-						event.getRemainingQuantity(),
-						event.getPrice(),
-						direction);
+		LimitOrderEvent limitOrderEvent =
+			new LimitOrderEvent(
+				orderEvent.tick,
+				order.getTrader(),
+				order.getStock(),
+				order.getRemainingQuantity(),
+				direction,
+				order.getLimitPrice(),
+				CANCELLED);
 
-
-		if (event instanceof SellOrder) {
-			cancelledSellOrders.add(orderEvent);
-		}
-		else {
-			cancelledBuyOrders.add(orderEvent);
-		}
-
+		limitOrderEvents.add(limitOrderEvent);
+		
 		for (OrderListener orderListener: orderListeners)
-			notifyOrderListenerOfCancelledOrder(orderEvent, orderListener);
+			notifyOrderListenerOfOrderEvent(limitOrderEvent, orderListener);
 	}
-
-	public abstract void notifyOrderListenerOfCancelledOrder(
-			OrderEvent orderEvent, OrderListener orderListener);
 	
+	@Override
+	public void notifyOrderListenersOfMarketOrder(TickEvent<? extends MarketOrder> orderEvent) {
+		
+		MarketOrder order = orderEvent.event;
+		
+		OrderDirection direction = 
+			order instanceof MarketSellOrder ? SELL : BUY;
+		
+		MarketOrderEvent marketOrderEvent =
+			new MarketOrderEvent(
+				orderEvent.tick,
+				order.getTrader(),
+				order.getStock(),
+				order.getRemainingQuantity(),
+				direction);
+
+		marketOrderEvents.add(marketOrderEvent);
+		
+		for (OrderListener orderListener: orderListeners)
+			notifyOrderListenerOfMarketOrderEvent(marketOrderEvent, orderListener);
+	}
+	
+
+	public abstract void notifyOrderListenerOfMarketOrderEvent(
+		MarketOrderEvent marketOrderEvent, OrderListener orderListener);
+
+	public abstract void notifyOrderListenerOfOrderEvent(
+		LimitOrderEvent limitOrderEvent, OrderListener orderListener);
 	
 	private List<OrderListener> getRandomisedOrderListeners() {
 		List<OrderListener> randomisedOrderListeners = 

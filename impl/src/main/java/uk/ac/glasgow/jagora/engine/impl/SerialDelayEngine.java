@@ -14,10 +14,16 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 
-public class DelayableSerialRandomEngine implements TradingEngine {
+/**
+ * A simulation engine that simulates differential latency between 'ordinary' and 'privileged' traders.
+ * @author Ivelin
+ * @author tws
+ *
+ */
+public class SerialDelayEngine implements TradingEngine {
 
 	private final Set<StockExchange> exchanges;
-	private final Set<Level1Trader> traders;
+	private final Set<Level1Trader> ordinaryTraders;
 	private final World world;
 	private final Random random;
 	private final Set<Level2Trader> privilegedTraders = new HashSet<>();
@@ -26,16 +32,23 @@ public class DelayableSerialRandomEngine implements TradingEngine {
 
 	private Long delay;
 
-	DelayableSerialRandomEngine(World world, Set<StockExchange> exchanges,
-						   Set<Level1Trader> traders, Random random,
-						   Long standardDelay, Set<Level2Trader> level2Traders){
+	SerialDelayEngine(
+		World world,
+		Set<StockExchange> exchanges,
+		Set<Level1Trader> ordinaryTraders,
+		Random random, Long standardDelay,
+		Set<Level2Trader> privilegedTraders){
+		
 		this.world = world;
 		this.exchanges = new HashSet<StockExchange>(exchanges);
-		this.traders = new HashSet<Level1Trader>(traders);
+		this.ordinaryTraders = new HashSet<Level1Trader>(ordinaryTraders);
 		this.random = random;
+
 		this.orderExecutors = new PriorityQueue<DelayedOrderExecutor>();
+		
 		this.delay = standardDelay;
-		this.privilegedTraders.addAll(level2Traders);
+		
+		this.privilegedTraders.addAll(privilegedTraders);
 	}
 
 	
@@ -43,16 +56,16 @@ public class DelayableSerialRandomEngine implements TradingEngine {
 	public void run() {
 		while (world.isAlive()) {
 			StockExchange exchange = random.chooseElement(exchanges);
-			Level1Trader trader = random.chooseElement(traders);
+			
+			Level1Trader trader = random.chooseElement(ordinaryTraders);
+			
 			DelayedExchangeLevel1View delayedView =
-				new DelayedExchangeLevel1View(exchange.createLevel1View(),
-					delay, world.getCurrentTick());
+				new DelayedExchangeLevel1View(
+					exchange.createLevel1View(), world.getCurrentTick() + delay);
 
 			trader.speak(delayedView);
-			for(DelayedOrderExecutor executor: delayedView.getOrderExecutors()) {
-				orderExecutors.add(executor);
-			}
-
+			
+			orderExecutors.addAll(delayedView.getOrderExecutors());
 
 			while (!orderExecutors.isEmpty()
 					&& world.getCurrentTick() >= orderExecutors.peek().getDelayedTick()){

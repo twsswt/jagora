@@ -2,9 +2,9 @@ package uk.ac.glasgow.jagora.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
@@ -18,7 +18,7 @@ public class ReceivedSellOrderTest {
 	
 	private static final ManualTickWorld world = new ManualTickWorld();
 	
-	private TickEvent<SellOrder>[] receivedOrders;
+	private TickEvent<LimitSellOrder>[] receivedOrders;
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -33,10 +33,10 @@ public class ReceivedSellOrderTest {
 
 	}
 
-	private TickEvent<SellOrder> createSellOrder(Integer quantity, Long price, Long tick) {
-		SellOrder sellOrder = new LimitSellOrder(null, lemons, quantity, price);
-		world.setTickForEvent(tick, sellOrder);
-		return world.getTick(sellOrder);
+	private TickEvent<LimitSellOrder> createSellOrder(Integer quantity, Long price, Long tick) {
+		LimitSellOrder limitSellOrder = new DefaultLimitSellOrder(null, lemons, quantity, price);
+		world.setTickForEvent(tick, limitSellOrder);
+		return world.getTick(limitSellOrder);
 	}
 
 	@Test

@@ -2,13 +2,13 @@ package uk.ac.glasgow.jagora.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.DefaultTrade;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
@@ -23,8 +23,8 @@ public class TradeTest {
 	
 	private StubTrader alice, bob;
 	
-	private BuyOrder limitBuyOrder;
-	private SellOrder limitSellOrder;
+	private LimitBuyOrder limitBuyOrder;
+	private LimitSellOrder limitSellOrder;
 	
 	private ManualTickWorld world;
 	
@@ -47,8 +47,8 @@ public class TradeTest {
 			.build();
 	
 		
-		limitBuyOrder = new LimitBuyOrder(alice, lemons, 500, 500l);
-		limitSellOrder = new LimitSellOrder(bob, lemons, 1000, 450l);
+		limitBuyOrder = new DefaultLimitBuyOrder(alice, lemons, 500, 500l);
+		limitSellOrder = new DefaultLimitSellOrder(bob, lemons, 1000, 450l);
 		
 		trade = new DefaultTrade(lemons, 500, 450l, limitSellOrder, limitBuyOrder);
 		

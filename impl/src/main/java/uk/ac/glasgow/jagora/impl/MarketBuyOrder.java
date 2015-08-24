@@ -1,20 +1,14 @@
 package uk.ac.glasgow.jagora.impl;
 
+import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.MarketOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.trader.Trader;
 
-public class MarketBuyOrder extends AbstractBuyOrder {
+public class MarketBuyOrder extends AbstractBuyOrder implements MarketOrder, BuyOrder {
 
-	private  StockExchangeLevel1View market;
-
-	public MarketBuyOrder (Trader trader,Stock stock,Integer quantity,StockExchangeLevel1View market){
+	public MarketBuyOrder (Trader trader, Stock stock, Integer quantity){
 		super(trader, stock, quantity);
-		this.market =  market;
 	}
 
-	@Override
-	public Long getPrice () {
-		return market.getBestOfferPrice(this.getStock());
-	}
 }

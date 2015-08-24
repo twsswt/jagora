@@ -1,6 +1,8 @@
 package uk.ac.glasgow.jagora.test.stub;
 
 import uk.ac.glasgow.jagora.*;
+import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
+import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
@@ -11,8 +13,8 @@ import java.util.Map;
 
 public class StubStockExchange implements StockExchange {
 
-	private final Map<Stock,List<BuyOrder>> allBuyOrders;
-	private final Map<Stock,List<SellOrder>> allSellOrders;
+	private final Map<Stock,List<LimitBuyOrder>> allBuyOrders;
+	private final Map<Stock,List<LimitSellOrder>> allSellOrders;
 
 	/**
 	 * Does nothing.
@@ -21,8 +23,8 @@ public class StubStockExchange implements StockExchange {
 	public void doClearing() {	}
 	
 	public StubStockExchange (){
-		allBuyOrders = new HashMap<Stock,List<BuyOrder>> ();
-		allSellOrders = new HashMap<Stock,List<SellOrder>>();
+		allBuyOrders = new HashMap<Stock,List<LimitBuyOrder>> ();
+		allSellOrders = new HashMap<Stock,List<LimitSellOrder>>();
 	}
 	
 	@Override
@@ -35,7 +37,7 @@ public class StubStockExchange implements StockExchange {
 		public Long getBestOfferPrice(Stock stock) {
 			return getSellOrders(stock)
 				.stream()
-				.mapToLong(sellOrder -> sellOrder.getPrice())
+				.mapToLong(sellOrder -> sellOrder.getLimitPrice())
 				.min()
 				.getAsLong();
 		}
@@ -44,30 +46,30 @@ public class StubStockExchange implements StockExchange {
 		public Long getBestBidPrice(Stock stock) {
 			return getBuyOrders(stock)
 				.stream()
-				.mapToLong(buyOrder -> buyOrder.getPrice())
+				.mapToLong(buyOrder -> buyOrder.getLimitPrice())
 				.max()
 				.getAsLong();
 		}
 
 		@Override
-		public void placeBuyOrder(BuyOrder buyOrder) {
-			getBuyOrders(buyOrder.getStock()).add(buyOrder);
+		public void placeLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
+			getBuyOrders(limitBuyOrder.getStock()).add(limitBuyOrder);
 		}
 
 		@Override
-		public void placeSellOrder(SellOrder SellOrder) {
-			getSellOrders(SellOrder.getStock()).add(SellOrder);
+		public void placeLimitSellOrder(LimitSellOrder LimitSellOrder) {
+			getSellOrders(LimitSellOrder.getStock()).add(LimitSellOrder);
 		}
 
 		@Override
-		public void cancelBuyOrder(BuyOrder BuyOrder) {
-			getBuyOrders(BuyOrder.getStock()).remove(BuyOrder);
+		public void cancelLimitBuyOrder(LimitBuyOrder LimitBuyOrder) {
+			getBuyOrders(LimitBuyOrder.getStock()).remove(LimitBuyOrder);
 			
 		}
 
 		@Override
-		public void cancelSellOrder(SellOrder SellOrder) {
-			getSellOrders(SellOrder.getStock()).remove(SellOrder);
+		public void cancelLimitSellOrder(LimitSellOrder LimitSellOrder) {
+			getSellOrders(LimitSellOrder.getStock()).remove(LimitSellOrder);
 		}
 
 		@Override
@@ -85,25 +87,39 @@ public class StubStockExchange implements StockExchange {
 			// Does nothing as no trades are executed.
 			
 		}
+
+		@Override
+		public void placeMarketBuyOrder(
+			MarketBuyOrder marketBuyOrder) {
+			// Does nothing.
+			
+		}
+
+		@Override
+		public void placeMarketSellOrder(
+			MarketSellOrder marketSellOrder) {
+			// Does nothing.
+			
+		}
 	}
 
 
-	public List<BuyOrder> getBuyOrders(Stock stock) {
-		List<BuyOrder> BuyOrders = allBuyOrders.get(stock);
-		if (BuyOrders == null){
-			BuyOrders = new ArrayList<BuyOrder>();
-			allBuyOrders.put(stock, BuyOrders);
+	public List<LimitBuyOrder> getBuyOrders(Stock stock) {
+		List<LimitBuyOrder> LimitBuyOrders = allBuyOrders.get(stock);
+		if (LimitBuyOrders == null){
+			LimitBuyOrders = new ArrayList<LimitBuyOrder>();
+			allBuyOrders.put(stock, LimitBuyOrders);
 		}
-		return BuyOrders;
+		return LimitBuyOrders;
 	}
 
-	public List<SellOrder> getSellOrders(Stock stock) {
-		List<SellOrder> SellOrders = allSellOrders.get(stock);
-		if (SellOrders == null){
-			SellOrders = new ArrayList<SellOrder>();
-			allSellOrders.put(stock, SellOrders);
+	public List<LimitSellOrder> getSellOrders(Stock stock) {
+		List<LimitSellOrder> LimitSellOrders = allSellOrders.get(stock);
+		if (LimitSellOrders == null){
+			LimitSellOrders = new ArrayList<LimitSellOrder>();
+			allSellOrders.put(stock, LimitSellOrders);
 		}
-		return SellOrders;
+		return LimitSellOrders;
 	}
 
 

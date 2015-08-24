@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.MarginalTraderBuilder;
 
@@ -17,7 +17,7 @@ import static org.easymock.EasyMock.expect;
 public class MarginalTraderTest extends EasyMockSupport {
 		
 	@Rule
-    public EasyMockRule rule = new EasyMockRule(this);
+	public EasyMockRule rule = new EasyMockRule(this);
 	
 	private Stock lemons;
 	
@@ -39,8 +39,9 @@ public class MarginalTraderTest extends EasyMockSupport {
 	@Test
 	public void test() {	
 		
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(alice, lemons, 5, 2l));
+		
 		expect(mockExchange.getBestOfferPrice(lemons)).andReturn(1l);
-		mockExchange.placeBuyOrder(new LimitBuyOrder(alice, lemons, 5, 2l));
 		
 		replayAll();
 		alice.speak(mockExchange);		

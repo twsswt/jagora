@@ -21,10 +21,10 @@ import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.pricer.TradePricer;
-import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.LimitOrderTradePricer;
+import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -63,9 +63,9 @@ public class Experiment0002 {
 		
 		world = new SimpleSerialWorld(2000000l);
 		
-		TradePricer tradePricer = new OldestOrderPricer ();
+		LimitOrderTradePricer limitOrderTradePricer = new OldestLimitOrderPricer ();
 		
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(tradePricer);
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(limitOrderTradePricer);
 		
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		
@@ -80,8 +80,8 @@ public class Experiment0002 {
 			.build();
 		
 		StockExchangeLevel1View stubsView = stockExchange.createLevel1View();
-		stubsView.placeBuyOrder(new LimitBuyOrder(stubTrader, lemons, 1, 99l));
-		stubsView.placeSellOrder(new LimitSellOrder(stubTrader, lemons, 1, 101l));		
+		stubsView.placeLimitBuyOrder(new DefaultLimitBuyOrder(stubTrader, lemons, 1, 99l));
+		stubsView.placeLimitSellOrder(new DefaultLimitSellOrder(stubTrader, lemons, 1, 101l));		
 
 		RandomTraderBuilder randomTraderBuilder = 
 			new RandomTraderBuilder()

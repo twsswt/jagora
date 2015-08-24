@@ -1,6 +1,7 @@
 package uk.ac.glasgow.jagora.ticker.impl;
 
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
+import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 
 import java.io.PrintStream;
@@ -14,12 +15,13 @@ public class OutputStreamOrderListener implements OrderListener {
 	}
 
 	@Override
-	public void orderEntered(OrderEvent orderEvent) {
-		printStream.println(orderEvent);
+	public void limitOrderEvent(LimitOrderEvent limitOrderEvent) {
+		printStream.println(limitOrderEvent);
 	}
 
 	@Override
-	public void orderCancelled(OrderEvent orderEvent) {
-		printStream.println(orderEvent);
+	public void marketOrderEntered(MarketOrderEvent marketOrderEvent) {
+		printStream.println(marketOrderEvent);
+		
 	}
 }

@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomTraderBuilder;
 import static org.easymock.EasyMock.expect;
@@ -46,9 +46,9 @@ public class RandomTraderTest extends EasyMockSupport {
 	public void test() {
 		
 		expect(mockExchange.getLastKnownBestOfferPrice(lemons)).andReturn(50l);
-		mockExchange.placeSellOrder(new LimitSellOrder(trader, lemons, 29, 49l));
+		mockExchange.placeLimitSellOrder(new DefaultLimitSellOrder(trader, lemons, 29, 49l));
 		expect(mockExchange.getLastKnownBestBidPrice(lemons)).andReturn(50l);
-		mockExchange.placeBuyOrder(new LimitBuyOrder(trader, lemons, 2, 45l));
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(trader, lemons, 2, 45l));
 
 		replayAll ();
 		

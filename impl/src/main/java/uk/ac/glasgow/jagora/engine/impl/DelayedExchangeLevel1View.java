@@ -1,20 +1,31 @@
 package uk.ac.glasgow.jagora.engine.impl;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
+import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * A transparent delay layer between a trader and an
+ * underlying stock exchange view. The class is useful for
+ * simulating differential network latency experienced by
+ * different trading agents in different locales.
+ * 
+ * @author Ivelin
+ * @author tws
+ */
 public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 	interface DelayedOrderExecutor extends Comparable<DelayedOrderExecutor> {
-		void execute() ;
-		Long getDelayedTick ();
+		public void execute() ;
+		
+		public Long getDelayedTick ();
 
 		@Override
 		default int compareTo(DelayedOrderExecutor delayedOrderExecutor){
@@ -28,9 +39,9 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	private StockExchangeLevel1View wrappedView;
 
 
-	public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long delay, Long currentTick) {
+	public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long delayedTick) {
 		this.wrappedView = wrappedView;
-		this.delayedTick = delay + currentTick;
+		this.delayedTick = delayedTick;
 	}
 
 
@@ -40,12 +51,12 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 
 	@Override
-	public void placeBuyOrder(BuyOrder buyOrder) {
+	public void placeLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
 		this.orderExecutors.add(
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
-						wrappedView.placeBuyOrder(buyOrder);
+						wrappedView.placeLimitBuyOrder(limitBuyOrder);
 					}
 
 					@Override
@@ -57,12 +68,12 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	}
 
 	@Override
-	public void placeSellOrder(SellOrder sellOrder) {
+	public void placeLimitSellOrder(LimitSellOrder limitSellOrder) {
 		this.orderExecutors.add(
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
-						wrappedView.placeSellOrder(sellOrder);
+						wrappedView.placeLimitSellOrder(limitSellOrder);
 					}
 
 					@Override
@@ -74,12 +85,12 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	}
 
 	@Override
-	public void cancelBuyOrder(BuyOrder buyOrder) {
+	public void cancelLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
 		this.orderExecutors.add(
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
-						wrappedView.cancelBuyOrder(buyOrder);
+						wrappedView.cancelLimitBuyOrder(limitBuyOrder);
 					}
 
 					@Override
@@ -91,12 +102,12 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	}
 
 	@Override
-	public void cancelSellOrder(SellOrder sellOrder) {
+	public void cancelLimitSellOrder(LimitSellOrder limitSellOrder) {
 		this.orderExecutors.add (
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
-						wrappedView.cancelSellOrder(sellOrder);
+						wrappedView.cancelLimitSellOrder(limitSellOrder);
 					}
 
 					@Override
@@ -107,6 +118,40 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 		);
 	}
 
+	@Override
+	public void placeMarketBuyOrder(MarketBuyOrder marketBuyOrder) {
+		this.orderExecutors.add (
+			new DelayedOrderExecutor() {
+				@Override
+				public void execute() {
+					wrappedView.placeMarketBuyOrder(marketBuyOrder);
+				}
+
+				@Override
+				public Long getDelayedTick() {
+					return delayedTick;
+				}
+			}
+		);
+	}
+
+	@Override
+	public void placeMarketSellOrder(MarketSellOrder marketSellOrder) {
+		this.orderExecutors.add (
+			new DelayedOrderExecutor() {
+				@Override
+				public void execute() {
+					wrappedView.placeMarketSellOrder(marketSellOrder);
+				}
+
+				@Override
+				public Long getDelayedTick() {
+					return delayedTick;
+				}
+			}
+		);
+	}
+	
 	@Override
 	public Long getBestOfferPrice(Stock stock) {
 		return wrappedView.getBestOfferPrice(stock);
@@ -131,5 +176,4 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	public void registerTradeListener(TradeListener tradeListener) {
 		wrappedView.registerTradeListener(tradeListener);
 	}
-
 }

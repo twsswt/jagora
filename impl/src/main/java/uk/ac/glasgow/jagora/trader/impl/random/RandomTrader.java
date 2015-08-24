@@ -1,11 +1,11 @@
 package uk.ac.glasgow.jagora.trader.impl.random;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.util.Random;
@@ -75,13 +75,13 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 			if (offerPrice == null) return;
 			Long price = createRandomPrice(offerPrice, relativeRangeData);
 
-			SellOrder sellOrder =
-				new LimitSellOrder(this, stock, quantity, price);
+			LimitSellOrder limitSellOrder =
+				new DefaultLimitSellOrder(this, stock, quantity, price);
 						
-			placeSafeSellOrder(stockExchangeLevel1View, sellOrder);
+			placeSafeSellOrder(stockExchangeLevel1View, limitSellOrder);
 			
 		} else {
-			SellOrder randomSellOrder = random.chooseElement(openSellOrders);
+			LimitSellOrder randomSellOrder = random.chooseElement(openSellOrders);
 
 			if (randomSellOrder != null)
 				cancelSafeSellOrder(stockExchangeLevel1View, randomSellOrder);
@@ -101,15 +101,15 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 		Integer quantity = createRandomQuantity( (int)(availableCash/price), relativeRangeData);
 		if (quantity > 0){
 			
-			BuyOrder buyOrder =
-				new LimitBuyOrder(this, stock, quantity, price);
+			LimitBuyOrder limitBuyOrder =
+				new DefaultLimitBuyOrder(this, stock, quantity, price);
 
-			placeSafeBuyOrder(stockExchangeLevel1View, buyOrder);
+			placeSafeBuyOrder(stockExchangeLevel1View, limitBuyOrder);
 			
 		} else {
-			BuyOrder buyOrder = random.chooseElement(openBuyOrders);
-			if (buyOrder != null)
-				cancelSafeBuyOrder(stockExchangeLevel1View, buyOrder);
+			LimitBuyOrder limitBuyOrder = random.chooseElement(openBuyOrders);
+			if (limitBuyOrder != null)
+				cancelSafeBuyOrder(stockExchangeLevel1View, limitBuyOrder);
 		}
 	}
 
