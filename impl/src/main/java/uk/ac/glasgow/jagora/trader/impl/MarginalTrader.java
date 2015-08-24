@@ -2,8 +2,8 @@ package uk.ac.glasgow.jagora.trader.impl;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.util.Random;
 
@@ -53,8 +53,8 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 		Integer quantity = random.nextInt(inventory.get(randomStock));
 
-		LimitSellOrder limitSellOrder = new LimitSellOrder(this, randomStock, quantity, price);
-		traderMarketView.placeSellOrder(limitSellOrder);
+		DefaultLimitSellOrder defaultLimitSellOrder = new DefaultLimitSellOrder(this, randomStock, quantity, price);
+		traderMarketView.placeLimitSellOrder(defaultLimitSellOrder);
 
 	}
 
@@ -75,8 +75,8 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 
 		Integer quantity = (int) (getCash() / buyPrice);
 
-		LimitBuyOrder limitBuyOrder = new LimitBuyOrder(this, randomStock, quantity, buyPrice);
-		traderMarketView.placeBuyOrder(limitBuyOrder);
+		DefaultLimitBuyOrder defaultLimitBuyOrder = new DefaultLimitBuyOrder(this, randomStock, quantity, buyPrice);
+		traderMarketView.placeLimitBuyOrder(defaultLimitBuyOrder);
 
 	}
 

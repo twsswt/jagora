@@ -2,17 +2,18 @@ package uk.ac.glasgow.jagora.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.glasgow.jagora.BuyOrder;
+
+import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.*;
-import uk.ac.glasgow.jagora.pricer.impl.SellOrderPricer;
+import uk.ac.glasgow.jagora.pricer.impl.SellLimitOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
+import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
-
 import static org.junit.Assert.assertEquals;
 
 public class MarketOrderTest {
@@ -23,8 +24,7 @@ public class MarketOrderTest {
 	private StubTrader bruce;
 	private StubTrader george;
 
-	private SimpleSerialWorld world;
-	private MarketFactory marketFactory;
+	private DefaultStockExchange stockExchange;
 
 
 	@Before
@@ -50,65 +50,60 @@ public class MarketOrderTest {
 				.addStock(lemons, 5000)
 				.build();
 
-		world = new SimpleSerialWorld(1000l);
-		marketFactory = new ContinuousOrderDrivenMarketFactory(new SellOrderPricer());
-
-
+		World world = new SimpleSerialWorld(1000l);
+		MarketFactory marketFactory =
+			new ContinuousOrderDrivenMarketFactory(new SellLimitOrderPricer());
+		
+		stockExchange = new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
 	}
 
 	@Test
 	public void testMarketBuyOrder(){
 
-		DefaultStockExchange market =
-				new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
-
 		//produce two sell orders and make sure that market order is buying from the lower one
-		SellOrder sellOrder1 = new LimitSellOrder(bruce, lemons, 3000, 100l);
+		LimitSellOrder sellOrder1 = new DefaultLimitSellOrder(bruce, lemons, 3000, 100l);
 		bruce.supplyOrder(sellOrder1);
-		bruce.speak(market.createLevel1View());
+		bruce.speak(stockExchange.createLevel1View());
 
-		SellOrder sellOrder2 = new LimitSellOrder(george, lemons, 1000, 150l);
+		LimitSellOrder sellOrder2 = new DefaultLimitSellOrder(george, lemons, 1000, 150l);
 		george.supplyOrder(sellOrder2);
-		george.speak(market.createLevel1View());
+		george.speak(stockExchange.createLevel1View());
 
-		MarketBuyOrder buyOrder = new MarketBuyOrder(alice, lemons, 100, market.createLevel1View());
+		MarketBuyOrder buyOrder = new MarketBuyOrder(alice, lemons, 100);
 		alice.supplyOrder(buyOrder);
-		alice.speak(market.createLevel1View());
+		alice.speak(stockExchange.createLevel1View());
 
-		market.doClearing();
+		stockExchange.doClearing();
 
-		Long aliceCash= alice.getCash();
-		assertEquals( "", aliceCash ,(Long) 40000l);
-		assertEquals("", alice.getInventory(lemons),(Integer) 100 );
+		assertEquals( "", 40000l, alice.getCash().longValue());
 
-		assertEquals("", bruce.getInventory(lemons) , (Integer) 4900);
+		assertEquals("", 100, alice.getInventory(lemons).intValue());
 
-		assertEquals("", george.getInventory(lemons), (Integer) 5000);
+		assertEquals("", 4900, bruce.getInventory(lemons).intValue());
+
+		assertEquals("", 5000, george.getInventory(lemons).intValue());
 
 	}
 
 	@Test
 	public void testMarketSellOrder (){
+		
+		LimitBuyOrder limitBuyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 100, 100l);
+		alice.supplyOrder(limitBuyOrder1);
+		alice.speak(stockExchange.createLevel1View());
 
-		DefaultStockExchange market =
-				new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
+		LimitBuyOrder limitBuyOrder2 = new DefaultLimitBuyOrder(george, lemons, 100, 50l);
+		george.supplyOrder(limitBuyOrder2);
+		george.speak(stockExchange.createLevel1View());
 
-		BuyOrder buyOrder = new LimitBuyOrder(alice, lemons, 100, 100l);
-		alice.supplyOrder(buyOrder);
-		alice.speak(market.createLevel1View());
+		MarketSellOrder marketSellOrder = new MarketSellOrder(bruce, lemons, 150);
+		bruce.supplyOrder(marketSellOrder);
+		bruce.speak(stockExchange.createLevel1View());
 
-		BuyOrder buyOrder1 = new LimitBuyOrder(george, lemons, 100, 50l);
-		george.supplyOrder(buyOrder1);
-		george.speak(market.createLevel1View());
+		stockExchange.doClearing();
 
-		SellOrder sellOrder = new MarketSellOrder(bruce, lemons, 150, market.createLevel1View());
-		bruce.supplyOrder(sellOrder);
-		bruce.speak(market.createLevel1View());
-
-		market.doClearing();
-
-		assertEquals("", bruce.getCash(), (Long) 62500l );
-		assertEquals("", bruce.getInventory(lemons),(Integer) 4850);
+		assertEquals("", 62500l, bruce.getCash().longValue() );
+		assertEquals("", 4850, bruce.getInventory(lemons).intValue());
 
 		assertEquals("", alice.getInventory(lemons), (Integer) 100);
 	}
@@ -116,87 +111,81 @@ public class MarketOrderTest {
 
 	@Test
 	public void testTwoMarketOrders() {
+		
+		// Establish a spread on the market first.
 
-		DefaultStockExchange market =
-				new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
-
-		MarketBuyOrder buyOrder = new MarketBuyOrder(alice, lemons, 100, market.createLevel1View());
+		MarketBuyOrder buyOrder = new MarketBuyOrder(alice, lemons, 100);
 		alice.supplyOrder(buyOrder);
-		alice.speak(market.createLevel1View());
+		alice.speak(stockExchange.createLevel1View());
 
-		market.doClearing();
+		stockExchange.doClearing();
 
 		assertEquals("", alice.getCash(),(Long) 50000l);
 
-		SellOrder sellOrder = new MarketSellOrder(bruce, lemons, 150, market.createLevel1View());
+		MarketSellOrder sellOrder = new MarketSellOrder(bruce, lemons, 150);
 		bruce.supplyOrder(sellOrder);
-		bruce.speak(market.createLevel1View());
+		bruce.speak(stockExchange.createLevel1View());
 
-		market.doClearing();
+		stockExchange.doClearing();
 
-		assertEquals("", alice.getCash(),(Long) 50000l);
-		assertEquals("", alice.getInventory(lemons), (Integer) 0);
-		assertEquals("", bruce.getInventory(lemons), (Integer) 5000); //no trade should occur
+		assertEquals("", 50000l, alice.getCash().longValue());
+		assertEquals("", 0, alice.getInventory(lemons).intValue());
+		assertEquals("", 5000, bruce.getInventory(lemons).intValue()); //no trade should occur
 
 	}
 
 
 	@Test
 	public void testMarketOrderWhenBetterPrice() {
-		DefaultStockExchange market =
-				new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
+		
+		MarketSellOrder limitSellOrder = new MarketSellOrder(bruce, lemons, 150);
+		bruce.supplyOrder(limitSellOrder);
+		bruce.speak(stockExchange.createLevel1View());
 
-		SellOrder sellOrder = new MarketSellOrder(bruce, lemons, 150, market.createLevel1View());
-		//SellOrder sellOrder = new LimitSellOrder(bruce, lemons, 150,120l);
-		bruce.supplyOrder(sellOrder);
-		bruce.speak(market.createLevel1View());
+		stockExchange.doClearing();
 
-		market.doClearing();
-
-		SellOrder sellOrder1 = new LimitSellOrder(george, lemons, 50, 150l);
+		LimitSellOrder sellOrder1 = new DefaultLimitSellOrder(george, lemons, 50, 150l);
 		george.supplyOrder(sellOrder1);
-		george.speak(market.createLevel1View());
+		george.speak(stockExchange.createLevel1View());
 
-		BuyOrder buyOrder1 = new LimitBuyOrder(alice, lemons, 100, 100l);
+		LimitBuyOrder buyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 100, 100l);
 		alice.supplyOrder(buyOrder1);
-		alice.speak(market.createLevel1View());
+		alice.speak(stockExchange.createLevel1View());
 
 
-		market.doClearing();
+		stockExchange.doClearing();
 		//Test to see if marketSellOrder price is updated and the order is able to be executed
-		assertEquals("", bruce.getInventory(lemons), (Integer) 4900);
-		assertEquals("", alice.getCash(), (Long) 40000l);
+		assertEquals("", 4900, bruce.getInventory(lemons).intValue());
+		assertEquals("", 40000l, alice.getCash().longValue());
 	}
 
 
 	//Two market sell orders are supplied and the first one should be executed and only after the second one as well
 	@Test
 	public void testTwoMarketSellOrders(){
-		DefaultStockExchange market =
-				new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
 
-		SellOrder sellOrder1 = new MarketSellOrder(bruce,lemons,100,market.createLevel1View());
+		MarketSellOrder sellOrder1 = new MarketSellOrder(bruce,lemons,100);
 		bruce.supplyOrder(sellOrder1);
-		bruce.speak(market.createLevel1View());
+		bruce.speak(stockExchange.createLevel1View());
 
-		SellOrder sellOrder2 = new MarketSellOrder(george,lemons,50,market.createLevel1View());
+		MarketSellOrder sellOrder2 = new MarketSellOrder(george,lemons,50);
 		george.supplyOrder(sellOrder2);
-		george.speak(market.createLevel1View());
+		george.speak(stockExchange.createLevel1View());
 
-		BuyOrder buyOrder1 = new LimitBuyOrder(alice,lemons,50,50l);
+		LimitBuyOrder buyOrder1 = new DefaultLimitBuyOrder(alice,lemons,50,50l);
 		alice.supplyOrder(buyOrder1);
-		alice.speak(market.createLevel1View());
+		alice.speak(stockExchange.createLevel1View());
 
-		market.doClearing();
+		stockExchange.doClearing();
 
 		assertEquals("",bruce.getInventory(lemons),(Integer) (5000-50));
 		assertEquals("",bruce.getCash(), (Long) (50000l + 50l*50l));
 
-		BuyOrder buyOrder2 = new LimitBuyOrder(alice,lemons,70,60l);
+		LimitBuyOrder buyOrder2 = new DefaultLimitBuyOrder(alice,lemons,70,60l);
 		alice.supplyOrder(buyOrder2);
-		alice.speak(market.createLevel1View());
+		alice.speak(stockExchange.createLevel1View());
 
-		market.doClearing();
+		stockExchange.doClearing();
 
 		assertEquals("",bruce.getInventory(lemons),(Integer) (5000-50 - 50));
 		assertEquals("",bruce.getCash(), (Long) (50000l + 50l*50l + 60l*50l));

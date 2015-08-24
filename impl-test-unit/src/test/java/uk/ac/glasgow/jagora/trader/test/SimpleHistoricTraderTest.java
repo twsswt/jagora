@@ -8,7 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
@@ -53,7 +53,7 @@ public class SimpleHistoricTraderTest extends EasyMockSupport {
 		expect(mockExchange.getBestBidPrice(lemons)).andReturn(8l);
 		expect(mockExchange.getBestOfferPrice(lemons)).andReturn(9l);
 		
-		mockExchange.placeBuyOrder(new LimitBuyOrder(alice, lemons, 1, 9l));
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(alice, lemons, 1, 9l));
 		
 		replayAll ();
 		

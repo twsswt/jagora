@@ -2,7 +2,7 @@ package uk.ac.glasgow.jagora.trader.impl;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class BuyOnlyTrader extends SafeAbstractTrader implements Level1Trader{
 
 	@Override
 	public void speak(StockExchangeLevel1View traderView) {
-		LimitBuyOrder limitBuyOrder = new LimitBuyOrder(this, stock, quantity, price);
-		this.placeSafeBuyOrder(traderView, limitBuyOrder);
+		DefaultLimitBuyOrder defaultLimitBuyOrder = new DefaultLimitBuyOrder(this, stock, quantity, price);
+		this.placeSafeBuyOrder(traderView, defaultLimitBuyOrder);
 	}
 }

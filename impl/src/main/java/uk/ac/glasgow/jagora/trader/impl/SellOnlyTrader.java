@@ -2,7 +2,7 @@ package uk.ac.glasgow.jagora.trader.impl;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 
 import java.util.HashMap;
@@ -30,8 +30,8 @@ public class SellOnlyTrader extends SafeAbstractTrader implements Level1Trader {
 
 	@Override
 	public void speak(StockExchangeLevel1View traderView) {
-		LimitSellOrder limitSellOrder = new LimitSellOrder(this, stock, sellQuantity, price);
-		this.placeSafeSellOrder(traderView, limitSellOrder);
+		DefaultLimitSellOrder defaultLimitSellOrder = new DefaultLimitSellOrder(this, stock, sellQuantity, price);
+		this.placeSafeSellOrder(traderView, defaultLimitSellOrder);
 	}
 
 }

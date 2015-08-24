@@ -2,9 +2,7 @@ package uk.ac.glasgow.jagora.ticker;
 
 public interface OrderListener {
 
-	void orderEntered(OrderEvent orderEvent);
+	public void limitOrderEvent(LimitOrderEvent limitOrderEvent);
 
-	void orderCancelled(OrderEvent orderEvent);
-
-
+	public void marketOrderEntered(MarketOrderEvent marketOrderEvent);
 }

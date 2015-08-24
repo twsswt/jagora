@@ -1,10 +1,12 @@
 package uk.ac.glasgow.jagora.test.stub;
 
+import uk.ac.glasgow.jagora.LimitOrder;
+import uk.ac.glasgow.jagora.MarketOrder;
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
 import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -27,18 +29,23 @@ public class StubTrader extends AbstractTrader implements Level1Trader {
 	public void speak(StockExchangeLevel1View market) {
 		Order nextOrder = orders.poll();
 		if (nextOrder != null)
-			if (nextOrder instanceof LimitSellOrder)
-				market.placeSellOrder((LimitSellOrder)nextOrder);
-			else if (nextOrder instanceof LimitBuyOrder )
-				market.placeBuyOrder((LimitBuyOrder)nextOrder);
-			else if (nextOrder instanceof MarketSellOrder)
-				market.placeSellOrder((MarketSellOrder)nextOrder);
-			else if (nextOrder instanceof MarketBuyOrder)
-				market.placeBuyOrder((MarketBuyOrder)nextOrder);
-		
+			if (nextOrder instanceof DefaultLimitSellOrder)
+				market.placeLimitSellOrder((DefaultLimitSellOrder)nextOrder);
+			else if (nextOrder instanceof DefaultLimitBuyOrder )
+				market.placeLimitBuyOrder((DefaultLimitBuyOrder)nextOrder);
+		if (nextOrder instanceof MarketSellOrder)
+			market.placeMarketSellOrder((MarketSellOrder)nextOrder);
+		else if (nextOrder instanceof MarketBuyOrder )
+			market.placeMarketBuyOrder((MarketBuyOrder)nextOrder);
+	
 	}
 
-	public void supplyOrder (Order order){
+	public void supplyOrder (LimitOrder order){
 		orders.offer(order);
 	}
+
+	public void supplyOrder(MarketOrder marketBuyOrder) {
+		orders.offer(marketBuyOrder);
+	}
+
 }

@@ -2,8 +2,8 @@ package uk.ac.glasgow.jagora.trader.impl;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
@@ -80,9 +80,9 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		
-		LimitBuyOrder limitBuyOrder = 
-			new LimitBuyOrder(this, randomStock, quantity, bestOfferPrice);
-		placeSafeBuyOrder(traderMarketView, limitBuyOrder);
+		DefaultLimitBuyOrder defaultLimitBuyOrder = 
+			new DefaultLimitBuyOrder(this, randomStock, quantity, bestOfferPrice);
+		placeSafeBuyOrder(traderMarketView, defaultLimitBuyOrder);
 	}
 
 	private void placeSellOrder(
@@ -90,9 +90,9 @@ public class SimpleHistoricTrader extends SafeAbstractTrader implements Level1Tr
 		
 		Integer quantity = computeAverageQuantity(randomStock);
 		
-		LimitSellOrder limitSellOrder = 
-			new LimitSellOrder(this, randomStock, quantity, bestOfferPrice);
-		placeSafeSellOrder(traderMarketView, limitSellOrder);
+		DefaultLimitSellOrder defaultLimitSellOrder = 
+			new DefaultLimitSellOrder(this, randomStock, quantity, bestOfferPrice);
+		placeSafeSellOrder(traderMarketView, defaultLimitSellOrder);
 	}
 
     /**

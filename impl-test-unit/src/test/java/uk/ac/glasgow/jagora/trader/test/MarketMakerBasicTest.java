@@ -9,9 +9,9 @@ import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.OrderEvent;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
@@ -56,7 +56,7 @@ public class MarketMakerBasicTest {
 		world = new SimpleSerialWorld(numberOfTraderActions);
 		lemons = new Stock("lemons");
 
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestOrderPricer());
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestLimitOrderPricer());
 
 		tickerTapeObserver = new SerialTickerTapeObserver();
 
@@ -70,8 +70,8 @@ public class MarketMakerBasicTest {
 				.addStock(lemons, 10).build();
 
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
-		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, 1001l));
-		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 5, 999l));
+		danView.placeLimitBuyOrder(new DefaultLimitBuyOrder(dan, lemons, 5, 1001l));
+		danView.placeLimitSellOrder(new DefaultLimitSellOrder(dan, lemons, 5, 999l));
 
 		Set<Level1Trader> traders = new HashSet<Level1Trader>();
 
@@ -141,10 +141,10 @@ public class MarketMakerBasicTest {
 		//Need to execute the following block to have the observer view of liquidity
 		Integer realBuySideLiquidity = 0;
 		Integer realSellSideLiquidity = 0;
-		for (OrderEvent event :tickerTapeObserver.getBuyOrderHistory(lemons))
+		for (OrderEvent event :tickerTapeObserver.getLimitBuyOrderHistory(lemons))
 			realBuySideLiquidity += event.quantity;
 
-		for (OrderEvent event: tickerTapeObserver.getSellOrderHistory(lemons))
+		for (OrderEvent event: tickerTapeObserver.getLimitSellOrderHistory(lemons))
 			realSellSideLiquidity += event.quantity;
 
 
@@ -166,8 +166,6 @@ public class MarketMakerBasicTest {
 				closeTo(buySideLiquidity.doubleValue(),permittedError));
 		assertThat(realSellSideLiquidity.doubleValue(),
 				closeTo(sellSideLiquidity.doubleValue(),permittedError));
-
-
 
 		System.out.println("Observer calculated buy liquidity " + realBuySideLiquidity);
 		System.out.println("Observer calculated sell liquidity " +realSellSideLiquidity);

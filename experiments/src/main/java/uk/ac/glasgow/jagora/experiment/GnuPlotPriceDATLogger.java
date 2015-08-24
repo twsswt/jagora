@@ -5,7 +5,8 @@ import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
 
 import java.io.PrintStream;
 
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
+import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
@@ -31,21 +32,22 @@ public class GnuPlotPriceDATLogger implements TradeListener, OrderListener {
 	}
 
 	@Override
-	public void orderEntered(OrderEvent orderEvent) {
+	public void limitOrderEvent(LimitOrderEvent limitOrderEvent) {
 		String template = null;
-		Long price = orderEvent.price;
-		if (orderEvent.orderDirection == SELL)
+		Long price = limitOrderEvent.price;
+		if (limitOrderEvent.orderDirection == SELL)
 			template = "%d,%d,,";
 		 else 
 			template = "%d,,%d,";
 
 		printStream.println(
-			format(template,orderEvent.tick, price));
+			format(template,limitOrderEvent.tick, price));
 	}
 
 	@Override
-	public void orderCancelled(OrderEvent orderEvent) {
-		// TODO Auto-generated method stub
+	public void marketOrderEntered(MarketOrderEvent limitOrderEvent) {
+		// TODO Log market orders.
+		
 	}
 
 } 

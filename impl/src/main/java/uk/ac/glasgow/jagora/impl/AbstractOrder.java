@@ -49,8 +49,8 @@ public abstract class AbstractOrder implements Order {
 
 	@Override
 	public String toString (){
-		return format("[trader=%s, stock=%s, quantity=%d, price=%d]", 
-			trader.getName(), stock.name, getRemainingQuantity(), getPrice());
+		return format("[trader=%s, stock=%s, quantity=%d]", 
+			trader.getName(), stock.name, getRemainingQuantity());
 	}
 	
 	@Override
@@ -63,36 +63,48 @@ public abstract class AbstractOrder implements Order {
 	
 	@Override
 	public abstract void rollBackTrade (TickEvent<Trade> trade) throws TradeExecutionException;
-	
-	@Override
-	public abstract Long getPrice();
 
 	@Override
 	public int hashCode() {
-		Long price = getPrice();
-		
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((price == null) ? 0 : price.hashCode());
+		result = prime
+			* result
+			+ ((initialQuantity == null) ? 0
+				: initialQuantity.hashCode());
+		result = prime * result
+			+ ((stock == null) ? 0 : stock.hashCode());
+		result = prime * result
+			+ ((trader == null) ? 0 : trader.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-
-		Long price = getPrice();
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Order other = (Order) obj;
-		if (price == null) {
-			if (other.getPrice() != null)
+		AbstractOrder other = (AbstractOrder) obj;
+		if (initialQuantity == null) {
+			if (other.initialQuantity != null)
 				return false;
-		} else if (!price.equals(other.getPrice()))
+		} else if (!initialQuantity
+			.equals(other.initialQuantity))
+			return false;
+		if (stock == null) {
+			if (other.stock != null)
+				return false;
+		} else if (!stock.equals(other.stock))
+			return false;
+		if (trader == null) {
+			if (other.trader != null)
+				return false;
+		} else if (!trader.equals(other.trader))
 			return false;
 		return true;
 	}
+
 }

@@ -1,5 +1,7 @@
 package uk.ac.glasgow.jagora;
 
+import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
+import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 public interface StockExchangeLevel1View {
@@ -12,13 +14,17 @@ public interface StockExchangeLevel1View {
 
 	public Long getLastKnownBestBidPrice(Stock stock);
 	
-	public void placeBuyOrder (BuyOrder buyOrder);
+	public void placeLimitBuyOrder (LimitBuyOrder limitBuyOrder);
 	
-	public void placeSellOrder (SellOrder sellOrder);
+	public void placeLimitSellOrder (LimitSellOrder limitSellOrder);
 	
-	public void cancelBuyOrder(BuyOrder buyOrder);
+	public void cancelLimitBuyOrder(LimitBuyOrder limitBuyOrder);
 	
-	public void cancelSellOrder(SellOrder sellOrder);
+	public void cancelLimitSellOrder(LimitSellOrder limitSellOrder);
+	
+	public void placeMarketBuyOrder(MarketBuyOrder marketBuyOrder);
+	
+	public void placeMarketSellOrder(MarketSellOrder marketSellOrder);
 	
 	public void registerTradeListener(TradeListener tradeListener);
 

@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderPctBuilder;
@@ -51,10 +51,10 @@ public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
 
 		mockExchange.getBestBidPrice(lemons);
 		expectLastCall().andReturn(4l);
-		mockExchange.placeSellOrder(new LimitSellOrder (trader, lemons, 2, 3l));
+		mockExchange.placeLimitSellOrder(new DefaultLimitSellOrder (trader, lemons, 2, 3l));
 		mockExchange.getBestOfferPrice(lemons);
 		expectLastCall().andReturn(6l);
-		mockExchange.placeBuyOrder(new LimitBuyOrder (trader, lemons, 2, 6l));
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder (trader, lemons, 2, 6l));
 
 		replayAll ();
 		
@@ -77,10 +77,10 @@ public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
 				.build();
 
 		expect(mockExchange.getBestBidPrice(lemons)).andReturn(100l);
-		mockExchange.placeSellOrder(new LimitSellOrder(trader,lemons,7,91l));
+		mockExchange.placeLimitSellOrder(new DefaultLimitSellOrder(trader,lemons,7,91l));
 
 		expect(mockExchange.getBestOfferPrice(lemons)).andReturn(150l);
-		mockExchange.placeBuyOrder(new LimitBuyOrder(trader,lemons,1,162l));
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(trader,lemons,1,162l));
 
 		replayAll();
 

@@ -13,10 +13,10 @@ public class DefaultTrade implements Trade {
 	private final Integer quantity;
 	private final Long price;
 	
-	private final SellOrder sellOrder;
-	private final BuyOrder buyOrder;
+	private final Order sellOrder;
+	private final Order buyOrder;
 	
-	public DefaultTrade(Stock stock, Integer quantity, Long price, SellOrder sellOrder, BuyOrder buyOrder) {
+	public DefaultTrade(Stock stock, Integer quantity, Long price, Order sellOrder, Order buyOrder) {
 		this.stock = stock;
 		this.quantity = quantity;
 		this.price = price;

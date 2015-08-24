@@ -1,8 +1,8 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
-import uk.ac.glasgow.jagora.BuyOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.World;
 
@@ -31,8 +31,8 @@ public class ScheduledLimitBuyOrder implements Comparable<ScheduledLimitBuyOrder
 		return delay;
 	}
 
-	public BuyOrder createBuyOrder(Trader trader) {
-		return new LimitBuyOrder(trader, stock, quantity, limitPrice);
+	public LimitBuyOrder createBuyOrder(Trader trader) {
+		return new DefaultLimitBuyOrder(trader, stock, quantity, limitPrice);
 	}
 
 	public Boolean shouldBeExecuted() {

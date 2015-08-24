@@ -5,9 +5,9 @@ import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
@@ -278,7 +278,7 @@ public class ExperimentUtility {
 
 		configureTickerTapeObserver();
 
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestOrderPricer());
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestLimitOrderPricer());
 
 		stockExchange = new DefaultStockExchange(world,tickerTapeObserver,marketFactory);
 
@@ -293,8 +293,8 @@ public class ExperimentUtility {
 			.build();
 
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
-		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 5, firstTradePrice + 1));
-		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 7, firstTradePrice));
+		danView.placeLimitBuyOrder(new DefaultLimitBuyOrder(dan, lemons, 5, firstTradePrice + 1));
+		danView.placeLimitSellOrder(new DefaultLimitSellOrder(dan, lemons, 7, firstTradePrice));
 
 	}
 

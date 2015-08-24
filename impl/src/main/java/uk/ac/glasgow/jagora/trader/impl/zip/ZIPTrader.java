@@ -3,7 +3,8 @@ package uk.ac.glasgow.jagora.trader.impl.zip;
 import uk.ac.glasgow.jagora.Order;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
+import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
 import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
@@ -17,6 +18,17 @@ import java.util.*;
 import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.INCREASE;
 import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction.REDUCE;
 
+/**
+ * Implementation of Cliff's (1997) Zero Intelligence Plus
+ * (ZIP) Trader.
+ * 
+ * The implementation assumes a limit order driven market.
+ * The algorithm does not account for the effect of
+ * cancelled orders on an agent's stock price.
+ * 
+ * @author tws
+ *
+ */
 public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, TradeListener, OrderListener {
 		
 	private Random random;
@@ -144,12 +156,12 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 
 
 	@Override
-	public void orderEntered(OrderEvent orderEvent) {
-		MarketDatum marketDatum = getMarketDatum(orderEvent.stock);
+	public void limitOrderEvent(LimitOrderEvent limitOrderEvent) {
+		MarketDatum marketDatum = getMarketDatum(limitOrderEvent.stock);
 		
-		Boolean wasOffer = orderEvent.orderDirection == OrderDirection.SELL;
+		Boolean wasOffer = limitOrderEvent.orderDirection == OrderDirection.SELL;
 		
-		marketDatum.updateMarketInformationFollowingOrder(orderEvent.price, wasOffer);
+		marketDatum.updateMarketInformationFollowingOrder(limitOrderEvent.price, wasOffer);
 	}
 
 	@Override
@@ -169,7 +181,9 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	}
 
 	@Override
-	public void orderCancelled(OrderEvent orderEvent) {
-		// TODO Should really factor in cancelled trades.
+	public void marketOrderEntered(MarketOrderEvent marketOrderEvent) {
+		// TODO Account for the effect of market orders
+		// (effectively spread crossing limit orders).
+		
 	}
 }

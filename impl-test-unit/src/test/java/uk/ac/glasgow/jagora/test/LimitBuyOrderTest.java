@@ -2,26 +2,26 @@ package uk.ac.glasgow.jagora.test;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.impl.AbstractBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
 
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-public class BuyOrderTest {
+public class LimitBuyOrderTest {
 	
 	private static final Stock lemons = new Stock("lemons");
 	
-	private AbstractBuyOrder[] limitBuyOrders;
+	private LimitBuyOrder[] limitBuyOrders;
 
 	@Before
 	public void setUp() throws Exception {
-		limitBuyOrders = new AbstractBuyOrder[3];
+		limitBuyOrders = new LimitBuyOrder[3];
 
-		limitBuyOrders[0] = new LimitBuyOrder(null, lemons, 10, 5000l);
-		limitBuyOrders[1] = new LimitBuyOrder(null, lemons, 10, 5000l);
-		limitBuyOrders[2] = new LimitBuyOrder(null, lemons, 10, 4500l);
+		limitBuyOrders[0] = new DefaultLimitBuyOrder(null, lemons, 10, 5000l);
+		limitBuyOrders[1] = new DefaultLimitBuyOrder(null, lemons, 10, 5000l);
+		limitBuyOrders[2] = new DefaultLimitBuyOrder(null, lemons, 10, 4500l);
 	}
 
 	@Test

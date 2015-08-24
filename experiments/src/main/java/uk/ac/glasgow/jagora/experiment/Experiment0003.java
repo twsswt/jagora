@@ -27,7 +27,7 @@ import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
+import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
 import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
@@ -129,7 +129,7 @@ public class Experiment0003 {
 	private void createStockExchange() throws FileNotFoundException {
 		world = new SimpleSerialWorld(maxTickCount);
 		
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestOrderPricer ());
+		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new OldestLimitOrderPricer ());
 		
 		configureTickerTapeObserver();
 		

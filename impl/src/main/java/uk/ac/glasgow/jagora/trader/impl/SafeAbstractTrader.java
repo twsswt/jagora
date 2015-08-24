@@ -8,55 +8,55 @@ import java.util.Map;
 
 public abstract class SafeAbstractTrader extends AbstractTrader {
 
-	protected final List<BuyOrder> openBuyOrders;
-	protected final List<SellOrder> openSellOrders;
+	protected final List<LimitBuyOrder> openBuyOrders;
+	protected final List<LimitSellOrder> openSellOrders;
 
 	public SafeAbstractTrader(String name, Long cash, Map<Stock, Integer> inventory) {
 		super(name, cash, inventory);
-		this.openBuyOrders = new ArrayList<BuyOrder>();
-		this.openSellOrders = new ArrayList<SellOrder>();
+		this.openBuyOrders = new ArrayList<LimitBuyOrder>();
+		this.openSellOrders = new ArrayList<LimitSellOrder>();
 	}
 
-	protected Boolean placeSafeBuyOrder(StockExchangeLevel1View traderView, BuyOrder buyOrder) {
+	protected Boolean placeSafeBuyOrder(StockExchangeLevel1View traderView, LimitBuyOrder limitBuyOrder) {
 		//if you have enough money, you can place the order(that's safe)
 
-		if (buyOrder.getPrice() * buyOrder.getRemainingQuantity() <= getAvailableCash()){
-			traderView.placeBuyOrder(buyOrder); //put it in the exchange book as order
-			openBuyOrders.add(buyOrder);
+		if (limitBuyOrder.getLimitPrice() * limitBuyOrder.getRemainingQuantity() <= getAvailableCash()){
+			traderView.placeLimitBuyOrder(limitBuyOrder); //put it in the exchange book as order
+			openBuyOrders.add(limitBuyOrder);
 			return true;
 		}
 		return false;
 	}
 
-	protected Boolean placeSafeSellOrder(StockExchangeLevel1View traderView, SellOrder sellOrder) {
-		if (sellOrder.getRemainingQuantity() <= getAvailableQuantity(sellOrder.getStock())){
-			openSellOrders.add(sellOrder);
+	protected Boolean placeSafeSellOrder(StockExchangeLevel1View traderView, LimitSellOrder limitSellOrder) {
+		if (limitSellOrder.getRemainingQuantity() <= getAvailableQuantity(limitSellOrder.getStock())){
+			openSellOrders.add(limitSellOrder);
 			
-			traderView.placeSellOrder(sellOrder);
+			traderView.placeLimitSellOrder(limitSellOrder);
 			return true;
 		}
 		return false;
 	}
 	
-	protected void cancelSafeSellOrder(	StockExchangeLevel1View stockExchangeLevel1View, SellOrder sellOrder) {
+	protected void cancelSafeSellOrder(	StockExchangeLevel1View stockExchangeLevel1View, LimitSellOrder limitSellOrder) {
 		
-		stockExchangeLevel1View.cancelSellOrder(sellOrder);			
+		stockExchangeLevel1View.cancelLimitSellOrder(limitSellOrder);			
 		
 		Integer indexToCancel = null;
 		for (int i = 0 ; i < openSellOrders.size(); i++)
-			if (openSellOrders.get(i) == sellOrder)
+			if (openSellOrders.get(i) == limitSellOrder)
 				indexToCancel = i;
 		if (indexToCancel != null)
 			openSellOrders.remove(indexToCancel.intValue());
 	}
 
-	protected void cancelSafeBuyOrder(StockExchangeLevel1View stockExchangeLevel1View, BuyOrder buyOrder) {
+	protected void cancelSafeBuyOrder(StockExchangeLevel1View stockExchangeLevel1View, LimitBuyOrder limitBuyOrder) {
 		
-		stockExchangeLevel1View.cancelBuyOrder(buyOrder);
+		stockExchangeLevel1View.cancelLimitBuyOrder(limitBuyOrder);
 		
 		Integer indexToCancel = null;
 		for (int i = 0 ; i < openBuyOrders.size(); i++)
-			if (openBuyOrders.get(i) == buyOrder)
+			if (openBuyOrders.get(i) == limitBuyOrder)
 				indexToCancel = i;
 		
 		if (indexToCancel != null)
@@ -70,7 +70,7 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	protected Long getAvailableCash() {
 		Long committedCash =
 			openBuyOrders.stream()
-			.mapToLong(buyOrder -> (buyOrder.getPrice() * buyOrder.getRemainingQuantity()))
+			.mapToLong(buyOrder -> (buyOrder.getLimitPrice() * buyOrder.getRemainingQuantity()))
 			.sum();
 		
 		return getCash() - committedCash;

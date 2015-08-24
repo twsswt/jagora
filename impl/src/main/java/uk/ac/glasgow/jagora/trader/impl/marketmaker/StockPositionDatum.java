@@ -1,7 +1,7 @@
 package uk.ac.glasgow.jagora.trader.impl.marketmaker;
 
-import uk.ac.glasgow.jagora.BuyOrder;
-import uk.ac.glasgow.jagora.SellOrder;
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 
 /**
@@ -12,8 +12,8 @@ public class StockPositionDatum {
 	public final Stock stock;
 	public final Integer targetQuantity;
 
-	protected BuyOrder currentBuyOrder = null;
-	protected SellOrder currentSellOrder = null;
+	protected LimitBuyOrder currentBuyOrder = null;
+	protected LimitSellOrder currentSellOrder = null;
 
 	protected Long newBuyPrice = 0l;
 	protected Long newSellPrice = 0l;

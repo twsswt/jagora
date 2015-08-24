@@ -17,10 +17,10 @@ import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.pricer.TradePricer;
-import uk.ac.glasgow.jagora.pricer.impl.OldestOrderPricer;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.pricer.LimitOrderTradePricer;
+import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
@@ -47,11 +47,11 @@ public class Experiment0001 {
 		Stock lemons =
 			new Stock("lemons");
 		
-		TradePricer tradePricer =
-			new OldestOrderPricer();
+		LimitOrderTradePricer limitOrderTradePricer =
+			new OldestLimitOrderPricer();
 		
 		MarketFactory marketFactory = 
-			new ContinuousOrderDrivenMarketFactory(tradePricer);
+			new ContinuousOrderDrivenMarketFactory(limitOrderTradePricer);
 		
 		StockExchangeObservable stockExchangeObservable = 
 			new SerialTickerTapeObserver();
@@ -106,13 +106,13 @@ public class Experiment0001 {
 	
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
 		
-		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 1, 75l));
-		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 1, 75l));
+		danView.placeLimitBuyOrder(new DefaultLimitBuyOrder(dan, lemons, 1, 75l));
+		danView.placeLimitSellOrder(new DefaultLimitSellOrder(dan, lemons, 1, 75l));
 		
 		stockExchange.doClearing();
 		
-		danView.placeBuyOrder(new LimitBuyOrder(dan, lemons, 1, 100l));
-		danView.placeSellOrder(new LimitSellOrder(dan, lemons, 1, 50l));	}
+		danView.placeLimitBuyOrder(new DefaultLimitBuyOrder(dan, lemons, 1, 100l));
+		danView.placeLimitSellOrder(new DefaultLimitSellOrder(dan, lemons, 1, 50l));	}
 	
 	@Test
 	public void test() {

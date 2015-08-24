@@ -2,9 +2,12 @@ package uk.ac.glasgow.jagora.trader.impl.marketmaker;
 
 import static java.lang.Math.round;
 import uk.ac.glasgow.jagora.*;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.OrderEvent;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
+import uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action;
+import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
+import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
@@ -15,6 +18,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import static uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action.PLACED;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.BUY;
+import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
 
 /**
  * This implementation of MarketMaker will only work for a single stock
@@ -107,10 +114,10 @@ public class MarketMaker extends SafeAbstractTrader implements Level2Trader,Trad
 		Integer cashLimit = (int) (getAvailableCash().doubleValue()/positionDatum.newBuyPrice.doubleValue());
 		buyQuantity = Math.min(buyQuantity,cashLimit);
 
-		BuyOrder buyOrder = new LimitBuyOrder
+		DefaultLimitBuyOrder defaultLimitBuyOrder = new DefaultLimitBuyOrder
 				(this,positionDatum.stock,buyQuantity,positionDatum.newBuyPrice);
 
-		positionDatum.currentBuyOrder = placeSafeBuyOrder(level1View,buyOrder) ? buyOrder: null;
+		positionDatum.currentBuyOrder = placeSafeBuyOrder(level1View,defaultLimitBuyOrder) ? defaultLimitBuyOrder: null;
 		//TODO make some sort of exception if null
 
 		if (positionDatum.currentSellOrder != null)
@@ -122,10 +129,10 @@ public class MarketMaker extends SafeAbstractTrader implements Level2Trader,Trad
 			sellQuantity = Math.round(inventory.get(stock)*0.1f);
 		}
 
-		SellOrder sellOrder = new LimitSellOrder
+		DefaultLimitSellOrder defaultLimitSellOrder = new DefaultLimitSellOrder
 				(this, positionDatum.stock,sellQuantity,positionDatum.newSellPrice);
 
-		positionDatum.currentSellOrder = placeSafeSellOrder(level1View,sellOrder) ?sellOrder :null;
+		positionDatum.currentSellOrder = placeSafeSellOrder(level1View,defaultLimitSellOrder) ?defaultLimitSellOrder :null;
 	}
 
 
@@ -200,21 +207,25 @@ public class MarketMaker extends SafeAbstractTrader implements Level2Trader,Trad
 	}
 
 	@Override
-	public void orderEntered(OrderEvent orderEvent) {
-		if (orderEvent.orderDirection == OrderEvent.OrderDirection.BUY) {
-			marketDatum.addBuySideLiquidity(orderEvent.quantity,orderEvent.price);
+	public void limitOrderEvent(LimitOrderEvent limitOrderEvent) {
+		
+		OrderDirection orderDirection = limitOrderEvent.orderDirection;
+		Action action = limitOrderEvent.action;
+		
+		Integer quantity = limitOrderEvent.quantity;
+		Long price = limitOrderEvent.price;
+		
+		if (action.equals(PLACED)){
+			if (orderDirection.equals(BUY)) 
+				marketDatum.addBuySideLiquidity(quantity,price);
+			else 
+				marketDatum.addSellSideLiquidity(quantity,price);
+		} else {
+			if (orderDirection.equals(SELL))
+				marketDatum.removeSellSideLiquidity(quantity, price);
+			else
+				marketDatum.removeBuySideLiquidity(quantity, price);
 		}
-		else {
-			marketDatum.addSellSideLiquidity(orderEvent.quantity,orderEvent.price);
-		}
-	}
-
-	@Override
-	public void orderCancelled(OrderEvent orderEvent) {
-		if (orderEvent.orderDirection == OrderEvent.OrderDirection.SELL)
-			marketDatum.removeSellSideLiquidity(orderEvent.quantity, orderEvent.price);
-		else
-			marketDatum.removeBuySideLiquidity(orderEvent.quantity, orderEvent.price);
 	}
 
 	@Override
@@ -224,6 +235,11 @@ public class MarketMaker extends SafeAbstractTrader implements Level2Trader,Trad
 		marketDatum.removeSellSideLiquidity(tradeExecutionEvent.quantity, tradeExecutionEvent.price);
 
 		//TODO - marketDatum.setLastTradeDirection();
+	}
+
+	@Override
+	public void marketOrderEntered(MarketOrderEvent marketOrderEvent) {
+		// TODO Handle for market orders in liquidity estimates.
 	}
 
 }

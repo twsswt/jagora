@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
-import uk.ac.glasgow.jagora.impl.LimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.LimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.impl.random.HighFrequencyRandomTrader;
 import uk.ac.glasgow.jagora.trader.impl.random.HighFrequencyRandomTraderBuilder;
 import static org.easymock.EasyMock.*;
@@ -42,15 +42,13 @@ public class HighFrequencyTraderRandomTest {
 			.setSellRangeDatum(lemons, 1, 100, 0.05, 0.05)
 			.build();
 
+		mockExchange.registerTradeListener(trader);
 		expect(mockExchange.getLastKnownBestOfferPrice(lemons)).andReturn(150l);
+		mockExchange.placeLimitSellOrder(new DefaultLimitSellOrder(trader, lemons, 97,158l));
+		mockExchange.registerTradeListener(trader);
+		mockExchange.cancelLimitSellOrder(new DefaultLimitSellOrder(trader,lemons, 97,158l));
 		expect(mockExchange.getLastKnownBestBidPrice(lemons)).andReturn(100l);
-
-		mockExchange.registerTradeListener(trader);
-		mockExchange.registerTradeListener(trader);
-
-		mockExchange.placeSellOrder(new LimitSellOrder(trader, lemons, 97,145l));
-		mockExchange.cancelSellOrder(new LimitSellOrder(trader,lemons, 97,145l));
-		mockExchange.placeBuyOrder(new LimitBuyOrder(trader,lemons,10, 95l));
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(trader,lemons,10, 95l));
 
 		replay(mockExchange);
 

@@ -1,21 +1,18 @@
 package uk.ac.glasgow.jagora.impl;
 
-import uk.ac.glasgow.jagora.SellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
+import uk.ac.glasgow.jagora.trader.StopLossOrder;
 import uk.ac.glasgow.jagora.trader.Trader;
 
 /**
- * 
  * @author Ivelin
+ * @author tws
  *
  */
-public class StopLossSellOrder implements TradeListener {
-	
+public class StopLossSellOrder implements StopLossOrder {
+
 	private final Trader trader;
-	private final StockExchangeLevel1View stockExchangeLevel1View;
 
 	private final Long stopPrice;
 	private final Stock stock;
@@ -24,9 +21,8 @@ public class StopLossSellOrder implements TradeListener {
 	private Boolean orderExecuted = false;
 
 	public StopLossSellOrder(
-		Trader trader, StockExchangeLevel1View stockExchangeLevel1View, Long stopPrice, Stock stock, Integer quantity) {
+		Trader trader,Long stopPrice, Stock stock, Integer quantity) {
 		this.trader = trader;
-		this.stockExchangeLevel1View = stockExchangeLevel1View;
 		this.stopPrice = stopPrice;
 		this.stock = stock;
 		this.quantity = quantity;
@@ -34,19 +30,25 @@ public class StopLossSellOrder implements TradeListener {
 	}
 
 	@Override
-	public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
-		Long eventPrice = tradeExecutionEvent.price;
+	public void executeOrder(StockExchangeLevel1View traderView) {
+		if (!orderExecuted){
+			MarketSellOrder marketSellOrder = 
+				new MarketSellOrder(trader, stock, quantity);
 		
-		if (!orderExecuted && eventPrice <= stopPrice){
-			SellOrder sellOrder = 
-				new MarketSellOrder(trader, stock, quantity, stockExchangeLevel1View);
-			
-			stockExchangeLevel1View.placeSellOrder(sellOrder);
+			traderView.placeMarketSellOrder(marketSellOrder);
 			
 			orderExecuted = true;
-
 		}
+	}
 
+	@Override
+	public Boolean priceThresholdCrossed(Long marketPrice) {		
+		return marketPrice <= stopPrice;
+	}
+
+	@Override
+	public Stock getStock() {
+		return stock;
 	}
 
 }

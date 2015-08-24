@@ -46,11 +46,11 @@ public class DefaultStockExchange implements StockExchange{
 				market.doClearing());
 	}
 	
-	public List<BuyOrder> getBuyOrders(Stock stock){
+	public List<LimitBuyOrder> getBuyOrders(Stock stock){
 		return getMarket(stock).getBuyOrders();
 	}
 	
-	public List<SellOrder> getSellOrders(Stock stock){
+	public List<LimitSellOrder> getSellOrders(Stock stock){
 		return getMarket(stock).getSellOrders();
 	}
 		
@@ -58,7 +58,7 @@ public class DefaultStockExchange implements StockExchange{
 	public StockExchangeLevel1View createLevel1View() {
 		return new DefaultLevel1View ();
 	}
-	//can't this be static?
+
 	private class DefaultLevel1View implements StockExchangeLevel1View {
 
 		@Override
@@ -82,33 +82,47 @@ public class DefaultStockExchange implements StockExchange{
 		}	
 
 		@Override
-		public void placeBuyOrder(BuyOrder buyOrder) {
-			TickEvent<BuyOrder> orderEvent =
-				getMarket(buyOrder.getStock()).recordBuyOrder(buyOrder);
-			stockExchangeObservable.notifyOrderListeners(orderEvent);		
+		public void placeLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
+			TickEvent<LimitBuyOrder> orderEvent =
+				getMarket(limitBuyOrder.getStock()).recordLimitBuyOrder(limitBuyOrder);
+			stockExchangeObservable.notifyOrderListenersOfLimitOrder(orderEvent);		
 		}
 
 		@Override
-		public void placeSellOrder(SellOrder sellOrder) {
-			TickEvent<SellOrder> orderEvent = 
-				getMarket(sellOrder.getStock()).recordSellOrder(sellOrder);	
-			stockExchangeObservable.notifyOrderListeners(orderEvent);
-		}
-
-        //Important if we want to implement the hypothetical crash
-		@Override
-		public void cancelBuyOrder(BuyOrder buyOrder) {
-			TickEvent<BuyOrder> orderEvent =
-					getMarket(buyOrder.getStock()).cancelBuyOrder(buyOrder);
-			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
+		public void placeLimitSellOrder(LimitSellOrder limitSellOrder) {
+			TickEvent<LimitSellOrder> orderEvent = 
+				getMarket(limitSellOrder.getStock()).recordLimitSellOrder(limitSellOrder);	
+			stockExchangeObservable.notifyOrderListenersOfLimitOrder(orderEvent);
 		}
 
 		@Override
-		public void cancelSellOrder(SellOrder sellOrder){
-			TickEvent<SellOrder> orderEvent =
-				getMarket(sellOrder.getStock()).cancelSellOrder(sellOrder);
-			stockExchangeObservable.notifyOrderListenersOfCancellation(orderEvent);
+		public void cancelLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
+			TickEvent<LimitBuyOrder> orderEvent =
+					getMarket(limitBuyOrder.getStock()).cancelLimitBuyOrder(limitBuyOrder);
+			stockExchangeObservable.notifyOrderListenersOfLimitOrderCancellation(orderEvent);
 		}
+
+		@Override
+		public void cancelLimitSellOrder(LimitSellOrder limitSellOrder){
+			TickEvent<LimitSellOrder> orderEvent =
+				getMarket(limitSellOrder.getStock()).cancelLimitSellOrder(limitSellOrder);
+			stockExchangeObservable.notifyOrderListenersOfLimitOrderCancellation(orderEvent);
+		}
+		
+		@Override
+		public void placeMarketBuyOrder(MarketBuyOrder marketBuyOrder) {
+			TickEvent<MarketBuyOrder> orderEvent =
+				getMarket(marketBuyOrder.getStock()).recordMarketBuyOrder(marketBuyOrder);
+			stockExchangeObservable.notifyOrderListenersOfMarketOrder(orderEvent);
+		}
+
+		@Override
+		public void placeMarketSellOrder(MarketSellOrder marketSellOrder) {
+			TickEvent<MarketSellOrder> orderEvent =
+				getMarket(marketSellOrder.getStock()).recordMarketSellOrder(marketSellOrder);
+			stockExchangeObservable.notifyOrderListenersOfMarketOrder(orderEvent);
+		}
+
 		
 		@Override
 		public void registerTradeListener(TradeListener tradeListener) {
