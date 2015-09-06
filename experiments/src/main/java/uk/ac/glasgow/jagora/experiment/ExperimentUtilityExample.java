@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
-import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBasicBuilder;
+import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBuilder;
 
 import java.util.Set;
 
@@ -21,14 +21,10 @@ public class ExperimentUtilityExample  extends  ExperimentUtility{
 		String name = createTraderName(MarketMaker.class,50);
 
 		Level2Trader trader =
-			new MarketMakerBasicBuilder()
+			new MarketMakerBuilder()
 				.setName(name)
 				.setCash(initialLevel2TraderCash)
-				.setSeed(seed)
-				.setInventoryAdjustmentInfluence(marketMakerInventoryAdjustmentInfluence)
-				.setLiquidityAdjustmentInfluence(marketMakerLiquidityAdjustmentInfluence)
-				.setSpread(marketMakerSpread)
-				.setTargetStockQuantity(lemons, 1000)
+				.addMarketPositionSpecification(lemons, 1000, 400)
 				.addStock(lemons,1000)
 				.build();
 

@@ -37,9 +37,10 @@ public class BrokerTest extends EasyMockSupport {
 		
 		broker = new DefaultBroker("broker", 0l, new HashMap<Stock,Integer>());
 		
-		StubTraderBuilder stubTraderBuilder = new StubTraderBuilder()
-		.setCash(100l)
-		.addStock(lemons, 10);
+		StubTraderBuilder stubTraderBuilder = 
+			new StubTraderBuilder()
+				.setCash(100l)
+				.addStock(lemons, 10);
 		
 		alice = stubTraderBuilder.setName("alice").build();
 		bob = stubTraderBuilder.setName("bob").build();

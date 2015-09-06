@@ -31,16 +31,18 @@ public class MarginalTraderTest extends EasyMockSupport {
 				
 		lemons = new Stock("lemons");
 
-		alice = new MarginalTraderBuilder("alice",100l,1)
+		alice = new MarginalTraderBuilder()
+			.setName("alice")
+			.setCash(100l)
 			.addStock(lemons, 10)
+			.setSeed(1)
 			.build();
 	}
 
 	@Test
 	public void test() {	
 		
-		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(alice, lemons, 5, 2l));
-		
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(alice, lemons, 50, 2l));		
 		expect(mockExchange.getBestOfferPrice(lemons)).andReturn(1l);
 		
 		replayAll();

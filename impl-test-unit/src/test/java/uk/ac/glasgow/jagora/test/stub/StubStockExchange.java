@@ -137,6 +137,20 @@ public class StubStockExchange implements StockExchange {
 
 		}
 
+		@Override
+		public List<? extends LimitOrder> getBuyLimitOrders(
+			Stock stock) {
+			// does nothing
+			return null;
+		}
+
+		@Override
+		public List<? extends LimitOrder> getSellLimitOrders(
+			Stock stock) {
+			// does nothing
+			return null;
+		}
+
 	}
 
 }

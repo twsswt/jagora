@@ -1,245 +1,190 @@
 package uk.ac.glasgow.jagora.trader.impl.marketmaker;
 
-import static java.lang.Math.round;
-import uk.ac.glasgow.jagora.*;
+import static java.lang.Math.max;
+import static java.lang.String.format;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import uk.ac.glasgow.jagora.LimitBuyOrder;
+import uk.ac.glasgow.jagora.LimitOrder;
+import uk.ac.glasgow.jagora.LimitSellOrder;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
-import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
-import uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action;
-import uk.ac.glasgow.jagora.ticker.MarketOrderEvent;
-import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
-import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
-import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
-import static uk.ac.glasgow.jagora.ticker.LimitOrderEvent.Action.PLACED;
-import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.BUY;
-import static uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection.SELL;
-
 /**
- * This implementation of MarketMaker will only work for a single stock
- * on a single exchange!- multiple stocks and exchanges are  confusing the algorithm.
- * The provided stockWarehouse should be
- * consistent throughout the whole usage of the environment to ensure proper
- * functioning of the algorithm.
+ * Implements an altruistic market making algorithm that (a)
+ * 'guarantees' the presence of a bid-ask order pair on a
+ * managed market and (b) attempts to maintain a constant
+ * share on the market.
+ * 
+ * @author Tim
+ *
  */
-public class MarketMaker extends SafeAbstractTrader implements Level2Trader,TradeListener, OrderListener {
+public class MarketMaker extends SafeAbstractTrader  implements Level2Trader {
 
-	private final Stock stock;
+	/**
+	 * Manages the market makers position for a single stock.
+	 */
+	class MarketPosition {
 
-	private Random random;
+		public final MarketPositionSpecification marketPositionSpecification;
+					
+		private LimitBuyOrder currentLimitBuyOrder;
+		private LimitSellOrder currentLimitSellOrder;
 
-	private MarketDatum marketDatum;
-	private StockPositionDatum positionDatum ;
+		protected MarketPosition(MarketPositionSpecification marketPositionSpecification) {
+			this.marketPositionSpecification = marketPositionSpecification;
+		}		
 
-	private Set<StockExchangeLevel2View> registered;
+		// Step 1. Calculate the current midpoint for the stock.
+		
+		// Step 2. Calculate amount of stock required for order to meet liquidity targets.
+		
+		// Step 3. Work out how much of order you actually want filled based on inventory targets.
+				
+		// Step 4. Calculate order price based on size of order.  An illiquid market should command a high price.
+				
+		public void updateMarketPosition (StockExchangeLevel2View level2View){
+			
+			updateBuyPosition(level2View);
+			updateSellPosition(level2View);
+		}
 
-	private Double spreadPercentage;
+		private void updateBuyPosition(
+			StockExchangeLevel2View level2View) {
 
-	private Double inventoryAdjustmentInfluence;
-	private Double liquidityAdjustmentInfluence;
+			Integer targetLiquidity = marketPositionSpecification.targetLiquidity;
+			Integer targetInventory = marketPositionSpecification.targetQuantity;
+			Stock stock = marketPositionSpecification.stock;
+			
+			Long bestBidPrice = level2View.getBestBidPrice(stock);
+			if (bestBidPrice == null) bestBidPrice = 1l;
+			
+			Integer buySideDepth = getBuySideDepth(level2View, 1l);
+						
+			Integer quantityNeededForTargetLiquidity = targetLiquidity - buySideDepth;
+			
+			Integer quantityNeededForTargetInventory = targetInventory - inventory.get(stock);
+			
+			Integer quantity =
+				max(1, max (quantityNeededForTargetLiquidity, quantityNeededForTargetInventory));
+			
+			Double priceFactor =
+				1.0 - (double)(quantity - quantityNeededForTargetInventory) / targetLiquidity;
+						
+			Long price = 
+				max(1l, (long)(bestBidPrice * priceFactor));
 
+			if (currentLimitBuyOrder != null)
+				level2View.cancelLimitBuyOrder(currentLimitBuyOrder);
+			currentLimitBuyOrder = new DefaultLimitBuyOrder(MarketMaker.this, stock, quantity, price);
+			level2View.placeLimitBuyOrder(currentLimitBuyOrder);
+		}
+
+		private void updateSellPosition(
+			StockExchangeLevel2View level2View) {
+			
+			Integer targetLiquidity = marketPositionSpecification.targetLiquidity;
+			Integer targetInventory = marketPositionSpecification.targetQuantity;
+			Stock stock = marketPositionSpecification.stock;
+			
+			Long bestOfferPrice = level2View.getBestOfferPrice(stock);
+			if (bestOfferPrice == null) bestOfferPrice = Long.MAX_VALUE;
+			
+			Integer sellSideDepth = getSellSideDepth(level2View, Long.MAX_VALUE);
+						
+			Integer quantityNeededForTargetLiquidity = targetLiquidity - sellSideDepth;
+
+			Integer quantityNeededForTargetInventory = inventory.get(stock) - targetInventory;
+			
+			Integer quantity = 
+				max( 1, max (quantityNeededForTargetLiquidity, quantityNeededForTargetInventory));
+						
+			Double priceFactor = 1.0 + (double)(quantity - quantityNeededForTargetInventory) / targetLiquidity;
+						
+			Long price = (long)(bestOfferPrice * priceFactor);
+			
+			if (currentLimitSellOrder != null)
+				level2View.cancelLimitSellOrder(currentLimitSellOrder);
+
+			currentLimitSellOrder = new DefaultLimitSellOrder(MarketMaker.this, stock, quantity, price);
+			level2View.placeLimitSellOrder(currentLimitSellOrder);
+		}
+		
+		@Override
+		public String toString() {
+			
+			String template = "[buy at=%s, sell at=%d]";
+			
+			return format(template, currentLimitBuyOrder, currentLimitSellOrder);
+		}
+		
+		private Integer getBuySideDepth(StockExchangeLevel2View level2View, Long price) {	
+			
+			Stock stock = marketPositionSpecification.stock;
+			
+			return getMarketDepth(
+				level2View.getBuyLimitOrders(stock), entry -> entry.getLimitPrice() >= price);
+		}
+		
+		private Integer getSellSideDepth(StockExchangeLevel2View level2View, Long price) {		
+			
+			Stock stock = marketPositionSpecification.stock;
+			
+			return getMarketDepth(
+				level2View.getSellLimitOrders(stock), entry -> entry.getLimitPrice() <= price);
+		}	
+
+		private Integer getMarketDepth(
+			List<? extends LimitOrder> side,
+			Predicate<? super LimitOrder> predicate) {
+			
+			return side
+				.stream()
+				.filter(predicate)
+				.mapToInt(entry-> entry.getRemainingQuantity())
+				.sum();
+		}
+
+	}
+
+	private Map<Stock,MarketPosition> marketPositions;
 
 	MarketMaker (
 		String name, Long cash, Map<Stock, Integer> inventory,
-		Stock stock, Integer targetQuantity,
-		Random random, Double spreadPercentage,
-		Double inventoryAdjustmentInfluence,
-		Double liquidityAdjustmentInfluence){
+		Set<MarketPositionSpecification> marketPositionSpecifications){
 
 		super(name,cash,inventory);
-
-		this.spreadPercentage = spreadPercentage;
-		this.random = random;
-
-		this.stock = stock;
 		
-		marketDatum = new MarketDatum();
-		
-		positionDatum =
-			new StockPositionDatum(stock, targetQuantity);
-
-		registered = new HashSet<StockExchangeLevel2View>();
-
-		this.inventoryAdjustmentInfluence = inventoryAdjustmentInfluence;
-		this.liquidityAdjustmentInfluence = liquidityAdjustmentInfluence;
-
-	}
-
-	/**
-	 * At the moments some trades must have occurred before speak works properly
-	 * @param level2View
-	 */
-	@Override
-	public void speak(StockExchangeLevel2View level2View){
-		if (!registered.contains(level2View)) register (level2View);
-
-		//update all positions on market
-		updateMarketPositions();
-
-		changeMarketPosition(level2View);
-	}
-
-
-	private void register(StockExchangeLevel2View level2View) {
-		level2View.registerOrderListener(this);
-		level2View.registerTradeListener(this);
-		registered.add(level2View);
-	}
-
-	private void changeMarketPosition(StockExchangeLevel1View level1View) {
-
-		//if some of these positions are not set yet don't place anything on the market
-		if (positionDatum.newBuyPrice == 0l || positionDatum.newSellPrice == 0l)
-			return;
-
-
-		if (positionDatum.currentBuyOrder != null)
-			cancelSafeBuyOrder(level1View,positionDatum.currentBuyOrder);
-
-		Integer buyQuantity = positionDatum.targetQuantity;
-		
-		if (positionDatum.inventoryAdjustment < -2) {
-			//if there' a big imbalance provide a stub quote to preserve inventory
-			buyQuantity = Math.round(positionDatum.targetQuantity*0.01f);
-		}
-		
-		Integer cashLimit = (int) (getAvailableCash().doubleValue()/positionDatum.newBuyPrice.doubleValue());
-		buyQuantity = Math.min(buyQuantity,cashLimit);
-
-		DefaultLimitBuyOrder defaultLimitBuyOrder = new DefaultLimitBuyOrder
-				(this,positionDatum.stock,buyQuantity,positionDatum.newBuyPrice);
-
-		positionDatum.currentBuyOrder = placeSafeBuyOrder(level1View,defaultLimitBuyOrder) ? defaultLimitBuyOrder: null;
-		//TODO make some sort of exception if null
-
-		if (positionDatum.currentSellOrder != null)
-			cancelSafeSellOrder(level1View,positionDatum.currentSellOrder);
-
-		Integer sellQuantity = inventory.get(stock);
-		if (positionDatum.inventoryAdjustment > 0.66){
-			//if there' a big imbalance provide a stub quote to preserve inventory
-			sellQuantity = Math.round(inventory.get(stock)*0.1f);
-		}
-
-		DefaultLimitSellOrder defaultLimitSellOrder = new DefaultLimitSellOrder
-				(this, positionDatum.stock,sellQuantity,positionDatum.newSellPrice);
-
-		positionDatum.currentSellOrder = placeSafeSellOrder(level1View,defaultLimitSellOrder) ?defaultLimitSellOrder :null;
-	}
-
-
-	private void updateMarketPositions () {
-
-		//if no available information about last trade, don't place orders yet
-		if (marketDatum.getLastPriceTraded() == null)
-			return;
-
-		positionDatum.spread = Math.round(spreadPercentage*marketDatum.getLastPriceTraded().doubleValue());
-
-
-		Long priceLiquidityAdjustment = liquidityPriceCalculation();
-
-
-		Long inventoryPriceAdjustment = inventoryPriceCalculation();
-
-		if (marketDatum.lastTradeWasSell()) {
-			positionDatum.setNewBuyPrice (marketDatum.getLastPriceTraded() - positionDatum.spread
-					+ priceLiquidityAdjustment + inventoryPriceAdjustment);
-
-			positionDatum.setNewSellPrice (marketDatum.getLastPriceTraded() + positionDatum.spread
-			+ inventoryPriceAdjustment);
-		}
-		else {
-			positionDatum.setNewBuyPrice (marketDatum.getLastPriceTraded() - positionDatum.spread
-			+ inventoryPriceAdjustment);
-
-			positionDatum.setNewSellPrice(marketDatum.getLastPriceTraded() + positionDatum.spread +
-					priceLiquidityAdjustment + inventoryPriceAdjustment);
-		}
-
-		if (positionDatum.newBuyPrice >= positionDatum.newSellPrice)
-			fixPriceAnomalies();
-
-	}
-
-	private Long liquidityPriceCalculation () {
-	
-		Integer totalBuySideLiquidity = marketDatum.getTotalBuySideDepth();
-		Integer totalSellSideLiquidity = marketDatum.getTotalSellSideDepth();
-		
-		Double liquidityAdjustment = (totalBuySideLiquidity - totalSellSideLiquidity) /
-			(double) totalBuySideLiquidity;
+		marketPositions = new HashMap<Stock,MarketPosition>();
 				
-
-		return round(
-			liquidityAdjustment * positionDatum.spread * random.nextDouble() * liquidityAdjustmentInfluence);
-	}
-
-	private Long inventoryPriceCalculation () {
+		marketPositionSpecifications
+			.stream()
+			.forEach(mps -> marketPositions.put(mps.stock, new MarketPosition(mps))); 
 		
-		Double inventoryAdjustment =
-				(positionDatum.targetQuantity - inventory.get(positionDatum.stock) )
-						/ positionDatum.targetQuantity.doubleValue();
-		
-		positionDatum.setInventoryAdjustment(inventoryAdjustment);
-		
-		Double toReturn =
-			inventoryAdjustment * positionDatum.spread.doubleValue() * random.nextDouble() * inventoryAdjustmentInfluence;
-
-		return  round(toReturn);
-	}
-
-	private void fixPriceAnomalies () {
-		//isolate the intervening price and fix it
-		if (positionDatum.newSellPrice < marketDatum.getLastPriceTraded())
-			positionDatum.newSellPrice = positionDatum.newBuyPrice + 1l;
-		else
-			positionDatum.newBuyPrice = positionDatum.newSellPrice - 1l;
-
 	}
 
 	@Override
-	public void limitOrderEvent(LimitOrderEvent limitOrderEvent) {
-		
-		OrderDirection orderDirection = limitOrderEvent.orderDirection;
-		Action action = limitOrderEvent.action;
-		
-		Integer quantity = limitOrderEvent.quantity;
-		Long price = limitOrderEvent.price;
-		
-		if (action.equals(PLACED)){
-			if (orderDirection.equals(BUY)) 
-				marketDatum.addBuySideLiquidity(quantity,price);
-			else 
-				marketDatum.addSellSideLiquidity(quantity,price);
-		} else {
-			if (orderDirection.equals(SELL))
-				marketDatum.removeSellSideLiquidity(quantity, price);
-			else
-				marketDatum.removeBuySideLiquidity(quantity, price);
-		}
-	}
+	public void speak(StockExchangeLevel2View level2View) {
+		// TODO Auto-generated method stub
+		// If the market maker can see the opportunity for free profit by intervening in a buy/sell
+				// then they should take it.
+				
+		marketPositions
+			.entrySet()
+			.stream()
+			.map(entry -> entry.getValue())
+			.forEach(marketPosition -> marketPosition.updateMarketPosition(level2View));
 
-	@Override
-	public void tradeExecuted(TradeExecutionEvent tradeExecutionEvent) {
-		marketDatum.setLastPriceTraded(tradeExecutionEvent.price);
-		marketDatum.removeBuySideLiquidity(tradeExecutionEvent.quantity, tradeExecutionEvent.price);
-		marketDatum.removeSellSideLiquidity(tradeExecutionEvent.quantity, tradeExecutionEvent.price);
-
-		//TODO - marketDatum.setLastTradeDirection();
-	}
-
-	@Override
-	public void marketOrderEntered(MarketOrderEvent marketOrderEvent) {
-		// TODO Handle for market orders in liquidity estimates.
 	}
 
 }
+

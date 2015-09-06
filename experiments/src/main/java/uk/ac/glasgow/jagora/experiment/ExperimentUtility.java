@@ -17,7 +17,7 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
-import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBasicBuilder;
+import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBuilder;
 import uk.ac.glasgow.jagora.trader.impl.random.*;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
@@ -98,6 +98,7 @@ public class ExperimentUtility {
 	protected Map<Long,Integer> delayedSellOrders = new HashMap<>();
 
 	protected Integer stockQuantity = 0;
+	protected Integer lemonsLiquidity = 0;
 
 
 	public void createExperiment() throws Exception{
@@ -153,14 +154,10 @@ public class ExperimentUtility {
 			String name = createTraderName(MarketMaker.class,i);
 
 			Level2Trader trader =
-					new MarketMakerBasicBuilder()
+					new MarketMakerBuilder()
 							.setName(name)
 							.setCash(initialLevel2TraderCash)
-							.setSeed(seed)
-							.setInventoryAdjustmentInfluence(marketMakerInventoryAdjustmentInfluence)
-							.setLiquidityAdjustmentInfluence(marketMakerLiquidityAdjustmentInfluence)
-							.setSpread(marketMakerSpread)
-							.setTargetStockQuantity(lemons, lemonsQuantity)
+							.addMarketPositionSpecification(lemons, lemonsQuantity, lemonsLiquidity )
 							.addStock(lemons, marketMakerQuantity)
 							.build();
 

@@ -1,6 +1,10 @@
 package uk.ac.glasgow.jagora.test;
 
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,15 +16,9 @@ import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.test.stub.StubTrader;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
-import uk.ac.glasgow.jagora.ticker.OrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.AbstractStockExchangeObservable;
-import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.world.TickEvent;
-
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class StockExchangeObservableTest {
 
@@ -30,30 +28,26 @@ public class StockExchangeObservableTest {
 	StubTrader bruce;
 	Stock lemons = new Stock("lemons");
 
-	OrderListener orderListener = new OutputStreamOrderListener(System.out);
-
 	@Before
 	public void setUp() {
 		stockExchangeObservable = new SerialTickerTapeObserver();
 
 		alice = new StubTraderBuilder()
-				.setName("alice")
-				.setCash(50000l)
-				.addStock(lemons,1000)
-				.build();
+			.setName("alice")
+			.setCash(50000l)
+			.addStock(lemons,1000)
+			.build();
 
 		bruce = new StubTraderBuilder()
-				.setName("bruce")
-				.setCash(50000l)
-				.addStock(lemons,1000)
-				.build();
+			.setName("bruce")
+			.setCash(50000l)
+			.addStock(lemons,1000)
+			.build();
 
 	}
 
 	@Test
 	public void testCancellationBook () {
-
-		stockExchangeObservable.registerOrderListener(orderListener);
 
 		LimitSellOrder limitSellOrder = new DefaultLimitSellOrder(alice, lemons, 1000, 100l);
 		LimitBuyOrder limitBuyOrder = new DefaultLimitBuyOrder(bruce,lemons, 1000, 100l );

@@ -1,5 +1,9 @@
 package uk.ac.glasgow.jagora.engine.test;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,12 +14,11 @@ import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
-import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.pricer.impl.SellLimitOrderPricer;
 import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
@@ -23,10 +26,6 @@ import uk.ac.glasgow.jagora.trader.impl.random.RandomTrader;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
-
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 
 public class DelayWorldTest {
 	private World world;
@@ -78,8 +77,6 @@ public class DelayWorldTest {
 
 			traders.add(randomTrader);
 		}
-
-		stockExchange.createLevel1View().registerTradeListener(new OutputStreamTradeListener(System.out));
 
 		engine = new DelayableSerialRandomEngineBuilder()
 				.setWorld(world)

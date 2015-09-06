@@ -33,7 +33,7 @@ import uk.ac.glasgow.jagora.world.World;
  */
 public class ContinuousOrderDrivenMarket implements Market {
 
-	public final Stock stock;
+	private final Stock stock;
 	public final World world;
 
 	private final LimitOrderBook<LimitSellOrder> limitSellOrderBook;
@@ -156,12 +156,12 @@ public class ContinuousOrderDrivenMarket implements Market {
 	}
 
 	@Override
-	public List<LimitBuyOrder> getBuyOrders() {
+	public List<LimitBuyOrder> getBuyLimitOrders() {
 		return limitBuyOrderBook.getOpenOrders();
 	}
 
 	@Override
-	public List<LimitSellOrder> getSellOrders() {
+	public List<LimitSellOrder> getSellLimitOrders() {
 		return limitSellOrderBook.getOpenOrders();
 	}
 
@@ -190,5 +190,10 @@ public class ContinuousOrderDrivenMarket implements Market {
 	@Override
 	public Long getLastKnownBestOfferPrice() {
 		return limitSellOrderBook.getLastKnownBestPrice();
+	}
+
+	@Override
+	public Stock getStock() {
+		return stock;
 	}
 }

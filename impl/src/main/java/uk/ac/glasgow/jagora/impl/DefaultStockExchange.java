@@ -20,19 +20,21 @@ public class DefaultStockExchange implements StockExchange{
 	
 	private final StockExchangeObservable stockExchangeObservable;
 		
-	public DefaultStockExchange (World world, StockExchangeObservable stockExchangeObservable,
-								 MarketFactory marketFactory){
+	public DefaultStockExchange (
+		World world,
+		StockExchangeObservable stockExchangeObservable,
+		MarketFactory marketFactory){
+		
 		this.world = world;
 		this.marketFactory = marketFactory;
 		this.stockExchangeObservable = stockExchangeObservable;
-		markets = new HashMap<Stock,Market>();
+		this.markets = new HashMap<Stock,Market>();
 	}
 
 	private Market getMarket(Stock stock) {
 		Market market = markets.get(stock);
 		
 		if (market == null){
-			//implemented this way to keep old experiments working - market should not fail
 			market = marketFactory.createOrderDrivenMarket(stock, world);
 			markets.put(stock, market);
 		}
@@ -47,11 +49,11 @@ public class DefaultStockExchange implements StockExchange{
 	}
 	
 	public List<LimitBuyOrder> getBuyOrders(Stock stock){
-		return getMarket(stock).getBuyOrders();
+		return getMarket(stock).getBuyLimitOrders();
 	}
 	
 	public List<LimitSellOrder> getSellOrders(Stock stock){
-		return getMarket(stock).getSellOrders();
+		return getMarket(stock).getSellLimitOrders();
 	}
 		
 	@Override
@@ -146,6 +148,16 @@ public class DefaultStockExchange implements StockExchange{
 		@Override
 		public void registerOrderListener(OrderListener orderListener) {
 			stockExchangeObservable.registerOrderListener(orderListener);
+		}
+
+		@Override
+		public List<? extends LimitOrder> getBuyLimitOrders(Stock stock) {
+			return getMarket(stock).getBuyLimitOrders();
+		}
+
+		@Override
+		public List<? extends LimitOrder> getSellLimitOrders(Stock stock) {
+			return getMarket(stock).getBuyLimitOrders();
 		}
 
 	}
