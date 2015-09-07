@@ -15,13 +15,17 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
  * trades. Notification is also asynchronous to prevent
  * blocking by registrants.
  * 
- * This implementation is rather naive and needs to be
- * properly re-written using executors.
+ * 
  * 
  * @author Tim
  *
  */
 public class ThreadedStockExchangeObservable extends AbstractStockExchangeObservable {
+	/*
+	 * TODO This implementation is rather naive and needs to be
+	 * properly re-written using executors.
+	 */
+	
 	
 	private Set<Thread> threads;
 	
@@ -79,7 +83,6 @@ public class ThreadedStockExchangeObservable extends AbstractStockExchangeObserv
 			try {
 				t.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		threads = new HashSet<Thread>();
