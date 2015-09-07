@@ -1,96 +1,74 @@
 package uk.ac.glasgow.jagora.engine.test;
 
+import static org.easymock.EasyMock.expect;
+
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import uk.ac.glasgow.jagora.MarketFactory;
-import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
-import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
-import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
-import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.pricer.impl.SellLimitOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
+import uk.ac.glasgow.jagora.engine.impl.DelayedExchangeLevel1View;
+import uk.ac.glasgow.jagora.engine.impl.SerialDelayEngine;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
-import uk.ac.glasgow.jagora.trader.Trader;
-import uk.ac.glasgow.jagora.trader.impl.random.RandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.random.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
-import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
-public class DelayWorldTest {
+public class DelayWorldTest extends EasyMockSupport{
+		
+	@Rule
+	public EasyMockRule rule = new EasyMockRule(this);
+	
+	@Mock
 	private World world;
-	private Stock lemons;
+	
+	@Mock
 	private StockExchange stockExchange;
+	
+	@Mock
+	private Level1Trader dan;
+	
+	private SerialDelayEngine engine;
 
-	private SerialTickerTapeObserver tickerTapeObserver;
-
-	private Long numberOfTraderActions = 50l;
-	private Integer seed = 1;
-	private int numberOfTraders = 10;
-	private Long initialTraderCash = 10000000l;
-	private TradingEngine engine;
+	@Mock
+	private StockExchangeLevel1View traderView;
+	
 
 	@Before
 	public void setUp() throws Exception {
-		world = new SimpleSerialWorld(numberOfTraderActions);
-		lemons = new Stock("lemons");
-
-		MarketFactory marketFactory = new ContinuousOrderDrivenMarketFactory(new SellLimitOrderPricer());
-
-		tickerTapeObserver = new SerialTickerTapeObserver();
-
-		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
-
-		Random r = new Random(seed);
-
-		Trader dan = new StubTraderBuilder()
-			.setName("stub")
-			.setCash(initialTraderCash)
-			.addStock(lemons, 10).build();
-
-		StockExchangeLevel1View danView = stockExchange.createLevel1View();
-		danView.placeLimitBuyOrder(new DefaultLimitBuyOrder(dan, lemons, 5, 1001l));
-		danView.placeLimitSellOrder(new DefaultLimitSellOrder(dan, lemons, 5, 999l));
 
 		Set<Level1Trader> traders = new HashSet<Level1Trader>();
-
-		for (int i = 0 ; i < numberOfTraders ; i++){
-			RandomTrader randomTrader =
-					new RandomTraderBuilder()
-						.setName("trader["+i+"]")
-						.setCash(initialTraderCash)
-						.setSeed(r.nextInt())
-						.setBuyOrderRange(lemons, 1, 100, -5l, +5l)
-						.setSellOrderRange(lemons, 1, 100, -5l, +5l)
-						.addStock(lemons, 1000)
-						.build();
-
-			traders.add(randomTrader);
-		}
+		traders.add(dan);
 
 		engine = new DelayableSerialRandomEngineBuilder()
-				.setWorld(world)
-				.setSeed(seed)
-				.addStockExchange(stockExchange)
-				.addTraders(traders)
-				.setStandardDelay(5l)
-				.build();
+			.setWorld(world)
+			.setStockExchange(stockExchange)
+			.addTraders(traders)
+			.setStandardDelay(5l)
+			.build();
 	}
 
 	@Test
 	public void testEngineRunningCorrectly(){
+		
+		expect(world.isAlive()).andReturn(true);
+		expect(stockExchange.createLevel1View()).andReturn(traderView);
+		
+		expect(world.getCurrentTick()).andReturn(1l);
+		dan.speak(new DelayedExchangeLevel1View(traderView, 6l));
+		stockExchange.doClearing();
+		expect(world.isAlive()).andReturn(false);
+		
+		replayAll ();
+		
 		engine.run();
-		//shows a bug in the system if debugging internals of the priority queue of executors,
-		//but it is actually just the priority queue implementation - no actual problem will ever occur
+		
+		verifyAll();
 	}
 }

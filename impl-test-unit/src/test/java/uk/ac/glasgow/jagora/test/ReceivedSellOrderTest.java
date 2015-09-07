@@ -1,23 +1,25 @@
 package uk.ac.glasgow.jagora.test;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import org.easymock.EasyMockSupport;
 import org.junit.Before;
 import org.junit.Test;
+
 import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
-import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.*;
-
-public class ReceivedSellOrderTest {
+public class ReceivedSellOrderTest extends EasyMockSupport{
 	
 	private static final Stock lemons = new Stock("lemons");
-	
-	private static final ManualTickWorld world = new ManualTickWorld();
-	
+		
 	private TickEvent<LimitSellOrder>[] receivedOrders;
 
 	@SuppressWarnings("unchecked")
@@ -31,12 +33,13 @@ public class ReceivedSellOrderTest {
 		receivedOrders[3] = createSellOrder(10, 55l, 1l);
 		receivedOrders[4] = createSellOrder(10, 65l, 1l);
 
+		
+		
 	}
 
 	private TickEvent<LimitSellOrder> createSellOrder(Integer quantity, Long price, Long tick) {
 		LimitSellOrder limitSellOrder = new DefaultLimitSellOrder(null, lemons, quantity, price);
-		world.setTickForEvent(tick, limitSellOrder);
-		return world.getTick(limitSellOrder);
+		return new TickEvent<LimitSellOrder>(limitSellOrder, tick);
 	}
 
 	@Test

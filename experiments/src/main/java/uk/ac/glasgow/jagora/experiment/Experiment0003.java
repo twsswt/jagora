@@ -28,7 +28,6 @@ import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.StubTradeListener;
 import uk.ac.glasgow.jagora.ticker.OrderEvent.OrderDirection;
 import uk.ac.glasgow.jagora.ticker.impl.FilterOnDirectionOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
@@ -91,9 +90,7 @@ public class Experiment0003 {
 	private Stock lemons;
 	
 	private StockExchange stockExchange;
-	
-	private StubTradeListener stubTradeListener;
-	
+		
 	private List<ZIPTrader> traders;
 	private SerialTickerTapeObserver tickerTapeObserver;
 	private World world;
@@ -140,9 +137,6 @@ public class Experiment0003 {
 
 		tickerTapeObserver = new SerialTickerTapeObserver();
 		
-		stubTradeListener = new StubTradeListener();
-		tickerTapeObserver.registerTradeListener(stubTradeListener);
-
 		//registerFilteredStdOutOrderListener(OrderDirection.BUY);
 		//registerFilteredStdOutOrderListener(OrderDirection.SELL);
 				

@@ -18,8 +18,7 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
-import uk.ac.glasgow.jagora.test.stub.StubTrader;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
+import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBuilder;
 
@@ -30,7 +29,8 @@ public class MarketMakerMock extends EasyMockSupport{
 
 	private MarketMakerBuilder marketMakerBuilder;
 	
-	private StubTrader alice;
+	@Mock
+	private Trader alice;
 	
 	@Rule
 	public EasyMockRule rule = new EasyMockRule(this);
@@ -46,14 +46,6 @@ public class MarketMakerMock extends EasyMockSupport{
 		marketMakerBuilder = new MarketMakerBuilder()
 			.setName("Goldman")
 			.setCash(100000000l);
-		
-		StubTraderBuilder stubTraderBuilder = 
-			new StubTraderBuilder()
-				.setCash(100l)
-				.addStock(lemons, 10);
-
-		alice = stubTraderBuilder.setName("alice").build();
-
 	}
 
 	/**
@@ -61,7 +53,7 @@ public class MarketMakerMock extends EasyMockSupport{
 	 * market by creating a position with a bid-ask spread
 	 * as wide as the available price range.
 	 */
-	//@Test
+	@Test
 	public void testNewMarket() throws Exception {
 		
 		MarketMaker marketMaker = 

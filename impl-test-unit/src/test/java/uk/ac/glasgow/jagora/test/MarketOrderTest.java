@@ -1,200 +1,279 @@
 package uk.ac.glasgow.jagora.test;
 
+import static java.util.Arrays.asList;
+
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import uk.ac.glasgow.jagora.LimitBuyOrder;
-import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.LimitSellOrder;
+import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.impl.*;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.Trade;
+import uk.ac.glasgow.jagora.TradeExecutionException;
+import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
+import uk.ac.glasgow.jagora.impl.DefaultTrade;
+import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
+import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.SellLimitOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.StubTrader;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
+import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
+import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
-import static org.junit.Assert.assertEquals;
 
-public class MarketOrderTest {
+public class MarketOrderTest extends EasyMockSupport {
 
 	private static final Stock lemons = new Stock("lemons");
+	
+	@Rule
+	public EasyMockRule rule = new EasyMockRule(this);
 
-	private StubTrader alice;
-	private StubTrader bruce;
-	private StubTrader george;
+	@Mock(name="alice")
+	private Trader alice;
+	
+	@Mock(name="bruce")
+	private Trader bruce;
+	
+	@Mock(name="george")
+	private Trader george;
+	
+	@Mock
+	private StockExchangeObservable stockExchangeObservable;
 
 	private DefaultStockExchange stockExchange;
 
+	private StockExchangeLevel1View stockExchangeLevel1View;
 
 	@Before
 	public void setUp() throws Exception {
-
-		alice =
-			new StubTraderBuilder()
-				.setName("alice")
-				.setCash(50000l)
-				.build();
-
-		bruce =
-			new StubTraderBuilder()
-				.setName("bruce")
-				.setCash(50000l)
-				.addStock(lemons, 5000)
-				.build();
-
-		george =
-			new StubTraderBuilder()
-				.setName("george")
-				.setCash(50000l)
-				.addStock(lemons, 5000)
-				.build();
 
 		World world = new SimpleSerialWorld(1000l);
 		MarketFactory marketFactory =
 			new ContinuousOrderDrivenMarketFactory(new SellLimitOrderPricer());
 		
-		stockExchange = new DefaultStockExchange(world,	new SerialTickerTapeObserver(),	marketFactory);
+		stockExchange =
+			new DefaultStockExchange(world,	stockExchangeObservable, marketFactory);
+		
+		stockExchangeLevel1View = stockExchange.createLevel1View();
 	}
 
+	/**
+	 * Clear a market buy order against two sell orders.
+	 * @throws TradeExecutionException
+	 */
+
 	@Test
-	public void testMarketBuyOrder(){
+	public void testMarketBuyOrder() throws TradeExecutionException {
 
-		//produce two sell orders and make sure that market order is buying from the lower one
-		LimitSellOrder sellOrder1 = new DefaultLimitSellOrder(bruce, lemons, 3000, 100l);
-		bruce.supplyOrder(sellOrder1);
-		bruce.speak(stockExchange.createLevel1View());
+		LimitSellOrder limitSellOrder1 = new DefaultLimitSellOrder(bruce, lemons, 3000, 100l);
+		LimitSellOrder limitSellOrder2 = new DefaultLimitSellOrder(george, lemons, 1000, 150l);
+		MarketBuyOrder marketBuyOrder = new MarketBuyOrder(alice, lemons, 100);
 
-		LimitSellOrder sellOrder2 = new DefaultLimitSellOrder(george, lemons, 1000, 150l);
-		george.supplyOrder(sellOrder2);
-		george.speak(stockExchange.createLevel1View());
-
-		MarketBuyOrder buyOrder = new MarketBuyOrder(alice, lemons, 100);
-		alice.supplyOrder(buyOrder);
-		alice.speak(stockExchange.createLevel1View());
-
+		Trade trade1 = new DefaultTrade(lemons, 100, 100l, limitSellOrder1, marketBuyOrder);
+		
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(limitSellOrder1, 0l));
+		
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(limitSellOrder2, 1l));
+		
+		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
+			new TickEvent<MarketBuyOrder>(marketBuyOrder, 2l));
+		
+		bruce.sellStock(trade1);
+		alice.buyStock(trade1);
+		
+		stockExchangeObservable.notifyTradeListeners(asList(new TickEvent<Trade>(trade1, 3l)));
+		
+		replayAll ();
+		
+		stockExchangeLevel1View.placeLimitSellOrder(limitSellOrder1);
+		stockExchangeLevel1View.placeLimitSellOrder(limitSellOrder2);
+		stockExchangeLevel1View.placeMarketBuyOrder(marketBuyOrder);
 		stockExchange.doClearing();
-
-		assertEquals( "", 40000l, alice.getCash().longValue());
-
-		assertEquals("", 100, alice.getInventory(lemons).intValue());
-
-		assertEquals("", 4900, bruce.getInventory(lemons).intValue());
-
-		assertEquals("", 5000, george.getInventory(lemons).intValue());
-
+		
+		verifyAll();
+		
 	}
 
 	@Test
-	public void testMarketSellOrder (){
+	public void testMarketSellOrder () throws TradeExecutionException {
 		
 		LimitBuyOrder limitBuyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 100, 100l);
-		alice.supplyOrder(limitBuyOrder1);
-		alice.speak(stockExchange.createLevel1View());
-
 		LimitBuyOrder limitBuyOrder2 = new DefaultLimitBuyOrder(george, lemons, 100, 50l);
-		george.supplyOrder(limitBuyOrder2);
-		george.speak(stockExchange.createLevel1View());
-
 		MarketSellOrder marketSellOrder = new MarketSellOrder(bruce, lemons, 150);
-		bruce.supplyOrder(marketSellOrder);
-		bruce.speak(stockExchange.createLevel1View());
 
+		Trade trade1 = new DefaultTrade(lemons, 100, 100l, marketSellOrder, limitBuyOrder1);
+		Trade trade2 = new DefaultTrade(lemons, 50, 50l, marketSellOrder, limitBuyOrder2);
+		
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(limitBuyOrder1, 0l));
+		
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(limitBuyOrder1, 1l));
+		
+		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
+			new TickEvent<MarketSellOrder>(marketSellOrder, 2l));
+		
+		bruce.sellStock(trade1);
+		alice.buyStock(trade1);		
+		bruce.sellStock(trade2);
+		george.buyStock(trade2);
+		
+		stockExchangeObservable.notifyTradeListeners(
+			asList(new TickEvent<Trade>(trade1, 3l), new TickEvent<Trade>(trade2, 4l)));
+
+		replayAll ();
+		
+		stockExchangeLevel1View.placeLimitBuyOrder(limitBuyOrder1);
+		stockExchangeLevel1View.placeLimitBuyOrder(limitBuyOrder2);
+		stockExchangeLevel1View.placeMarketSellOrder(marketSellOrder);
 		stockExchange.doClearing();
-
-		assertEquals("", 62500l, bruce.getCash().longValue() );
-		assertEquals("", 4850, bruce.getInventory(lemons).intValue());
-
-		assertEquals("", alice.getInventory(lemons), (Integer) 100);
+		
+		verifyAll();
 	}
 
-
+	/**
+	 * Check that no trade occurs on a market with only market orders.
+	 */
 	@Test
 	public void testTwoMarketOrders() {
 		
-		// Establish a spread on the market first.
+		MarketBuyOrder marketBuyOrder = new MarketBuyOrder(alice, lemons, 100);
+		MarketSellOrder marketSellOrder = new MarketSellOrder(bruce, lemons, 150);
 
-		MarketBuyOrder buyOrder = new MarketBuyOrder(alice, lemons, 100);
-		alice.supplyOrder(buyOrder);
-		alice.speak(stockExchange.createLevel1View());
-
-		stockExchange.doClearing();
-
-		assertEquals("", alice.getCash(),(Long) 50000l);
-
-		MarketSellOrder sellOrder = new MarketSellOrder(bruce, lemons, 150);
-		bruce.supplyOrder(sellOrder);
-		bruce.speak(stockExchange.createLevel1View());
-
-		stockExchange.doClearing();
-
-		assertEquals("", 50000l, alice.getCash().longValue());
-		assertEquals("", 0, alice.getInventory(lemons).intValue());
-		assertEquals("", 5000, bruce.getInventory(lemons).intValue()); //no trade should occur
-
-	}
-
-
-	@Test
-	public void testMarketOrderWhenBetterPrice() {
+		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
+			new TickEvent<MarketBuyOrder>(marketBuyOrder, 0l));
 		
-		MarketSellOrder limitSellOrder = new MarketSellOrder(bruce, lemons, 150);
-		bruce.supplyOrder(limitSellOrder);
-		bruce.speak(stockExchange.createLevel1View());
+		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
+			new TickEvent<MarketSellOrder>(marketSellOrder, 1l));
+		
+		stockExchangeObservable.notifyTradeListeners(asList());
+		
+		replayAll();
+	
+		stockExchangeLevel1View.placeMarketBuyOrder(marketBuyOrder);
+		stockExchangeLevel1View.placeMarketSellOrder(marketSellOrder);
+		stockExchange.doClearing();
+
+		verifyAll();
+
+	}
+
+	/**
+	 * Tests that the availability of a spread allows a
+	 * market order to be executed in preference to the
+	 * spread creating limit orders.
+	 */
+	@Test
+	public void testMarketOrderWhenBetterPrice() throws TradeExecutionException {
+		
+		MarketSellOrder marketSellOrder = new MarketSellOrder(bruce, lemons, 150);
+		LimitSellOrder limitSellOrder1 = new DefaultLimitSellOrder(george, lemons, 50, 150l);
+		LimitBuyOrder limitBuyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 100, 100l);
+		
+		Trade trade1 = new DefaultTrade(lemons, 100, 100l, marketSellOrder, limitBuyOrder1);
+
+		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
+			new TickEvent<MarketSellOrder>(marketSellOrder, 0l));
+		
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(limitSellOrder1, 1l));
+		
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(limitBuyOrder1, 2l));
+
+		bruce.sellStock(trade1);
+		alice.buyStock(trade1);
+		
+		stockExchangeObservable.notifyTradeListeners(
+			asList(new TickEvent<Trade>(trade1, 3l)));
+
+		replayAll ();
+
+		stockExchangeLevel1View.placeMarketSellOrder(marketSellOrder);
+		stockExchangeLevel1View.placeLimitSellOrder(limitSellOrder1);
+		stockExchangeLevel1View.placeLimitBuyOrder(limitBuyOrder1);
 
 		stockExchange.doClearing();
 
-		LimitSellOrder sellOrder1 = new DefaultLimitSellOrder(george, lemons, 50, 150l);
-		george.supplyOrder(sellOrder1);
-		george.speak(stockExchange.createLevel1View());
-
-		LimitBuyOrder buyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 100, 100l);
-		alice.supplyOrder(buyOrder1);
-		alice.speak(stockExchange.createLevel1View());
-
-
-		stockExchange.doClearing();
-		//Test to see if marketSellOrder price is updated and the order is able to be executed
-		assertEquals("", 4900, bruce.getInventory(lemons).intValue());
-		assertEquals("", 40000l, alice.getCash().longValue());
+		verifyAll();
+		
 	}
 
 
-	//Two market sell orders are supplied and the first one should be executed and only after the second one as well
+	/**
+	 * Tests that two market sell orders are executed in the
+	 * order passed to the market, even though counter party
+	 * limit buy orders are prioritised by limit price.
+	 * 
+	 * @throws TradeExecutionException
+	 */
 	@Test
-	public void testTwoMarketSellOrders(){
+	public void testTwoMarketSellOrders() throws TradeExecutionException{
 
-		MarketSellOrder sellOrder1 = new MarketSellOrder(bruce,lemons,100);
-		bruce.supplyOrder(sellOrder1);
-		bruce.speak(stockExchange.createLevel1View());
+		MarketSellOrder marketSellOrder1 = new MarketSellOrder(bruce,lemons,100);
+		MarketSellOrder marketSellOrder2 = new MarketSellOrder(george,lemons,50);
 
-		MarketSellOrder sellOrder2 = new MarketSellOrder(george,lemons,50);
-		george.supplyOrder(sellOrder2);
-		george.speak(stockExchange.createLevel1View());
+		LimitBuyOrder limitBuyOrder1 = new DefaultLimitBuyOrder(alice,lemons,50,50l);
+		Trade trade1 = new DefaultTrade(lemons, 50, 50l, marketSellOrder1, limitBuyOrder1);
+		
+		LimitBuyOrder limitBuyOrder2 = new DefaultLimitBuyOrder(alice,lemons,70,60l);
+		Trade trade2 = new DefaultTrade(lemons, 50, 60l, marketSellOrder1, limitBuyOrder2);
+		Trade trade3 = new DefaultTrade(lemons, 20, 60l, marketSellOrder2, limitBuyOrder2);
+		
+		// resetAll ();
+		
+		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
+			new TickEvent<MarketSellOrder>(marketSellOrder1, 0l));
+		
+		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
+			new TickEvent<MarketSellOrder>(marketSellOrder2, 1l));
+		
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(limitBuyOrder1, 2l));
+		
+		bruce.sellStock(trade1);
+		alice.buyStock(trade1);
+		
+		stockExchangeObservable.notifyTradeListeners(
+			asList(new TickEvent<Trade>(trade1, 3l)));
 
-		LimitBuyOrder buyOrder1 = new DefaultLimitBuyOrder(alice,lemons,50,50l);
-		alice.supplyOrder(buyOrder1);
-		alice.speak(stockExchange.createLevel1View());
+		stockExchangeObservable.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(limitBuyOrder2, 4l));
+
+		bruce.sellStock(trade2);
+		alice.buyStock(trade2);
+		george.sellStock(trade3);
+		alice.buyStock(trade3);
+		
+		stockExchangeObservable.notifyTradeListeners(
+			asList(
+				new TickEvent<Trade>(trade2, 5l),
+				new TickEvent<Trade>(trade3, 6l)));
+
+		replayAll ();
+		
+		stockExchangeLevel1View.placeMarketSellOrder(marketSellOrder1);
+		stockExchangeLevel1View.placeMarketSellOrder(marketSellOrder2);
+		stockExchangeLevel1View.placeLimitBuyOrder(limitBuyOrder1);
 
 		stockExchange.doClearing();
-
-		assertEquals("",bruce.getInventory(lemons),(Integer) (5000-50));
-		assertEquals("",bruce.getCash(), (Long) (50000l + 50l*50l));
-
-		LimitBuyOrder buyOrder2 = new DefaultLimitBuyOrder(alice,lemons,70,60l);
-		alice.supplyOrder(buyOrder2);
-		alice.speak(stockExchange.createLevel1View());
-
+		
+		stockExchangeLevel1View.placeLimitBuyOrder(limitBuyOrder2);
+		
 		stockExchange.doClearing();
-
-		assertEquals("",bruce.getInventory(lemons),(Integer) (5000-50 - 50));
-		assertEquals("",bruce.getCash(), (Long) (50000l + 50l*50l + 60l*50l));
-
-		assertEquals("",george.getInventory(lemons),(Integer) (5000-20));
-		assertEquals("",george.getCash(), (Long) (50000l + 20l*60l));
-
-
-
+		
+		verifyAll ();
 
 	}
 }

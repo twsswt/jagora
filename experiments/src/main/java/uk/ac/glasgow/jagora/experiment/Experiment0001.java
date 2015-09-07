@@ -21,13 +21,14 @@ import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.LimitOrderTradePricer;
 import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
@@ -99,10 +100,17 @@ public class Experiment0001 {
 			.addTraders(traders)
 			.build();
 		
-		Trader dan = new StubTraderBuilder()
-		.setName("stub")
-		.setCash(200l)
-		.addStock(lemons, 1).build();
+		Trader dan = new AbstractTraderBuilder(){
+
+			public Trader build() {
+				setName("stub");
+				setCash(200l);
+				addStock(lemons, 1);
+				return new SafeAbstractTrader(getName(), getCash(), getInventory()){};
+			}
+			
+		}.build();
+		
 	
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
 		

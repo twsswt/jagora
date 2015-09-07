@@ -1,6 +1,7 @@
 package uk.ac.glasgow.jagora.impl.orderbook;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -58,8 +59,11 @@ public class OrderBook<O extends Order> {
 	public List<O> getOpenOrders() {
 		
 		List<O> result = new ArrayList<O>();
-
-		receivedOrders
+		
+		List<TickEvent<O>> intermediate = new ArrayList<TickEvent<O>>(receivedOrders);
+		Collections.sort(intermediate, receivedOrders.comparator());
+				
+		intermediate
 			.stream()
 			.forEach(receivedOrder -> result.add(receivedOrder.event));
 	

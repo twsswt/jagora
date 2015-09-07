@@ -13,9 +13,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.impl.StopLossSellOrder;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
-import uk.ac.glasgow.jagora.trader.Level1Trader;
+import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.DefaultBroker;
 
 public class BrokerTest extends EasyMockSupport {
@@ -30,21 +29,19 @@ public class BrokerTest extends EasyMockSupport {
 	@Mock
 	private StockExchangeLevel1View mockExchange;
 
-	private Level1Trader alice, bob, charlie;
+	@Mock
+	private Trader alice;
+	
+	@Mock
+	private Trader bob;
+	
+	@Mock
+	private Trader charlie;
 
 	@Before
 	public void setUp() throws  Exception{
 		
 		broker = new DefaultBroker("broker", 0l, new HashMap<Stock,Integer>());
-		
-		StubTraderBuilder stubTraderBuilder = 
-			new StubTraderBuilder()
-				.setCash(100l)
-				.addStock(lemons, 10);
-		
-		alice = stubTraderBuilder.setName("alice").build();
-		bob = stubTraderBuilder.setName("bob").build();
-		charlie = stubTraderBuilder.setName("charlie").build();
 
 	}
 
