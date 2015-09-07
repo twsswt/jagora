@@ -1,209 +1,201 @@
 package uk.ac.glasgow.jagora.test;
 
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
-import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
+import uk.ac.glasgow.jagora.impl.DefaultTrade;
 import uk.ac.glasgow.jagora.pricer.impl.SellLimitOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.StubTickerTapeListener;
-import uk.ac.glasgow.jagora.test.stub.StubTrader;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.ticker.LimitOrderEvent;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
-import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
-import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.ticker.impl.ThreadedTickerTapeObserver;
+import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
-import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-
-public class DefaultStockExchangeTest {
+public class DefaultStockExchangeTest extends EasyMockSupport {
+	
+	@Rule
+	public EasyMockRule rule = new EasyMockRule(this);
 
 	private Stock lemons = new Stock("lemons");
 	private Stock oranges = new Stock("oranges");
 	
-	private StubTrader alice;
+	@Mock(name="alice")
+	private Trader alice;
 	
-	private StubTrader bob;
+	@Mock(name="bob")
+	private Trader bob;
 		
-	private ContinuousOrderDrivenMarketFactory marketFactory;
-	private SimpleSerialWorld world;
+	private LimitSellOrder[] sellOrders;
+	private LimitBuyOrder[] buyOrders;
+	private Trade[] trades;		
 	
+	@Mock
+	private StockExchangeObservable tickerTapeObserver;
+	
+	private DefaultStockExchange defaultStockExchange;
+	
+	private StockExchangeLevel1View stockExchangeLevel1View;
+
 
 	@Before
 	public void setUp() throws Exception {
-	
-		bob   = 
-			new StubTraderBuilder()
-				.setName("bob")
-				.setCash(50000l)
-				.addStock(lemons, 200)
-				.addStock(oranges,400)
-				.build();
+			
+		sellOrders = new LimitSellOrder[] {
+			new DefaultLimitSellOrder(bob, lemons, 50, 550l),
+			new DefaultLimitSellOrder(bob, lemons, 10, 559l),
+			new DefaultLimitSellOrder(alice, oranges, 20, 265l),
+			new DefaultLimitSellOrder(alice, oranges, 20, 250l)
+		};
 		
-		alice = 
-			new StubTraderBuilder()
-				.setName("alice")
-				.setCash(1000000l)
-				.addStock(lemons, 100)
-				.addStock(oranges, 2000)
-				.build();
+		buyOrders = new LimitBuyOrder[]{
+			new DefaultLimitBuyOrder(alice, lemons, 25, 450l),
+			new DefaultLimitBuyOrder(alice, lemons, 60, 560l),
+			new DefaultLimitBuyOrder(bob, oranges, 30, 270l)
+		};
 		
-		marketFactory = new ContinuousOrderDrivenMarketFactory(new SellLimitOrderPricer());		
-		world = new SimpleSerialWorld(1000l);		
+		trades = new Trade[] {
+			new DefaultTrade(lemons, 50, 550l, sellOrders[0], buyOrders[1]),
+			new DefaultTrade(lemons, 10, 559l, sellOrders[1], buyOrders[1]),
+			new DefaultTrade(oranges, 20, 250l, sellOrders[3], buyOrders[2]),
+			new DefaultTrade(oranges, 10, 265l, sellOrders[2], buyOrders[2])
+
+		};
+		
+		ContinuousOrderDrivenMarketFactory marketFactory = 
+			new ContinuousOrderDrivenMarketFactory(new SellLimitOrderPricer());
+		
+		SimpleSerialWorld world = new SimpleSerialWorld(1000l);
+
+		defaultStockExchange = 
+			new DefaultStockExchange(world,	tickerTapeObserver,	marketFactory);
+		
+		stockExchangeLevel1View = 
+			defaultStockExchange.createLevel1View();
 	}
 
 	/**
 	 * Executes a short order sequence for two agents on two stocks.
 	 */
 	@Test
-	public void testClearing() {
+	public void testClearingWithNoCompatibleOrders() {
+
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(sellOrders[0], 0l));
 		
-		SerialTickerTapeObserver tickerTapeObserver = new SerialTickerTapeObserver ();
-
-		DefaultStockExchange defaultStockExchange = 
-			new DefaultStockExchange(world,	tickerTapeObserver,	marketFactory);
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(buyOrders[0], 1l));
 		
-		LimitSellOrder sellOrder1 = new DefaultLimitSellOrder(bob, lemons, 50, 550l);
-		bob.supplyOrder(sellOrder1);
-		bob.speak(defaultStockExchange.createLevel1View());
-
-		LimitBuyOrder buyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 25, 450l);
-		alice.supplyOrder(buyOrder1);
-		alice.speak(defaultStockExchange.createLevel1View());
-
+		tickerTapeObserver.notifyTradeListeners(new ArrayList<>());
+		
+		replayAll();
+		
+		stockExchangeLevel1View
+			.placeLimitSellOrder(sellOrders[0]);
+		
+		stockExchangeLevel1View
+			.placeLimitBuyOrder(buyOrders[0]);
+				
 		defaultStockExchange.doClearing();
 		
-		//No satisfying trades at this stage.
-		
-		assertEquals("", 50000, bob.getCash().longValue());
-		
-		LimitSellOrder sellOrder2 = new DefaultLimitSellOrder(bob, lemons, 10, 559l);
-		bob.supplyOrder(sellOrder2);
-		bob.speak(defaultStockExchange.createLevel1View());
-		
-		LimitBuyOrder buyOrder2 = new DefaultLimitBuyOrder(alice, lemons, 60, 560l);
-		alice.supplyOrder(buyOrder2);
-		alice.speak(defaultStockExchange.createLevel1View());
-		
-		defaultStockExchange.doClearing();
-		
-		//sellOrder 1 and 2, and buyOrder 2 should now be fully executed.
-		
-		Long trade1Cost = 50 * 550l + 10 * 559l;
-		
-		assertEquals("", 50000l + trade1Cost, bob.getCash().longValue());
-		assertEquals("", 1000000l - trade1Cost, alice.getCash().longValue());
-		
-		LimitSellOrder sellOrder3 = new DefaultLimitSellOrder(alice, oranges, 20, 265l);
-		alice.supplyOrder(sellOrder3);
-		alice.speak(defaultStockExchange.createLevel1View());
-		
-		LimitSellOrder sellOrder4 = new DefaultLimitSellOrder(alice, oranges, 20, 250l);
-		alice.supplyOrder(sellOrder4);
-		alice.speak(defaultStockExchange.createLevel1View());
-
-		
-		LimitBuyOrder buyOrder3 = new DefaultLimitBuyOrder(bob, oranges, 30, 270l);
-		bob.supplyOrder(buyOrder3);
-		bob.speak(defaultStockExchange.createLevel1View());
-		
-		defaultStockExchange.doClearing();
-		
-		//Sell order 3, buy order 3 and partially sell order 4 should be executed.
-		
-		Long trade2Cost = 20 * 250l + 10 * 265l;
-
-		assertEquals("", 50000l + trade1Cost - trade2Cost, bob.getCash().longValue());
-		assertEquals("", 1000000 - trade1Cost + trade2Cost, alice.getCash().longValue());
-
-		List<TickEvent<Trade>> tradeHistory = tickerTapeObserver.getTradeHistory(oranges);
-		assertEquals ("", 2, tradeHistory.size());
-		
-		Trade firstOrangeTrade = tradeHistory.get(0).event;
-		assertEquals("", 250, firstOrangeTrade.getPrice(), 0.0);
-		assertEquals("", 20, firstOrangeTrade.getQuantity()+0);
-		
-		Trade secondOrangeTrade = tradeHistory.get(1).event;
-		assertEquals("", 265, secondOrangeTrade.getPrice(), 0.0);
-		assertEquals("", 10, secondOrangeTrade.getQuantity()+0);
-
-		List<LimitOrderEvent> SellOrderHistory = tickerTapeObserver.getLimitSellOrderHistory(oranges);
-		assertEquals("",2,SellOrderHistory.size());
-		assertEquals("", (Long) 265l,SellOrderHistory.get(0).price);
-		assertEquals("", (Long) 250l,SellOrderHistory.get(1).price);
-
-		List<LimitOrderEvent> buyOrderHistory = tickerTapeObserver.getLimitBuyOrderHistory(oranges);
-		assertEquals("", 1,buyOrderHistory.size());
-		assertEquals("", (Long) 270l,buyOrderHistory.get(0).price);
-
-		List<LimitSellOrder> orangeSellOrders = 
-			defaultStockExchange.getSellOrders(oranges);
-		
-		List<LimitBuyOrder> orangeBuyOrders = 
-			defaultStockExchange.getBuyOrders(oranges);
-		
-		assertEquals("", 1, orangeSellOrders.size());
-		assertEquals("", 0, orangeBuyOrders.size());
-		
-		assertEquals("", 10, orangeSellOrders.get(0).getRemainingQuantity().intValue());
+		verifyAll ();
 	}
 	
-	/**
-	 * Checks for the arrival of completed trade events with registered
-	 * listeners. Notification is asynchronous on this exchange to prevent
-	 * blocking by traders. Therefore we need to wait for the notification to
-	 * arrive. The timeout ensures that the test completes if the notification
-	 * doesn't arrive within a generous period (indicating a bug).
-	 * 
-	 * @throws Exception
-	 */
-	@Test(timeout=20000)
-	public void testTickerTapeNotification () throws Exception {
+	@Test
+	public void testCompletelyClearSellSide () throws Exception{
+		
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(sellOrders[0], 0l));
+		
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(buyOrders[0], 1l));
+		
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(sellOrders[1], 2l));
+		
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(buyOrders[1], 3l));
 
-		StockExchangeObservable stockExchangeObservable = new ThreadedTickerTapeObserver ();
+		bob.sellStock(trades[0]);
+		alice.buyStock(trades[0]);
+		bob.sellStock(trades[1]);
+		alice.buyStock(trades[1]);
+		
+		tickerTapeObserver.notifyTradeListeners(
+			asList(
+				new TickEvent<Trade>(trades[0], 4l),
+				new TickEvent<Trade>(trades[1], 5l)));
+				
+		replayAll();
+		
+		stockExchangeLevel1View
+			.placeLimitSellOrder(sellOrders[0]);
+	
+		stockExchangeLevel1View
+			.placeLimitBuyOrder(buyOrders[0]);
 
-		DefaultStockExchange defaultStockExchange = 
-			new DefaultStockExchange(world,	stockExchangeObservable, marketFactory);
-		
-		StubTickerTapeListener stubTickerTapeListener = 
-			new StubTickerTapeListener();
-		
-		defaultStockExchange.createLevel1View().registerTradeListener(stubTickerTapeListener);
-		
-		LimitSellOrder limitSellOrder = new DefaultLimitSellOrder(bob, lemons, 10, 1000l);
-		bob.supplyOrder(limitSellOrder);
-		bob.speak(defaultStockExchange.createLevel1View());
-		
-		LimitBuyOrder limitBuyOrder = new DefaultLimitBuyOrder(alice, lemons, 10, 1100l);
-		alice.supplyOrder(limitBuyOrder);
-		alice.speak(defaultStockExchange.createLevel1View());
+				
+		stockExchangeLevel1View
+			.placeLimitSellOrder(sellOrders[1]);
+	
+		stockExchangeLevel1View
+			.placeLimitBuyOrder(buyOrders[1]);
 		
 		defaultStockExchange.doClearing();
-				
-		TradeExecutionEvent lastTradeExecutionEvent = 
-			stubTickerTapeListener.getLastTradeExecutionEvent();
 		
-		while(lastTradeExecutionEvent == null){
-			Thread.sleep(100);
-			lastTradeExecutionEvent = 
-				stubTickerTapeListener.getLastTradeExecutionEvent();
-		}
-		
-		TradeExecutionEvent expected = 
-			new TradeExecutionEvent(lemons, alice, bob, 2l, 1000l, 10);
-		
-		assertEquals ("", expected, lastTradeExecutionEvent);
+		verifyAll();
 	}
+	
+	@Test
+	public void testCompletelyClearBuySide () throws Exception {
 
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(sellOrders[2], 0l));
+		
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitSellOrder>(sellOrders[3], 1l));
+		
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(buyOrders[2], 2l));
+		
+		alice.sellStock(trades[2]);
+		bob.buyStock(trades[2]);
+		alice.sellStock(trades[3]);
+		bob.buyStock(trades[3]);
+		
+		tickerTapeObserver.notifyTradeListeners(
+			asList(new TickEvent<Trade>(trades[2], 3l), new TickEvent<Trade>(trades[3], 4l)));
+		
+		replayAll ();
+		
+		stockExchangeLevel1View
+			.placeLimitSellOrder(sellOrders[2]);
+		
+		stockExchangeLevel1View
+			.placeLimitSellOrder(sellOrders[3]);
+
+		stockExchangeLevel1View
+			.placeLimitBuyOrder(buyOrders[2]);
+		
+		defaultStockExchange.doClearing();
+		
+		verifyAll ();
+	}
+	
 }

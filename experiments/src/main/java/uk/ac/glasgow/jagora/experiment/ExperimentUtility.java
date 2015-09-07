@@ -8,14 +8,15 @@ import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
 import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBuilder;
 import uk.ac.glasgow.jagora.trader.impl.random.*;
@@ -124,8 +125,7 @@ public class ExperimentUtility {
 
 		engine = new DelayableSerialRandomEngineBuilder()
 			.setWorld(world)
-			.setSeed(seed)
-			.addStockExchange(stockExchange)
+			.setStockExchange(stockExchange)
 			.setStandardDelay(standardDelay)
 			.addTraders(level1Traders)
 			.addPrivilegedTraders(level2Traders)
@@ -283,11 +283,17 @@ public class ExperimentUtility {
 	}
 
 	protected void configureFirstTrade () {
-		Trader dan = new StubTraderBuilder()
-			.setName("stub")
-			.setCash(initialTraderCash)
-			.addStock(lemons, 10)
-			.build();
+		
+		Trader dan = new AbstractTraderBuilder(){
+
+			public Trader build() {
+				setName("stub");
+				setCash(200l);
+				addStock(lemons, 1);
+				return new SafeAbstractTrader(getName(), getCash(), getInventory()){};
+			}
+			
+		}.build();
 
 		StockExchangeLevel1View danView = stockExchange.createLevel1View();
 		danView.placeLimitBuyOrder(new DefaultLimitBuyOrder(dan, lemons, 5, firstTradePrice + 1));

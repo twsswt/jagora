@@ -176,4 +176,54 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	public void registerTradeListener(TradeListener tradeListener) {
 		wrappedView.registerTradeListener(tradeListener);
 	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+			* result
+			+ ((delayedTick == null) ? 0 : delayedTick
+				.hashCode());
+		result = prime
+			* result
+			+ ((orderExecutors == null) ? 0
+				: orderExecutors.hashCode());
+		result = prime
+			* result
+			+ ((wrappedView == null) ? 0 : wrappedView
+				.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DelayedExchangeLevel1View other = (DelayedExchangeLevel1View) obj;
+		if (delayedTick == null) {
+			if (other.delayedTick != null)
+				return false;
+		} else if (!delayedTick.equals(other.delayedTick))
+			return false;
+		if (orderExecutors == null) {
+			if (other.orderExecutors != null)
+				return false;
+		} else if (!orderExecutors
+			.equals(other.orderExecutors))
+			return false;
+		if (wrappedView == null) {
+			if (other.wrappedView != null)
+				return false;
+		} else if (!wrappedView.equals(other.wrappedView))
+			return false;
+		return true;
+	}
+	
 }

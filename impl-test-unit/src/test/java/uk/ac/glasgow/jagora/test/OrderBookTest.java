@@ -1,35 +1,44 @@
 package uk.ac.glasgow.jagora.test;
 
+import static java.util.Collections.shuffle;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.easymock.EasyMockRule;
+import org.easymock.EasyMockSupport;
+import org.easymock.Mock;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.Trade;
-import uk.ac.glasgow.jagora.impl.DefaultTrade;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.impl.orderbook.LimitOrderBook;
-import uk.ac.glasgow.jagora.test.stub.ManualTickWorld;
-import uk.ac.glasgow.jagora.test.stub.StubTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.AbstractTrader;
+import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.world.TickEvent;
+import uk.ac.glasgow.jagora.world.World;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
-public class OrderBookTest {
+public class OrderBookTest extends EasyMockSupport {
 	
 	private static Stock lemons = new Stock("lemons");
 	
-	private AbstractTrader alice;
-	private AbstractTrader bob;
-		
-	private ManualTickWorld manualTickWorld;
+	@Rule
+	public EasyMockRule rule = new EasyMockRule(this);
+	
+	@Mock(name="alice")
+	private Trader alice;
+	
+	@Mock(name="bob")
+	private Trader bob;
+	
+	@Mock
+	private World world;
 
 	private LimitOrderBook<LimitSellOrder> sellBook;
 	private LimitOrderBook<LimitBuyOrder> buyBook;
@@ -37,109 +46,88 @@ public class OrderBookTest {
 	
 	@Before
 	public void setUp() throws Exception {
-	
-		alice = new StubTraderBuilder()
-			.setName("alice")
-			.setCash(100000000l)
-			.addStock(lemons, 10000)
-			.build();
-		
-		bob   = new StubTraderBuilder()
-			.setName("bob")
-			.setCash(5000000l)
-			.addStock(lemons, 200)
-			.build();
-		
-		manualTickWorld = new ManualTickWorld();
 				
-		sellBook = new LimitOrderBook<LimitSellOrder>(manualTickWorld);
-		buyBook = new LimitOrderBook<LimitBuyOrder>(manualTickWorld);
+		sellBook = new LimitOrderBook<LimitSellOrder>(world);
+		buyBook = new LimitOrderBook<LimitBuyOrder>(world);
 	}
 
 	@Test
 	public void testSellOrderBook() throws Exception{
 		
-		List<LimitSellOrder> limitSellOrders =
-			Arrays.asList(
-				createSellOrder(alice, lemons, 500,  50l, 4l), 
-				createSellOrder(bob,   lemons,  15, 110l, 1l),
-				createSellOrder(alice, lemons,  10, 110l, 2l),
-				createSellOrder(alice, lemons,   5, 200l, 3l),
-				createSellOrder(bob,   lemons,  10, 250l, 0l)
-			);
-		
+		List<LimitSellOrder> expectedSellOrders = new ArrayList<LimitSellOrder>();
+
+		expectedSellOrders.add(new DefaultLimitSellOrder(alice, lemons, 500,  50l));
+		expectedSellOrders.add(new DefaultLimitSellOrder(bob,   lemons,  15, 110l));
+		expectedSellOrders.add(new DefaultLimitSellOrder(alice, lemons,  10, 110l));
+		expectedSellOrders.add(new DefaultLimitSellOrder(alice, lemons,   5, 200l));
+		expectedSellOrders.add(new DefaultLimitSellOrder(bob,   lemons,  10, 250l));
+
 		List<LimitSellOrder> randomisedSellOrders =
-			new ArrayList<LimitSellOrder>(limitSellOrders);
+			new ArrayList<LimitSellOrder>(expectedSellOrders);
 		
-		Collections.shuffle(randomisedSellOrders);
+		shuffle(randomisedSellOrders);
+		
+		
+		resetAll ();
+		
+		for (LimitSellOrder limitSellOrder : randomisedSellOrders){
+			int index = 
+				expectedSellOrders.indexOf(limitSellOrder);
+			expect(
+				world
+					.getTick(limitSellOrder))
+					.andReturn(new TickEvent<LimitSellOrder>(limitSellOrder, (long) index));
+		}
+				
+		replayAll ();
 		
 		for (LimitSellOrder limitSellOrder : randomisedSellOrders)
 			sellBook.recordOrder(limitSellOrder);
+				
+		List<LimitSellOrder> actualSellOrders = sellBook.getOpenOrders();
+		assertEquals(expectedSellOrders, actualSellOrders);
+
+		verifyAll ();
 		
-		Integer tradeTick = limitSellOrders.size();
-
-		for (LimitSellOrder expected : limitSellOrders){
-			LimitSellOrder actual = sellBook.getBestOrder().event;
-			assertEquals(expected,actual);
-			
-			Trade satisfyingTrade = new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getLimitPrice(), actual, null);
-			
-			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
-			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
-		}		
-	}
-
-	private LimitSellOrder createSellOrder(AbstractTrader trader, Stock stock, Integer quantity, Long price, Long tick) {
-		LimitSellOrder limitSellOrder = new DefaultLimitSellOrder(trader, stock, quantity, price);
-		manualTickWorld.setTickForEvent(tick, limitSellOrder);
-		return limitSellOrder;
+		
 	}
 	
 	@Test
-	public void testBuyOrderBook() throws Exception {
+	public void testBuyOrderBook() throws Exception{
 		
-		List<LimitBuyOrder> limitBuyOrders =
-			Arrays.asList(
-				createBuyOrder(alice, lemons, 500, 90000l, 4l),
-				createBuyOrder(alice, lemons,  10, 22000l, 2l),
-				createBuyOrder(alice, lemons,  15, 22000l, 3l),
-				createBuyOrder(alice, lemons,   5, 15000l, 0l),
-				createBuyOrder(bob,   lemons,  10, 11000l, 1l)
-			);
+		List<LimitBuyOrder> expectedBuyOrders = new ArrayList<LimitBuyOrder>();
 
-		
-		List<LimitBuyOrder> randomisedbuyOrders =
-			new ArrayList<LimitBuyOrder>(limitBuyOrders);
-			
-		Collections.shuffle(randomisedbuyOrders);
-			
-		for (LimitBuyOrder limitBuyOrder : randomisedbuyOrders)
-			buyBook.recordOrder(limitBuyOrder);
-		
-		List<LimitBuyOrder> actualBestBuyOrders = new ArrayList<LimitBuyOrder>();
-		
-		Integer tradeTick = limitBuyOrders.size();
-		
-		for (LimitBuyOrder expected : limitBuyOrders){
-			LimitBuyOrder actual = buyBook.getBestOrder().event;
-			actualBestBuyOrders.add(actual);
-			
-			Trade satisfyingTrade =
-				new DefaultTrade(lemons, expected.getRemainingQuantity(),  expected.getLimitPrice(), null, actual);
-			manualTickWorld.setTickForEvent(Long.valueOf(tradeTick++), satisfyingTrade);
+		expectedBuyOrders.add(new DefaultLimitBuyOrder(alice, lemons, 500,  5l));
+		expectedBuyOrders.add(new DefaultLimitBuyOrder(alice, lemons,  15,  4l));
+		expectedBuyOrders.add(new DefaultLimitBuyOrder(alice, lemons,  10,  3l));
+		expectedBuyOrders.add(new DefaultLimitBuyOrder(alice, lemons,   5,  3l));
+		expectedBuyOrders.add(new DefaultLimitBuyOrder(bob,   lemons,  10,  2l));
 
-			actual.satisfyTrade(manualTickWorld.getTick(satisfyingTrade));
+		List<LimitBuyOrder> randomisedBuyOrders =
+			new ArrayList<LimitBuyOrder>(expectedBuyOrders);
+		
+		shuffle(randomisedBuyOrders);
+		
+		resetAll ();
+		
+		for (LimitBuyOrder limitBuyOrder : randomisedBuyOrders){
+			int index = 
+				expectedBuyOrders.indexOf(limitBuyOrder);
+			expect(
+				world
+					.getTick(limitBuyOrder))
+					.andReturn(new TickEvent<LimitBuyOrder>(limitBuyOrder, (long) index));
 		}
+				
+		replayAll ();
 		
-		assertEquals(limitBuyOrders, actualBestBuyOrders);
-	}
-	
-	private LimitBuyOrder createBuyOrder(
-		AbstractTrader trader, Stock stock, Integer quantity, Long price, Long tick) {
-		
-		LimitBuyOrder limitBuyOrder = new DefaultLimitBuyOrder(trader, stock, quantity, price);
-		manualTickWorld.setTickForEvent(tick, limitBuyOrder);
-		return limitBuyOrder;
-	}
+		for (LimitBuyOrder limitBuyOrder : randomisedBuyOrders)
+			buyBook.recordOrder(limitBuyOrder);
+				
+		List<LimitBuyOrder> actualBuyOrders = buyBook.getOpenOrders();
+		assertEquals(expectedBuyOrders, actualBuyOrders);
 
+		verifyAll ();
+	
+	}
 }

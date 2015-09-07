@@ -3,7 +3,6 @@ package uk.ac.glasgow.jagora.engine.impl;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
-import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 
 import java.util.HashSet;
@@ -12,16 +11,15 @@ import java.util.Set;
 public class DelayableSerialRandomEngineBuilder {
 
 	private World world;
-	private Integer seed;
 
-	private Set<StockExchange> stockExchanges;
+	private StockExchange stockExchange;
 	private Set<Level1Trader> traders;
-	private Long standardDelay = 100l;
-	private Set<Level2Trader> privilegedTraders = new HashSet<>();
+	private Long standardDelay;
+	private Set<Level2Trader> privilegedTraders;
 
 	public DelayableSerialRandomEngineBuilder() {
-		stockExchanges = new HashSet<StockExchange>();
 		traders = new HashSet<Level1Trader>();
+		privilegedTraders = new HashSet<>();
 	}
 	
 	public DelayableSerialRandomEngineBuilder setWorld(World world) {
@@ -29,13 +27,8 @@ public class DelayableSerialRandomEngineBuilder {
 		return this;
 	}
 	
-	public DelayableSerialRandomEngineBuilder setSeed (Integer seed){
-		this.seed = seed;
-		return this;
-	}
-	
-	public DelayableSerialRandomEngineBuilder addStockExchange(StockExchange stockExchange){
-		stockExchanges.add(stockExchange);
+	public DelayableSerialRandomEngineBuilder setStockExchange(StockExchange stockExchange){
+		this.stockExchange = stockExchange;
 		return this;
 	}
 	
@@ -66,10 +59,7 @@ public class DelayableSerialRandomEngineBuilder {
 
 	public SerialDelayEngine build() {
 		return new SerialDelayEngine(
-				world, stockExchanges, traders, new Random(seed), standardDelay, privilegedTraders);
+			world, stockExchange, traders, privilegedTraders, standardDelay);
 	}
-
-
-
 	
 }
