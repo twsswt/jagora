@@ -15,8 +15,8 @@ import org.junit.Test;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
-import uk.ac.glasgow.jagora.engine.impl.DelayedExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.impl.SerialDelayEngine;
+import uk.ac.glasgow.jagora.engine.impl.delay.DelayedExchangeLevel1View;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.world.World;
 

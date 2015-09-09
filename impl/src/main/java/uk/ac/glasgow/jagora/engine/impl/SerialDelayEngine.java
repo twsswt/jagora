@@ -8,7 +8,8 @@ import java.util.Set;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
-import uk.ac.glasgow.jagora.engine.impl.DelayedExchangeLevel1View.DelayedOrderExecutor;
+import uk.ac.glasgow.jagora.engine.impl.delay.DelayedExchangeLevel1View;
+import uk.ac.glasgow.jagora.engine.impl.delay.DelayedExchangeLevel1View.DelayedOrderExecutor;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.world.World;
@@ -76,7 +77,7 @@ public class SerialDelayEngine implements TradingEngine {
 			}
 			
 			while (!orderExecutors.isEmpty()
-				&& world.getCurrentTick() >= orderExecutors.peek().getDelayedTick()){
+				&& world.getCurrentTick() >= orderExecutors.peek().delayTick){
 				
 				DelayedOrderExecutor executor = orderExecutors.poll();
 				executor.execute();

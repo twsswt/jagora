@@ -13,9 +13,11 @@ import uk.ac.glasgow.jagora.world.World;
 public class SerialRandomEngine implements TradingEngine {
 	
 	private final Set<StockExchange> exchanges;
-	private final Set<Level1Trader> traders;
 	private final World world;
 	private final Random random;
+	
+	private final Set<Level1Trader> traders;
+
 	
 	public SerialRandomEngine (World world, Set<StockExchange> exchanges, Set<Level1Trader> traders, Random random){
 		this.world = world;

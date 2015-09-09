@@ -5,12 +5,8 @@ package uk.ac.glasgow.jagora;
  * @author Tim
  *
  */
-public interface StockExchange {
+public interface StockExchange extends StockExchangeViewProvider {
 
 	public void doClearing ();
-
-	public StockExchangeLevel1View createLevel1View();
-	
-	public StockExchangeLevel2View createLevel2View();
 	
 }
