@@ -52,9 +52,12 @@
 
 			<auxClasspath refid="project.classpath" />
 
-			<sourcePath path="api/src/main/java,impl/src/main/java,impl-test-unit/src/test/java" />
+			<sourcePath path="api/src/main/java,impl/src/main/java,impl-test-unit/src/test/java,experiments/src/main/java" />
 
 			<class location="api/bin" />
+			<class location="impl/bin" />
+			<class location="impl-test-unit/bin" />
+			<class location="experiments/bin" />
 
 		</findbugs>
 
