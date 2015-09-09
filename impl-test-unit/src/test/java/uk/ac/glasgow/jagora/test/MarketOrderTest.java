@@ -11,18 +11,20 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.LimitSellOrder;
+import uk.ac.glasgow.jagora.MarketBuyOrder;
 import uk.ac.glasgow.jagora.MarketFactory;
+import uk.ac.glasgow.jagora.MarketSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.TradeExecutionException;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
+import uk.ac.glasgow.jagora.impl.DefaultMarketBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultMarketSellOrder;
 import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.DefaultTrade;
-import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
-import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.pricer.impl.SellLimitOrderPricer;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.trader.Trader;
@@ -76,7 +78,7 @@ public class MarketOrderTest extends EasyMockSupport {
 
 		LimitSellOrder limitSellOrder1 = new DefaultLimitSellOrder(bruce, lemons, 3000, 100l);
 		LimitSellOrder limitSellOrder2 = new DefaultLimitSellOrder(george, lemons, 1000, 150l);
-		MarketBuyOrder marketBuyOrder = new MarketBuyOrder(alice, lemons, 100);
+		MarketBuyOrder marketBuyOrder = new DefaultMarketBuyOrder(alice, lemons, 100);
 
 		Trade trade1 = new DefaultTrade(lemons, 100, 100l, limitSellOrder1, marketBuyOrder);
 		
@@ -110,7 +112,7 @@ public class MarketOrderTest extends EasyMockSupport {
 		
 		LimitBuyOrder limitBuyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 100, 100l);
 		LimitBuyOrder limitBuyOrder2 = new DefaultLimitBuyOrder(george, lemons, 100, 50l);
-		MarketSellOrder marketSellOrder = new MarketSellOrder(bruce, lemons, 150);
+		MarketSellOrder marketSellOrder = new DefaultMarketSellOrder(bruce, lemons, 150);
 
 		Trade trade1 = new DefaultTrade(lemons, 100, 100l, marketSellOrder, limitBuyOrder1);
 		Trade trade2 = new DefaultTrade(lemons, 50, 50l, marketSellOrder, limitBuyOrder2);
@@ -148,8 +150,8 @@ public class MarketOrderTest extends EasyMockSupport {
 	@Test
 	public void testTwoMarketOrders() {
 		
-		MarketBuyOrder marketBuyOrder = new MarketBuyOrder(alice, lemons, 100);
-		MarketSellOrder marketSellOrder = new MarketSellOrder(bruce, lemons, 150);
+		MarketBuyOrder marketBuyOrder = new DefaultMarketBuyOrder(alice, lemons, 100);
+		MarketSellOrder marketSellOrder = new DefaultMarketSellOrder(bruce, lemons, 150);
 
 		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
 			new TickEvent<MarketBuyOrder>(marketBuyOrder, 0l));
@@ -177,7 +179,7 @@ public class MarketOrderTest extends EasyMockSupport {
 	@Test
 	public void testMarketOrderWhenBetterPrice() throws TradeExecutionException {
 		
-		MarketSellOrder marketSellOrder = new MarketSellOrder(bruce, lemons, 150);
+		MarketSellOrder marketSellOrder = new DefaultMarketSellOrder(bruce, lemons, 150);
 		LimitSellOrder limitSellOrder1 = new DefaultLimitSellOrder(george, lemons, 50, 150l);
 		LimitBuyOrder limitBuyOrder1 = new DefaultLimitBuyOrder(alice, lemons, 100, 100l);
 		
@@ -221,8 +223,8 @@ public class MarketOrderTest extends EasyMockSupport {
 	@Test
 	public void testTwoMarketSellOrders() throws TradeExecutionException{
 
-		MarketSellOrder marketSellOrder1 = new MarketSellOrder(bruce,lemons,100);
-		MarketSellOrder marketSellOrder2 = new MarketSellOrder(george,lemons,50);
+		MarketSellOrder marketSellOrder1 = new DefaultMarketSellOrder(bruce,lemons,100);
+		MarketSellOrder marketSellOrder2 = new DefaultMarketSellOrder(george,lemons,50);
 
 		LimitBuyOrder limitBuyOrder1 = new DefaultLimitBuyOrder(alice,lemons,50,50l);
 		Trade trade1 = new DefaultTrade(lemons, 50, 50l, marketSellOrder1, limitBuyOrder1);

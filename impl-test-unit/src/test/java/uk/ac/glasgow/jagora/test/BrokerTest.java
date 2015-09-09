@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.MarketSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultMarketSellOrder;
 import uk.ac.glasgow.jagora.impl.StopLossSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.trader.Trader;
@@ -48,7 +48,7 @@ public class BrokerTest extends EasyMockSupport {
 	@Test
 	public void testSingleSellStopLoss (){
 
-		mockExchange.placeMarketSellOrder(new MarketSellOrder(alice, lemons, 10));
+		mockExchange.placeMarketSellOrder(new DefaultMarketSellOrder(alice, lemons, 10));
 		//TODO		
 		replayAll();
 		broker.placeStopLossOrder(new StopLossSellOrder(alice, 25l, lemons, 10));

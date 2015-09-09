@@ -1,8 +1,8 @@
 package uk.ac.glasgow.jagora.impl.orderbook;
 
 import uk.ac.glasgow.jagora.LimitSellOrder;
+import uk.ac.glasgow.jagora.MarketBuyOrder;
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
 import uk.ac.glasgow.jagora.pricer.impl.MarketBuyLimitSellTradePricer;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;

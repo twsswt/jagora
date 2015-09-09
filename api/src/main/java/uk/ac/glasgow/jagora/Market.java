@@ -1,7 +1,5 @@
 package uk.ac.glasgow.jagora;
 
-import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
-import uk.ac.glasgow.jagora.impl.MarketSellOrder;
 import uk.ac.glasgow.jagora.world.TickEvent;
 
 import java.util.List;
