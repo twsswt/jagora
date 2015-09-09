@@ -4,8 +4,8 @@ import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
-import uk.ac.glasgow.jagora.impl.MarketBuyOrder;
-import uk.ac.glasgow.jagora.impl.MarketSellOrder;
+import uk.ac.glasgow.jagora.MarketBuyOrder;
+import uk.ac.glasgow.jagora.MarketSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 import java.util.ArrayList;

@@ -1,5 +1,6 @@
 package uk.ac.glasgow.jagora.impl;
 
+import uk.ac.glasgow.jagora.MarketBuyOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.trader.StopLossOrder;
@@ -33,7 +34,7 @@ public class StopLossBuyOrder implements StopLossOrder {
 	public void executeOrder(StockExchangeLevel1View traderView) {
 		if (!orderExecuted){
 			MarketBuyOrder marketBuyOrder = 
-				new MarketBuyOrder(trader, stock, quantity);
+				new DefaultMarketBuyOrder(trader, stock, quantity);
 		
 			traderView.placeMarketBuyOrder(marketBuyOrder);
 			

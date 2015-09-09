@@ -8,6 +8,8 @@ import java.util.List;
 import uk.ac.glasgow.jagora.LimitBuyOrder;
 import uk.ac.glasgow.jagora.LimitSellOrder;
 import uk.ac.glasgow.jagora.Market;
+import uk.ac.glasgow.jagora.MarketBuyOrder;
+import uk.ac.glasgow.jagora.MarketSellOrder;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.Trade;
 import uk.ac.glasgow.jagora.impl.orderbook.LimitOrderBook;
