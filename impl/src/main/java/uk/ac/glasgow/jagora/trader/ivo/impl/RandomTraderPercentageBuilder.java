@@ -1,6 +1,7 @@
-package uk.ac.glasgow.jagora.trader.impl.random;
+package uk.ac.glasgow.jagora.trader.ivo.impl;
 
 
+import java.util.HashMap;
 import java.util.Map;
 
 import uk.ac.glasgow.jagora.Stock;
@@ -9,12 +10,14 @@ import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTraderPercentageBuilder extends AbstractTraderBuilder {
 		
-	protected Integer seed;
-	protected Map<Stock, PercentageRangeData> sellRangeData;
-	protected Map<Stock, PercentageRangeData> buyRangeData;
+	private Integer seed;
+	private Map<Stock, PercentageRangeData> sellRangeData;
+	private Map<Stock, PercentageRangeData> buyRangeData;
 	
 	public RandomTraderPercentageBuilder() {
 		super();
+		sellRangeData = new HashMap<Stock, PercentageRangeData>();
+		buyRangeData = new HashMap<Stock, PercentageRangeData>();
 	}
 	
 	public RandomTraderPercentageBuilder setSellOrderRange(Stock stock, Integer minQuantity, Integer maxQuantity,

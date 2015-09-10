@@ -149,7 +149,10 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			relativeChange = random.nextDouble() * maximumRelativeChange;
 			absoluteChange = (long) (random.nextDouble() * maximumAbsoluteChange);
 			
-		} 
+		} else {
+			relativeChange = 0.0;
+			absoluteChange = 0l;
+		}
 		
 		return (long)(basePrice * (1.0 + relativeChange)) + absoluteChange;
 	}

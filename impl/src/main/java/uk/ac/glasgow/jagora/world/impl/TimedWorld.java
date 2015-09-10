@@ -21,7 +21,7 @@ public class TimedWorld implements World{
 	public <T> TickEvent<T> getTick(T event) {
 		synchronized(syncObject){
 			try {
-				Thread.sleep(1);//1 sec is a bit too much??
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 			return new TickEvent<T>(event, getCurrentTick());

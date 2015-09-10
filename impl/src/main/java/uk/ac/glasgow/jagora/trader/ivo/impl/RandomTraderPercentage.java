@@ -1,4 +1,4 @@
-package uk.ac.glasgow.jagora.trader.impl.random;
+package uk.ac.glasgow.jagora.trader.ivo.impl;
 
 
 import uk.ac.glasgow.jagora.LimitBuyOrder;
@@ -9,6 +9,8 @@ import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.RangeData;
 import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
@@ -93,7 +95,7 @@ public class RandomTraderPercentage extends SafeAbstractTrader implements Level1
 		if (bestBidPrice == null) return;
 		
 		PercentageRangeData percentageRangeData = buyRangeData.get(stock);
-		Long price = createRandomPrice( bestBidPrice, percentageRangeData);
+		Long price = createRandomPrice(bestBidPrice, percentageRangeData);
 
 		Long availableCash = getAvailableCash();
 		
