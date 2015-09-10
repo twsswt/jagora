@@ -62,8 +62,8 @@ public class SerialRandomEngineTest {
 		engine = new SerialRandomEngineBuilder()
 			.setWorld(world)
 			.setSeed(seed)
-			.addTrader(alice)
-			.addTrader(bob)
+			.addTraderStockExchangeView(alice, stockExchange)
+			.addTraderStockExchangeView(bob, stockExchange)
 			.addStockExchange(stockExchange)
 			.build();
 		

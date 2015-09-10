@@ -10,6 +10,7 @@ import uk.ac.glasgow.jagora.ticker.TradeListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * A transparent delay layer between a trader and an
@@ -41,16 +42,14 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	private StockExchangeLevel1View wrappedView;
 
 
-	public DelayedExchangeLevel1View(StockExchangeLevel1View wrappedView, Long delayedTick) {
+	public DelayedExchangeLevel1View(
+		StockExchangeLevel1View wrappedView,
+		Long delayedTick,
+		Queue<DelayedOrderExecutor> orderExecutorQueue) {
+		
 		this.wrappedView = wrappedView;
 		this.delayedTick = delayedTick;
 	}
-
-
-	public List<DelayedOrderExecutor> getOrderExecutors (){
-		return orderExecutors;
-	}
-
 
 	@Override
 	public void placeLimitBuyOrder(LimitBuyOrder limitBuyOrder) {

@@ -73,7 +73,7 @@ public class Experiment0002 {
 		
 		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
 
-		Set<Level1Trader> traders = new HashSet<Level1Trader>();
+		Set<Trader> traders = new HashSet<Trader>();
 						
 		Trader dan = new AbstractTraderBuilder(){
 
@@ -124,7 +124,7 @@ public class Experiment0002 {
 			.setWorld(world)
 			.setSeed(1)
 			.addStockExchange(stockExchange)
-			.addTraders(traders)
+			.addTradersStockExchangeView(traders,stockExchange)
 			.build();
 	}
 	
