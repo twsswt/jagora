@@ -10,8 +10,8 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel2View;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
-import uk.ac.glasgow.jagora.trader.impl.random.HighFrequencyRandomTrader;
-import uk.ac.glasgow.jagora.trader.impl.random.HighFrequencyRandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.ivo.impl.HighFrequencyRandomTrader;
+import uk.ac.glasgow.jagora.trader.ivo.impl.HighFrequencyRandomTraderBuilder;
 import static org.easymock.EasyMock.*;
 
 

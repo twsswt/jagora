@@ -25,7 +25,7 @@ import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
  * managed market and (b) attempts to maintain a constant
  * share on the market.
  * 
- * @author Tim
+ * @author tws
  *
  */
 public class MarketMaker extends SafeAbstractTrader  implements Level2Trader {
@@ -36,13 +36,13 @@ public class MarketMaker extends SafeAbstractTrader  implements Level2Trader {
 	class MarketPosition {
 
 		public final MarketPositionSpecification marketPositionSpecification;
-					
+
 		private LimitBuyOrder currentLimitBuyOrder;
 		private LimitSellOrder currentLimitSellOrder;
 
 		protected MarketPosition(MarketPositionSpecification marketPositionSpecification) {
 			this.marketPositionSpecification = marketPositionSpecification;
-		}		
+		}
 
 		// Step 1. Calculate the current midpoint for the stock.
 		
@@ -122,7 +122,7 @@ public class MarketMaker extends SafeAbstractTrader  implements Level2Trader {
 		@Override
 		public String toString() {
 			
-			String template = "[buy at=%s, sell at=%d]";
+			String template = "[buy at=%s, sell at=%s]";
 			
 			return format(template, currentLimitBuyOrder, currentLimitSellOrder);
 		}

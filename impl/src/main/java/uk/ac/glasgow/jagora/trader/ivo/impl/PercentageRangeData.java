@@ -1,6 +1,7 @@
-package uk.ac.glasgow.jagora.trader.impl.random;
+package uk.ac.glasgow.jagora.trader.ivo.impl;
 
 import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.trader.impl.random.RangeData;
 
 class PercentageRangeData extends RangeData {
 

@@ -16,30 +16,33 @@ import java.util.Map;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+/**
+ * A trader that places spread crossing limit orders. When
+ * the trader is given an opportunity to speak on the market
+ * it randomly chooses to place a bid or offer. A random
+ * stock is chosen and a random quantity (within the
+ * selected range) is chosen. Finally, a random price
+ * between the best bid (offer) and the configured price
+ * range limit for that stock is chosen. An existing order
+ * is cancelled in order to free up resources, if the
+ * computed limit order cannot be placed safely. Otherwise
+ * the proposed order is placed on the market.
+ * 
+ * @author tws
+ *
+ */
 public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Level1Trader {
 	
-	protected static class TradeRange {
-		public final Integer minQuantity;
-		public final Integer maxQuantity;
-		public final Long price;
-		
-		public TradeRange(Integer minQuantity, Integer maxQuantity, Long price){
-			this.minQuantity = minQuantity;
-			this.maxQuantity = maxQuantity;
-			this.price = price;
-		}
-	}
-		
-	private final Map<Stock,TradeRange> tradeRanges;
+	private final Map<Stock,SpreadCrossingRangeData> tradeRanges;
 	protected final Random random;
 	
 	protected RandomSpreadCrossingTrader(
 		String name, Long cash, Map<Stock, Integer> inventory,
-		Random random, Map<Stock,TradeRange> tradeRanges) {
+		Random random, Map<Stock,SpreadCrossingRangeData> tradeRanges) {
 		
 		super(name, cash, inventory);
 		this.random = random;
-		this.tradeRanges = new HashMap<Stock,TradeRange>(tradeRanges);
+		this.tradeRanges = new HashMap<Stock,SpreadCrossingRangeData>(tradeRanges);
 	}
 
 	@Override
@@ -52,12 +55,6 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 			performRandomBuyAction(randomStock, traderMarketView);
 	}
 
-	/**
-     * Either sells a random quantity of stock at random price
-     * or it cancels an open sell order
-     * @param stock
-     * @param stockExchangeLevel1View
-     */
 	private void performRandomSellAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
@@ -87,12 +84,6 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 		}
 	}
 
-    /**
-     * Either buys a random quantity of stock at random price
-     * or cancels a SafeBuyOrder
-     * @param stock
-     * @param stockExchangeLevel1View
-     */
 	private void performRandomBuyAction(
 		Stock stock, StockExchangeLevel1View stockExchangeLevel1View) {
 		
@@ -129,9 +120,9 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
      */
 	protected Long createRandomPrice(Stock stock, Long basePrice, boolean isSell) {
 
-		TradeRange tradeRange = tradeRanges.get(stock);
+		SpreadCrossingRangeData tradeRange = tradeRanges.get(stock);
 		Long randomPrice = 
-			(isSell?-1:1) * (long)(random.nextDouble() *  tradeRange.price) + basePrice;
+			(isSell?-1:1) * (long)(random.nextDouble() *  tradeRange.priceRange) + basePrice;
 		
 		return max(randomPrice, 0l);
 	}
@@ -143,7 +134,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
      * @return random quantity of stock, which is in its tradeRange for the particular trader
      */
 	protected Integer createRandomQuantity(Stock stock, Integer ceiling) {
-		TradeRange stockData = tradeRanges.get(stock);
+		SpreadCrossingRangeData stockData = tradeRanges.get(stock);
 		
 		Integer tradeQuantityRange = stockData.maxQuantity - stockData.minQuantity;
 
