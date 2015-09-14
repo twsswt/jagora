@@ -10,6 +10,7 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import uk.ac.glasgow.jagora.MarketFactory;
@@ -42,7 +43,6 @@ import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPct;
 import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPctBuilder;
 import uk.ac.glasgow.jagora.trader.ivo.impl.RandomTraderPercentage;
 import uk.ac.glasgow.jagora.trader.ivo.impl.RandomTraderPercentageBuilder;
-import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 

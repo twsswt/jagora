@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 
 import uk.ac.glasgow.jagora.StockExchange;
@@ -13,20 +14,18 @@ import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngine.TraderViewSpecificati
 import uk.ac.glasgow.jagora.engine.impl.delay.DelayViewProvider;
 import uk.ac.glasgow.jagora.engine.impl.delay.DelayedExchangeLevel1View.DelayedOrderExecutor;
 import uk.ac.glasgow.jagora.trader.Trader;
-import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 
 public class SerialRandomEngineBuilder {
 
 	private World world;
-	private Integer seed;
+	private Random random;
 
 	private Set<StockExchange> stockExchanges;
 	
 	private Collection<TraderViewSpecification> traderViewSpecifications;
 	
 	private Queue<DelayedOrderExecutor> orderExecutorQueue;
-	
 
 	public SerialRandomEngineBuilder() {
 		stockExchanges = new HashSet<StockExchange>();
@@ -40,8 +39,8 @@ public class SerialRandomEngineBuilder {
 		return this;
 	}
 	
-	public SerialRandomEngineBuilder setSeed (Integer seed){
-		this.seed = seed;
+	public SerialRandomEngineBuilder setRandom (Random random){
+		this.random = random;
 		return this;
 	}
 	
@@ -75,7 +74,7 @@ public class SerialRandomEngineBuilder {
 		Trader level1Trader, Long delay, StockExchange stockExchange) {
 
 		DelayViewProvider delayedViewProvider = 
-			new DelayViewProvider(stockExchange, delay, orderExecutorQueue);
+			new DelayViewProvider(stockExchange, delay, world, orderExecutorQueue);
 		
 		addTraderStockExchangeView(level1Trader, delayedViewProvider);
 		
@@ -98,7 +97,7 @@ public class SerialRandomEngineBuilder {
 			stockExchanges,
 			traderViewSpecifications,
 			orderExecutorQueue,
-			new Random(seed));
+			random);
 	}
 
 	

@@ -8,7 +8,6 @@ import uk.ac.glasgow.jagora.MarketBuyOrder;
 import uk.ac.glasgow.jagora.MarketSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
@@ -38,7 +37,7 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 	private final Long delayedTick;
 
-	private List<DelayedOrderExecutor> orderExecutors = new ArrayList<DelayedOrderExecutor>();
+	private Queue<DelayedOrderExecutor> orderExecutorQueue;
 	private StockExchangeLevel1View wrappedView;
 
 
@@ -49,11 +48,12 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 		
 		this.wrappedView = wrappedView;
 		this.delayedTick = delayedTick;
+		this.orderExecutorQueue = orderExecutorQueue;
 	}
 
 	@Override
 	public void placeLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
-		this.orderExecutors.add(
+		this.orderExecutorQueue.add(
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
@@ -65,7 +65,7 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 	@Override
 	public void placeLimitSellOrder(LimitSellOrder limitSellOrder) {
-		this.orderExecutors.add(
+		this.orderExecutorQueue.add(
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
@@ -77,7 +77,7 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 	@Override
 	public void cancelLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
-		this.orderExecutors.add(
+		this.orderExecutorQueue.add(
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
@@ -89,7 +89,7 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 	@Override
 	public void cancelLimitSellOrder(LimitSellOrder limitSellOrder) {
-		this.orderExecutors.add (
+		this.orderExecutorQueue.add (
 				new DelayedOrderExecutor() {
 					@Override
 					public void execute() {
@@ -101,7 +101,7 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 	@Override
 	public void placeMarketBuyOrder(MarketBuyOrder marketBuyOrder) {
-		this.orderExecutors.add (
+		this.orderExecutorQueue.add (
 			new DelayedOrderExecutor() {
 				@Override
 				public void execute() {
@@ -113,7 +113,7 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 
 	@Override
 	public void placeMarketSellOrder(MarketSellOrder marketSellOrder) {
-		this.orderExecutors.add (
+		this.orderExecutorQueue.add (
 			new DelayedOrderExecutor() {
 				@Override
 				public void execute() {
@@ -159,8 +159,8 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 				.hashCode());
 		result = prime
 			* result
-			+ ((orderExecutors == null) ? 0
-				: orderExecutors.hashCode());
+			+ ((orderExecutorQueue == null) ? 0
+				: orderExecutorQueue.hashCode());
 		result = prime
 			* result
 			+ ((wrappedView == null) ? 0 : wrappedView
@@ -183,11 +183,11 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 				return false;
 		} else if (!delayedTick.equals(other.delayedTick))
 			return false;
-		if (orderExecutors == null) {
-			if (other.orderExecutors != null)
+		if (orderExecutorQueue == null) {
+			if (other.orderExecutorQueue != null)
 				return false;
-		} else if (!orderExecutors
-			.equals(other.orderExecutors))
+		} else if (!orderExecutorQueue
+			.equals(other.orderExecutorQueue))
 			return false;
 		if (wrappedView == null) {
 			if (other.wrappedView != null)

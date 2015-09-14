@@ -8,13 +8,14 @@ import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static uk.ac.glasgow.jagora.util.CollectionsRandom.chooseElement;
 
 /**
  * A trader that places spread crossing limit orders. When
@@ -47,7 +48,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 
 	@Override
 	public void speak(StockExchangeLevel1View traderMarketView) {
-		Stock randomStock = random.chooseElement(inventory.keySet());
+		Stock randomStock = chooseElement(inventory.keySet(), random);
 		
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
@@ -77,7 +78,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 			placeSafeSellOrder(stockExchangeLevel1View, limitSellOrder);
 			
 		} else {
-			LimitSellOrder randomSellOrder = random.chooseElement(openSellOrders);
+			LimitSellOrder randomSellOrder = chooseElement(openSellOrders, random);
 			if (randomSellOrder != null){
 				cancelSafeSellOrder(stockExchangeLevel1View, randomSellOrder);
 			}
@@ -104,7 +105,7 @@ public class RandomSpreadCrossingTrader extends SafeAbstractTrader implements Le
 			placeSafeBuyOrder(stockExchangeLevel1View, limitBuyOrder);
 			
 		} else {
-			LimitBuyOrder limitBuyOrder = random.chooseElement(openBuyOrders);
+			LimitBuyOrder limitBuyOrder = chooseElement(openBuyOrders, random);
 			if (limitBuyOrder != null)
 				cancelSafeBuyOrder(stockExchangeLevel1View, limitBuyOrder);
 		}

@@ -1,7 +1,8 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
+import java.util.Random;
+
 import uk.ac.glasgow.jagora.Stock;
-import uk.ac.glasgow.jagora.util.Random;
 
 
 public class MarginalTraderBuilder extends AbstractTraderBuilder {

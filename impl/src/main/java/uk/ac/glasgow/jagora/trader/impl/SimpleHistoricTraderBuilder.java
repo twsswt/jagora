@@ -3,9 +3,9 @@ package uk.ac.glasgow.jagora.trader.impl;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
 import uk.ac.glasgow.jagora.StockExchangeViewProvider;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class SimpleHistoricTraderBuilder extends AbstractTraderBuilder {

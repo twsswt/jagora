@@ -22,8 +22,8 @@ import static uk.ac.glasgow.jagora.trader.impl.zip.ZIPOrderJob.TargetPriceAction
  * Implementation of Cliff's (1997) Zero Intelligence Plus
  * (ZIP) Trader.
  * 
- * The implementation assumes a limit order driven market.
- * The algorithm does not account for the effect of
+ * The current implementation assumes a limit order driven
+ * market. The algorithm does not account for the effect of
  * cancelled orders on an agent's stock price.
  * 
  * @author tws

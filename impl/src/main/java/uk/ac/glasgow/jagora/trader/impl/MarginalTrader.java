@@ -1,13 +1,14 @@
 package uk.ac.glasgow.jagora.trader.impl;
 
+import static uk.ac.glasgow.jagora.util.CollectionsRandom.chooseElement;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Simulates an order driven market trader who places buy (often very large)
@@ -44,7 +45,7 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 	private void performMarginalSellOrder(
 		StockExchangeLevel1View traderMarketView) {
 
-		Stock randomStock = random.chooseElement(inventory.keySet());
+		Stock randomStock = chooseElement(inventory.keySet(), random);
 
 		Long bestBidPrice = 
 			traderMarketView.getBestBidPrice(randomStock);
@@ -66,7 +67,7 @@ public class MarginalTrader extends AbstractTrader implements Level1Trader {
 	private void performMarginalBuyOrder(
 			StockExchangeLevel1View traderMarketView) {
 		
-		Stock randomStock = random.chooseElement(inventory.keySet());
+		Stock randomStock = chooseElement(inventory.keySet(), random);
 
 		Long bestOfferPrice = 
 			traderMarketView.getBestOfferPrice(randomStock);

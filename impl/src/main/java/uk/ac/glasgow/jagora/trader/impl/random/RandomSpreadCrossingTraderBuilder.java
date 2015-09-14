@@ -2,10 +2,10 @@ package uk.ac.glasgow.jagora.trader.impl.random;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class RandomSpreadCrossingTraderBuilder extends AbstractTraderBuilder {
 

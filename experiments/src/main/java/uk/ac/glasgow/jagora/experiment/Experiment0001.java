@@ -94,7 +94,7 @@ public class Experiment0001 {
 		
 		engine = new SerialRandomEngineBuilder()
 			.setWorld(world)
-			.setSeed(1)
+			.setRandom(new Random(1))
 			.addStockExchange(stockExchange)
 			.addTradersStockExchangeView(traders, stockExchange)
 			.build();

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static uk.ac.glasgow.jagora.experiment.ExperimentalReportsPathsUtil.experimentalPricesDatFilePath;
 import static uk.ac.glasgow.jagora.experiment.ExperimentalReportsPathsUtil.experimentalReportDirectory;
 import static uk.ac.glasgow.jagora.experiment.MarketCalculationsUtil.calculateEquilibriumPrice;
+import static uk.ac.glasgow.jagora.util.CollectionsRandom.chooseElement;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +17,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +37,6 @@ import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTrader;
 import uk.ac.glasgow.jagora.trader.impl.zip.ZIPTraderBuilder;
-import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
@@ -232,7 +233,7 @@ public class Experiment0003 {
 			calculateEquilibriumPrice(maxPrice, minPrice, maxBidLimit, minOfferLimit, numberOfBuyers, numberOfSellers); 
 						
 		while (world.isAlive()){	
-			ZIPTrader zipTrader = random.chooseElement(traders);
+			ZIPTrader zipTrader = chooseElement(traders, random);
 			zipTrader.speak(stockExchange.createLevel2View());
 			stockExchange.doClearing();
 		}

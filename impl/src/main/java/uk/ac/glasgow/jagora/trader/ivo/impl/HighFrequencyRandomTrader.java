@@ -11,9 +11,9 @@ import uk.ac.glasgow.jagora.ticker.TradeExecutionEvent;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.Map;
+import java.util.Random;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;

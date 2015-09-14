@@ -1,9 +1,12 @@
 package uk.ac.glasgow.jagora.engine.impl;
 
+import static uk.ac.glasgow.jagora.util.CollectionsRandom.chooseElement;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 
 import uk.ac.glasgow.jagora.StockExchange;
@@ -13,7 +16,6 @@ import uk.ac.glasgow.jagora.engine.impl.delay.DelayedExchangeLevel1View.DelayedO
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Level2Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
-import uk.ac.glasgow.jagora.util.Random;
 import uk.ac.glasgow.jagora.world.World;
 
 public class SerialRandomEngine implements TradingEngine {
@@ -59,9 +61,8 @@ public class SerialRandomEngine implements TradingEngine {
 	@Override
 	public void run() {
 		while (world.isAlive()) {
-			
 			TraderViewSpecification traderViewSpecification
-				= random.chooseElement(traderViewSpecifications);
+				= chooseElement(traderViewSpecifications, random);
 			
 			Trader trader = traderViewSpecification.trader;
 	
