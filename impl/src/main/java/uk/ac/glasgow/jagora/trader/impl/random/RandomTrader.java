@@ -8,13 +8,14 @@ import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static uk.ac.glasgow.jagora.util.CollectionsRandom.chooseElement;
 
 /**
  * Places buy and sell limit orders on markets randomly. Buy
@@ -50,8 +51,8 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 
 	@Override
 	public void speak(StockExchangeLevel1View traderMarketView) {
-		Stock randomStock = random.chooseElement(sellRangeData.keySet());
 
+		Stock randomStock = chooseElement(sellRangeData.keySet(), random);
 
 		if (random.nextBoolean())
 			performRandomSellAction(randomStock, traderMarketView);
@@ -81,7 +82,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 			placeSafeSellOrder(stockExchangeLevel1View, limitSellOrder);
 			
 		} else {
-			LimitSellOrder randomSellOrder = random.chooseElement(openSellOrders);
+			LimitSellOrder randomSellOrder = chooseElement(openSellOrders, random);
 
 			if (randomSellOrder != null)
 				cancelSafeSellOrder(stockExchangeLevel1View, randomSellOrder);
@@ -107,7 +108,7 @@ public class RandomTrader extends SafeAbstractTrader implements Level1Trader {
 			placeSafeBuyOrder(stockExchangeLevel1View, limitBuyOrder);
 			
 		} else {
-			LimitBuyOrder limitBuyOrder = random.chooseElement(openBuyOrders);
+			LimitBuyOrder limitBuyOrder = chooseElement(openBuyOrders, random);
 			if (limitBuyOrder != null)
 				cancelSafeBuyOrder(stockExchangeLevel1View, limitBuyOrder);
 		}

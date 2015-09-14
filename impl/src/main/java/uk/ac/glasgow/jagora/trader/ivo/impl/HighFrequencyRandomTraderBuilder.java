@@ -1,8 +1,9 @@
 package uk.ac.glasgow.jagora.trader.ivo.impl;
 
+import java.util.Random;
+
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
-import uk.ac.glasgow.jagora.util.Random;
 
 public class HighFrequencyRandomTraderBuilder extends AbstractTraderBuilder {
 

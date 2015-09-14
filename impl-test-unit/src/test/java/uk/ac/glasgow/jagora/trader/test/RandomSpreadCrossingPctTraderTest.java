@@ -16,7 +16,7 @@ import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderBuilder
 import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPctBuilder;
 import static org.easymock.EasyMock.expect;
 
-public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
+public class RandomSpreadCrossingPctTraderTest extends EasyMockSupport {
 	
 	@Rule
 	public EasyMockRule rule = new EasyMockRule(this);
@@ -34,28 +34,27 @@ public class RandomSpreadCrossingTraderTest extends EasyMockSupport {
 	}
 
 	@Test
-	public void testRandomSpreadCrossingTrader() {
+	public void testRandomSpreadCrossingTraderPct () {
 
-		trader = new RandomSpreadCrossingTraderBuilder()
-			.setName("alice")
-			.setCash(100l)
-			.setSeed(1)
-			.addStock(lemons, 10)
-			.addTradeRange(lemons, 1, 4, 4l)
-			.build();
+		trader = new RandomSpreadCrossingTraderPctBuilder()
+				.setName("alicePct")
+				.setCash(1000l)
+				.setSeed(2)
+				.addStock(lemons,50)
+				.addTradeRangePct(lemons,1,10,0.1)
+				.build();
 
-		
-		expect(mockExchange.getBestOfferPrice(lemons)).andReturn(6l);
-		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder (trader, lemons, 3, 7l));
-		expect(mockExchange.getBestOfferPrice(lemons)).andReturn(4l);
-		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder (trader, lemons, 2, 6l));
+		expect(mockExchange.getBestOfferPrice(lemons)).andReturn(100l);
+		mockExchange.placeLimitBuyOrder(new DefaultLimitBuyOrder(trader,lemons,7,109l));
 
-		replayAll ();
-		
+		expect(mockExchange.getBestBidPrice(lemons)).andReturn(150l);
+		mockExchange.placeLimitSellOrder(new DefaultLimitSellOrder(trader,lemons,1,138l));
+
+		replayAll();
+
 		trader.speak(mockExchange);
 		trader.speak(mockExchange);
-		
+
 		verifyAll();
 	}
-
 }

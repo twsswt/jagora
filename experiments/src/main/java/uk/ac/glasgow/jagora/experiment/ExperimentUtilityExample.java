@@ -2,9 +2,10 @@ package uk.ac.glasgow.jagora.experiment;
 
 
 import org.junit.Before;
+
 import org.junit.Test;
 
-import uk.ac.glasgow.jagora.trader.Level2Trader;
+import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
 import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBuilder;
 
@@ -14,13 +15,13 @@ public class ExperimentUtilityExample  extends  ExperimentUtility{
 
 	/**
 	 * Overriding a method that needs to be changed
-	 * @param level2Traders
+	 * @param traders
 	 */
 	@Override
-	protected void addMarketMakers(Set<Level2Trader> level2Traders) {
+	protected void addMarketMakers(Set<Trader> traders) {
 		String name = createTraderName(MarketMaker.class,50);
 
-		Level2Trader trader =
+		Trader trader =
 			new MarketMakerBuilder()
 				.setName(name)
 				.setCash(initialLevel2TraderCash)
@@ -28,7 +29,7 @@ public class ExperimentUtilityExample  extends  ExperimentUtility{
 				.addStock(lemons,1000)
 				.build();
 
-		level2Traders.add(trader);
+		traders.add(trader);
 	}
 
 

@@ -2,14 +2,14 @@ package uk.ac.glasgow.jagora.trader.impl.random;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class RandomTraderBuilder extends AbstractTraderBuilder {
 	
-	protected Integer seed;
+	protected Random random;
 	protected Map<Stock, RelativeRangeData> sellRangeData;
 	protected Map<Stock, RelativeRangeData> buyRangeData;
 	
@@ -52,11 +52,16 @@ public class RandomTraderBuilder extends AbstractTraderBuilder {
 	}
 	
 	public RandomTrader build(){
-		return new RandomTrader(getName(), getCash(), getInventory(), new Random(seed), sellRangeData, buyRangeData);
+		return new RandomTrader(
+			getName(), getCash(),
+			getInventory(),
+			random,
+			sellRangeData,
+			buyRangeData);
 	}
 
-	public RandomTraderBuilder setSeed(Integer seed) {
-		this.seed = seed;
+	public RandomTraderBuilder setRandom(Random random) {
+		this.random = random;
 		return this;
 	}
 

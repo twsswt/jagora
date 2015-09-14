@@ -5,10 +5,10 @@ import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader;
 import uk.ac.glasgow.jagora.trader.impl.random.RangeData;
 import uk.ac.glasgow.jagora.trader.impl.random.SpreadCrossingRangeData;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;

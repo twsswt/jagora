@@ -19,11 +19,11 @@ public class TimedWorld implements World{
 		
 	@Override
 	public <T> TickEvent<T> getTick(T event) {
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+		}
 		synchronized(syncObject){
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-			}
 			return new TickEvent<T>(event, getCurrentTick());
 		}
 	}

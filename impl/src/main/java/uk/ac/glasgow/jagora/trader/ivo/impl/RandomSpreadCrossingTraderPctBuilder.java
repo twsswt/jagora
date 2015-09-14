@@ -4,10 +4,10 @@ package uk.ac.glasgow.jagora.trader.ivo.impl;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderBuilder;
 import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPct.TradeRangePct;
-import uk.ac.glasgow.jagora.util.Random;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class RandomSpreadCrossingTraderPctBuilder extends  RandomSpreadCrossingTraderBuilder {
 

@@ -16,16 +16,15 @@ import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.engine.TradingEngine;
 import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
 import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
-import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
 import uk.ac.glasgow.jagora.pricer.LimitOrderTradePricer;
 import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
 import uk.ac.glasgow.jagora.ticker.StockExchangeObservable;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamOrderListener;
 import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
 import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.trader.Level1Trader;
 import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
@@ -60,7 +59,7 @@ public class Experiment0001 {
 		StockExchange stockExchange = 
 			new DefaultStockExchange(world, stockExchangeObservable, marketFactory);
 		
-		Set<Level1Trader> traders = new HashSet<Level1Trader>();
+		Set<Trader> traders = new HashSet<Trader>();
 		
 		SimpleHistoricTraderBuilder simpleHistoricTraderBuilder = 
 			new SimpleHistoricTraderBuilder()
@@ -95,9 +94,9 @@ public class Experiment0001 {
 		
 		engine = new SerialRandomEngineBuilder()
 			.setWorld(world)
-			.setSeed(1)
+			.setRandom(new Random(1))
 			.addStockExchange(stockExchange)
-			.addTraders(traders)
+			.addTradersStockExchangeView(traders, stockExchange)
 			.build();
 		
 		Trader dan = new AbstractTraderBuilder(){

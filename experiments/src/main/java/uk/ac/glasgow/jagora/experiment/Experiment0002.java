@@ -46,22 +46,27 @@ import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 public class Experiment0002 {
 		
 
-	private final String pricesDatFilePath = experimentalPricesDatFilePath(this.getClass());
-		
-	private World world;
+	private final String pricesDatFilePath = 
+		experimentalPricesDatFilePath(this.getClass());
+	
 	private Stock lemons;
+	
+	private Random random;
+
+	private World world;
+	
 	private StockExchange stockExchange;
 	
 	private SerialTickerTapeObserver tickerTapeObserver;
 	
 	private TradingEngine engine;
-	
+		
 	@Before
 	public void setUp() throws Exception {
-
-		Random r = new Random(1);
-
+		
 		lemons = new Stock("lemons");
+
+		random = new Random(1);
 		
 		world = new SimpleSerialWorld(2000000l);
 		
@@ -73,7 +78,7 @@ public class Experiment0002 {
 		
 		stockExchange = new DefaultStockExchange(world, tickerTapeObserver, marketFactory);
 
-		Set<Level1Trader> traders = new HashSet<Level1Trader>();
+		Set<Trader> traders = new HashSet<Trader>();
 						
 		Trader dan = new AbstractTraderBuilder(){
 
@@ -101,7 +106,7 @@ public class Experiment0002 {
 			traders.add(
 				randomTraderBuilder
 				.setName(format("RandomTrader[%d]", i))
-				.setSeed(r.nextInt())
+				.setRandom(random)
 				.build()));
 
 		Level1Trader institutionalInvestorTrader = 
@@ -122,9 +127,9 @@ public class Experiment0002 {
 		
 		engine = new SerialRandomEngineBuilder()
 			.setWorld(world)
-			.setSeed(1)
+			.setRandom(new Random(1))
 			.addStockExchange(stockExchange)
-			.addTraders(traders)
+			.addTradersStockExchangeView(traders,stockExchange)
 			.build();
 	}
 	

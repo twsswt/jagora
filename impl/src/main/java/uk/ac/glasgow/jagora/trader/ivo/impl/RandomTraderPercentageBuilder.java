@@ -3,10 +3,10 @@ package uk.ac.glasgow.jagora.trader.ivo.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
-import uk.ac.glasgow.jagora.util.Random;
 
 public class RandomTraderPercentageBuilder extends AbstractTraderBuilder {
 		

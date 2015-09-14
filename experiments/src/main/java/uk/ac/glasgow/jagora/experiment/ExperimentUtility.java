@@ -1,36 +1,7 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import uk.ac.glasgow.jagora.*;
-import uk.ac.glasgow.jagora.engine.TradingEngine;
-import uk.ac.glasgow.jagora.engine.impl.DelayableSerialRandomEngineBuilder;
-import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
-import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
-import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
-import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
-import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
-import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
-import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
-import uk.ac.glasgow.jagora.trader.Level1Trader;
-import uk.ac.glasgow.jagora.trader.Level2Trader;
-import uk.ac.glasgow.jagora.trader.Trader;
-import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
-import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
-import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
-import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
-import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBuilder;
-import uk.ac.glasgow.jagora.trader.impl.random.*;
-import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
-import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
-import uk.ac.glasgow.jagora.trader.ivo.impl.HighFrequencyRandomTrader;
-import uk.ac.glasgow.jagora.trader.ivo.impl.HighFrequencyRandomTraderBuilder;
-import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPct;
-import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPctBuilder;
-import uk.ac.glasgow.jagora.trader.ivo.impl.RandomTraderPercentage;
-import uk.ac.glasgow.jagora.trader.ivo.impl.RandomTraderPercentageBuilder;
-import uk.ac.glasgow.jagora.util.Random;
-import uk.ac.glasgow.jagora.world.World;
-import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
+import static java.lang.String.format;
+import static java.util.stream.IntStream.range;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,10 +10,41 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
-import static java.lang.String.format;
-import static java.util.stream.IntStream.range;
+import uk.ac.glasgow.jagora.MarketFactory;
+import uk.ac.glasgow.jagora.Stock;
+import uk.ac.glasgow.jagora.StockExchange;
+import uk.ac.glasgow.jagora.StockExchangeLevel1View;
+import uk.ac.glasgow.jagora.engine.TradingEngine;
+import uk.ac.glasgow.jagora.engine.impl.SerialRandomEngineBuilder;
+import uk.ac.glasgow.jagora.impl.ContinuousOrderDrivenMarketFactory;
+import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
+import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
+import uk.ac.glasgow.jagora.impl.DefaultStockExchange;
+import uk.ac.glasgow.jagora.pricer.impl.OldestLimitOrderPricer;
+import uk.ac.glasgow.jagora.ticker.impl.OutputStreamTradeListener;
+import uk.ac.glasgow.jagora.ticker.impl.SerialTickerTapeObserver;
+import uk.ac.glasgow.jagora.trader.Trader;
+import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTrader;
+import uk.ac.glasgow.jagora.trader.impl.InstitutionalInvestorTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
+import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTrader;
+import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMaker;
+import uk.ac.glasgow.jagora.trader.impl.marketmaker.MarketMakerBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomTrader;
+import uk.ac.glasgow.jagora.trader.ivo.impl.HighFrequencyRandomTrader;
+import uk.ac.glasgow.jagora.trader.ivo.impl.HighFrequencyRandomTraderBuilder;
+import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPct;
+import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPctBuilder;
+import uk.ac.glasgow.jagora.trader.ivo.impl.RandomTraderPercentage;
+import uk.ac.glasgow.jagora.trader.ivo.impl.RandomTraderPercentageBuilder;
+import uk.ac.glasgow.jagora.world.World;
+import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
 
 /**
@@ -98,8 +100,8 @@ public class ExperimentUtility {
 
 	protected Random random;
 
-	protected Set<Level1Trader> level1Traders;
-	protected Set<Level2Trader> level2Traders;
+	protected Set<Trader> traders;
+	protected Set<Trader> level2Traders;
 
 	protected Map<Long,Integer> delayedBuyOrders = new HashMap<>();
 	protected Map<Long,Integer> delayedSellOrders = new HashMap<>();
@@ -117,24 +119,23 @@ public class ExperimentUtility {
 
 		calculateNumberOfShares();
 
-		level1Traders = new HashSet<>();
+		traders = new HashSet<Trader>();
 		level2Traders = new HashSet<>();
 
-		addRandomTraders(level1Traders);
-		addRandomSpreadCrossingTraders(level1Traders);
-		addSimpleHistoricTraders(level1Traders);
-		addInstitutionalInvestorTrader(level1Traders);
+		addRandomTraders(traders);
+		addRandomSpreadCrossingTraders(traders);
+		addSimpleHistoricTraders(traders);
+		addInstitutionalInvestorTrader(traders);
 
 		addHighFrequencyTraders (level2Traders);
 		addMarketMakers (level2Traders);
 
 
-		engine = new DelayableSerialRandomEngineBuilder()
+		engine = new SerialRandomEngineBuilder()
 			.setWorld(world)
-			.setStockExchange(stockExchange)
-			.setStandardDelay(standardDelay)
-			.addTraders(level1Traders)
-			.addPrivilegedTraders(level2Traders)
+			.addStockExchange(stockExchange)
+			.addDelayedTradersView(traders, standardDelay, stockExchange)
+			.addTradersStockExchangeView(level2Traders, stockExchange)
 			.build();
 
 		configureFirstTrade();
@@ -153,62 +154,62 @@ public class ExperimentUtility {
 
 	}
 
-	protected void addMarketMakers(Set<Level2Trader> level2Traders) {
+	protected void addMarketMakers(Set<Trader> traders) {
 		Integer marketMakerQuantity = Math.round(this.lemonsQuantity * marketMakerShare);
 
 		for (Integer i : range(0,numberOfMarketMakers).toArray()) {
 			String name = createTraderName(MarketMaker.class,i);
 
-			Level2Trader trader =
-					new MarketMakerBuilder()
-							.setName(name)
-							.setCash(initialLevel2TraderCash)
-							.addMarketPositionSpecification(lemons, lemonsQuantity, lemonsLiquidity )
-							.addStock(lemons, marketMakerQuantity)
-							.build();
+			Trader trader =
+				new MarketMakerBuilder()
+					.setName(name)
+					.setCash(initialLevel2TraderCash)
+					.addMarketPositionSpecification(lemons, lemonsQuantity, lemonsLiquidity )
+					.addStock(lemons, marketMakerQuantity)
+					.build();
 
-			level2Traders.add(trader);
+			traders.add(trader);
 
 		}
 	}
 
-	protected void addHighFrequencyTraders(Set<Level2Trader> level2Traders) {
+	protected void addHighFrequencyTraders(Set<Trader> traders) {
 		for (Integer i: range(0,numberOfHighFrequencyTraders).toArray()){
 			String name = createTraderName(HighFrequencyRandomTrader.class,i);
 
-			Level2Trader trader =
-					new HighFrequencyRandomTraderBuilder()
-							.addStock(lemons,0)
-							.setName(name)
-							.setCash(initialLevel2TraderCash)
-							.setSeed(seed)
-							.setBuyRangeDatum(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread)
-							.setSellRangeDatum(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread)							
-							.build();
+			Trader trader =
+				new HighFrequencyRandomTraderBuilder()
+					.addStock(lemons,0)
+					.setName(name)
+					.setCash(initialLevel2TraderCash)
+					.setSeed(seed)
+					.setBuyRangeDatum(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread)
+					.setSellRangeDatum(lemons, quantityTradeRangeLow, quantityTradeRangeHigh, -hFTSpread, hFTSpread)							
+					.build();
 
-			level2Traders.add(trader);
+			traders.add(trader);
 		}
 	}
 
-	protected void addSimpleHistoricTraders(Set<Level1Trader> level1Traders) throws  Exception{
+	protected void addSimpleHistoricTraders(Set<Trader> traders) throws  Exception{
 		for (Integer i : range(0, numberOfSimpleHistoricTraders).toArray()){
 
 			String name = createTraderName(SimpleHistoricTrader.class, i);
 
-			Level1Trader trader =
-					new SimpleHistoricTraderBuilder()
-							.setName(name)
-							.setCash(initialTraderCash)
-							.setSeed(seed)
-							.addStock(lemons, stockQuantity)
-							.monitorStockExchange(stockExchange)
-							.build();
-			level1Traders.add(trader);
+			Trader trader =
+				new SimpleHistoricTraderBuilder()
+					.setName(name)
+					.setCash(initialTraderCash)
+					.setSeed(seed)
+					.addStock(lemons, stockQuantity)
+					.monitorStockExchange(stockExchange)
+					.build();
+			traders.add(trader);
 		}
 	}
 
 
-	protected void addRandomTraders(Set<Level1Trader> level1Traders) throws Exception{
+	protected void addRandomTraders(Set<Trader> level1Traders) throws Exception{
 		for (Integer i : range(0, numberOfRandomTraders).toArray()){
 
 			String name = createTraderName(RandomTrader.class, i);
@@ -228,7 +229,7 @@ public class ExperimentUtility {
 	}
 
 
-	protected void addRandomSpreadCrossingTraders(Set<Level1Trader> level1Traders) {
+	protected void addRandomSpreadCrossingTraders(Set<Trader> level1Traders) {
 		for (Integer i : range(0, numberOfRandomSpreadCrossingTraders).toArray()) {
 
 			String name = createTraderName(RandomSpreadCrossingTrader.class,i);
@@ -247,7 +248,7 @@ public class ExperimentUtility {
 		}
 	}
 
-	protected void addInstitutionalInvestorTrader (Set<Level1Trader> level1Traders) throws Exception{
+	protected void addInstitutionalInvestorTrader (Set<Trader> level1Traders) throws Exception{
 
 			if (delayedBuyOrders.isEmpty() && delayedSellOrders.isEmpty())
 				return;

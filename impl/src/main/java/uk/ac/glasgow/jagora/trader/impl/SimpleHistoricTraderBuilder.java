@@ -2,9 +2,10 @@ package uk.ac.glasgow.jagora.trader.impl;
 
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
-import uk.ac.glasgow.jagora.util.Random;
+import uk.ac.glasgow.jagora.StockExchangeViewProvider;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class SimpleHistoricTraderBuilder extends AbstractTraderBuilder {
@@ -46,7 +47,7 @@ public class SimpleHistoricTraderBuilder extends AbstractTraderBuilder {
 		SimpleHistoricTrader trader =  
 			new SimpleHistoricTrader(
 				getName(), getCash(), getInventory(), new Random(seed));
-		for (StockExchange stockExchange: stockExchanges)
+		for (StockExchangeViewProvider stockExchange: stockExchanges)
 			stockExchange.createLevel1View().registerTradeListener(trader);
 		return trader;
 	}

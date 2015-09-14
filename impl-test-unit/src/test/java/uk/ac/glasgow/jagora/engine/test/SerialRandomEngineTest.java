@@ -1,7 +1,10 @@
 package uk.ac.glasgow.jagora.engine.test;
 
+import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import uk.ac.glasgow.jagora.MarketFactory;
 import uk.ac.glasgow.jagora.Stock;
 import uk.ac.glasgow.jagora.StockExchange;
@@ -16,7 +19,6 @@ import uk.ac.glasgow.jagora.trader.impl.BuyOnlyTrader;
 import uk.ac.glasgow.jagora.trader.impl.SellOnlyTrader;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
-
 import static org.junit.Assert.assertEquals;
 
 public class SerialRandomEngineTest {
@@ -61,9 +63,9 @@ public class SerialRandomEngineTest {
 		
 		engine = new SerialRandomEngineBuilder()
 			.setWorld(world)
-			.setSeed(seed)
-			.addTrader(alice)
-			.addTrader(bob)
+			.setRandom(new Random(seed))
+			.addTraderStockExchangeView(alice, stockExchange)
+			.addTraderStockExchangeView(bob, stockExchange)
 			.addStockExchange(stockExchange)
 			.build();
 		
