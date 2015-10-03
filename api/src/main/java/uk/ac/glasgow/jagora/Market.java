@@ -28,6 +28,13 @@ public interface Market {
 
 	public TickEvent <LimitSellOrder> cancelLimitSellOrder(LimitSellOrder order);
 	
+	/**
+	 * Clears this market according to the market
+	 * implementation specific rules for matching orders.
+	 * 
+	 * @return the list of trades that were executed during
+	 * this round of clearing.
+	 */
 	public List<TickEvent<Trade>> doClearing();
 
 	public List<LimitBuyOrder> getBuyLimitOrders();
