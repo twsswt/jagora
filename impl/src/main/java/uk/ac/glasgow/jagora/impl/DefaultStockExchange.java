@@ -101,14 +101,18 @@ public class DefaultStockExchange implements StockExchange{
 		public void cancelLimitBuyOrder(LimitBuyOrder limitBuyOrder) {
 			TickEvent<LimitBuyOrder> orderEvent =
 					getMarket(limitBuyOrder.getStock()).cancelLimitBuyOrder(limitBuyOrder);
-			stockExchangeObservable.notifyOrderListenersOfLimitOrderCancellation(orderEvent);
+			if (orderEvent != null)
+				stockExchangeObservable.
+					notifyOrderListenersOfLimitOrderCancellation(orderEvent);
 		}
 
 		@Override
 		public void cancelLimitSellOrder(LimitSellOrder limitSellOrder){
 			TickEvent<LimitSellOrder> orderEvent =
 				getMarket(limitSellOrder.getStock()).cancelLimitSellOrder(limitSellOrder);
-			stockExchangeObservable.notifyOrderListenersOfLimitOrderCancellation(orderEvent);
+			if (orderEvent != null) 
+				stockExchangeObservable.
+					notifyOrderListenersOfLimitOrderCancellation(orderEvent);
 		}
 		
 		@Override

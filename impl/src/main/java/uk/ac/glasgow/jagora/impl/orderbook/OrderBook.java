@@ -27,6 +27,7 @@ public class OrderBook<O extends Order> {
 	}
 
 	public TickEvent<O> cancelOrder(O order) {
+
 		TickEvent<O> toRemove = null;
 				
 		for (TickEvent<O> receivedOrder : receivedOrders)

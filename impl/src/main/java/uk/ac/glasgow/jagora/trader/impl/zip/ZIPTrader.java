@@ -86,7 +86,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 	@Override
 	public void speak(StockExchangeLevel2View level2View) {
 		register (level2View);
-		
+
 		updateCurrentOrderJob ();
 		if (!currentOrderJobIsFinished())
 			currentOrderJob.updateOrder(level2View);
