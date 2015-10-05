@@ -121,7 +121,7 @@ public class Experiment0003 {
 		range(0,numberOfSellers)
 			.forEach(seed -> configureSellerZIPTrader(seed, minPrice, maxBidLimit));
 		
-		shuffle(traders);
+		shuffle(traders, new Random(seed));
 	}
 
 	private void createStockExchange() throws FileNotFoundException {
