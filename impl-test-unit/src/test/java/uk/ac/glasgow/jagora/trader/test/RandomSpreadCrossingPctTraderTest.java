@@ -12,7 +12,6 @@ import uk.ac.glasgow.jagora.StockExchangeLevel1View;
 import uk.ac.glasgow.jagora.impl.DefaultLimitBuyOrder;
 import uk.ac.glasgow.jagora.impl.DefaultLimitSellOrder;
 import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTrader;
-import uk.ac.glasgow.jagora.trader.impl.random.RandomSpreadCrossingTraderBuilder;
 import uk.ac.glasgow.jagora.trader.ivo.impl.RandomSpreadCrossingTraderPctBuilder;
 import static org.easymock.EasyMock.expect;
 

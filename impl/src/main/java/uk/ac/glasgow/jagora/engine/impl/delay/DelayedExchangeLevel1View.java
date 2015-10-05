@@ -8,7 +8,6 @@ import uk.ac.glasgow.jagora.MarketBuyOrder;
 import uk.ac.glasgow.jagora.MarketSellOrder;
 import uk.ac.glasgow.jagora.ticker.TradeListener;
 
-import java.util.List;
 import java.util.Queue;
 
 /**

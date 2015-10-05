@@ -43,7 +43,7 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 	private Trader bob;
 		
 	private LimitSellOrder[] sellOrders;
-	private LimitBuyOrder[] buyOrders;
+	private LimitBuyOrder[] limitBuyOrders;
 	private Trade[] trades;		
 	
 	@Mock
@@ -64,17 +64,17 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 			new DefaultLimitSellOrder(alice, oranges, 20, 250l)
 		};
 		
-		buyOrders = new LimitBuyOrder[]{
+		limitBuyOrders = new LimitBuyOrder[]{
 			new DefaultLimitBuyOrder(alice, lemons, 25, 450l),
 			new DefaultLimitBuyOrder(alice, lemons, 60, 560l),
 			new DefaultLimitBuyOrder(bob, oranges, 30, 270l)
 		};
 		
 		trades = new Trade[] {
-			new DefaultTrade(lemons, 50, 550l, sellOrders[0], buyOrders[1]),
-			new DefaultTrade(lemons, 10, 559l, sellOrders[1], buyOrders[1]),
-			new DefaultTrade(oranges, 20, 250l, sellOrders[3], buyOrders[2]),
-			new DefaultTrade(oranges, 10, 265l, sellOrders[2], buyOrders[2])
+			new DefaultTrade(lemons, 50, 550l, sellOrders[0], limitBuyOrders[1]),
+			new DefaultTrade(lemons, 10, 559l, sellOrders[1], limitBuyOrders[1]),
+			new DefaultTrade(oranges, 20, 250l, sellOrders[3], limitBuyOrders[2]),
+			new DefaultTrade(oranges, 10, 265l, sellOrders[2], limitBuyOrders[2])
 
 		};
 		
@@ -89,6 +89,51 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 		stockExchangeLevel1View = 
 			defaultStockExchange.createLevel1View();
 	}
+	
+	@Test
+	public void testPlaceLimitOrder (){
+		
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(limitBuyOrders[0], 0l));
+		
+		replayAll();
+		
+		stockExchangeLevel1View.placeLimitBuyOrder(limitBuyOrders[0]);
+		
+		verifyAll();
+	}
+	
+	@Test
+	public void testCancelLimitOrder (){
+	
+		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
+			new TickEvent<LimitBuyOrder>(limitBuyOrders[0], 0l));
+		tickerTapeObserver.notifyOrderListenersOfLimitOrderCancellation(
+			new TickEvent<LimitBuyOrder>(limitBuyOrders[0], 1l));
+		
+		
+		replayAll();
+		
+		stockExchangeLevel1View.placeLimitBuyOrder(limitBuyOrders[0]);
+		stockExchangeLevel1View.cancelLimitBuyOrder(limitBuyOrders[0]);
+		
+		verifyAll();
+		
+	}
+	
+	/**
+	 * A cancelled non-existent order should not result in a notification to the observable.
+	 */
+	@Test
+	public void testCancelNonExistentOrder (){		
+		
+		replayAll();
+		
+		stockExchangeLevel1View.cancelLimitBuyOrder(limitBuyOrders[0]);
+		
+		verifyAll();		
+	}
+	
 
 	/**
 	 * Executes a short order sequence for two agents on two stocks.
@@ -100,7 +145,7 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 			new TickEvent<LimitSellOrder>(sellOrders[0], 0l));
 		
 		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
-			new TickEvent<LimitBuyOrder>(buyOrders[0], 1l));
+			new TickEvent<LimitBuyOrder>(limitBuyOrders[0], 1l));
 		
 		tickerTapeObserver.notifyTradeListeners(new ArrayList<>());
 		
@@ -110,7 +155,7 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 			.placeLimitSellOrder(sellOrders[0]);
 		
 		stockExchangeLevel1View
-			.placeLimitBuyOrder(buyOrders[0]);
+			.placeLimitBuyOrder(limitBuyOrders[0]);
 				
 		defaultStockExchange.doClearing();
 		
@@ -124,13 +169,13 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 			new TickEvent<LimitSellOrder>(sellOrders[0], 0l));
 		
 		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
-			new TickEvent<LimitBuyOrder>(buyOrders[0], 1l));
+			new TickEvent<LimitBuyOrder>(limitBuyOrders[0], 1l));
 		
 		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
 			new TickEvent<LimitSellOrder>(sellOrders[1], 2l));
 		
 		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
-			new TickEvent<LimitBuyOrder>(buyOrders[1], 3l));
+			new TickEvent<LimitBuyOrder>(limitBuyOrders[1], 3l));
 
 		bob.sellStock(trades[0]);
 		alice.buyStock(trades[0]);
@@ -148,14 +193,14 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 			.placeLimitSellOrder(sellOrders[0]);
 	
 		stockExchangeLevel1View
-			.placeLimitBuyOrder(buyOrders[0]);
+			.placeLimitBuyOrder(limitBuyOrders[0]);
 
 				
 		stockExchangeLevel1View
 			.placeLimitSellOrder(sellOrders[1]);
 	
 		stockExchangeLevel1View
-			.placeLimitBuyOrder(buyOrders[1]);
+			.placeLimitBuyOrder(limitBuyOrders[1]);
 		
 		defaultStockExchange.doClearing();
 		
@@ -172,7 +217,7 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 			new TickEvent<LimitSellOrder>(sellOrders[3], 1l));
 		
 		tickerTapeObserver.notifyOrderListenersOfLimitOrder(
-			new TickEvent<LimitBuyOrder>(buyOrders[2], 2l));
+			new TickEvent<LimitBuyOrder>(limitBuyOrders[2], 2l));
 		
 		alice.sellStock(trades[2]);
 		bob.buyStock(trades[2]);
@@ -191,7 +236,7 @@ public class DefaultStockExchangeTest extends EasyMockSupport {
 			.placeLimitSellOrder(sellOrders[3]);
 
 		stockExchangeLevel1View
-			.placeLimitBuyOrder(buyOrders[2]);
+			.placeLimitBuyOrder(limitBuyOrders[2]);
 		
 		defaultStockExchange.doClearing();
 		
