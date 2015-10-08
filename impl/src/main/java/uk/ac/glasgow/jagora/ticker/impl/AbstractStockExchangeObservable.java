@@ -92,10 +92,12 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 
 	@Override
 	public void registerTradeListener(TradeListener tradeListener) {
-		if (tradeListeners.contains(tradeListener))
-			return;
-
 		tradeListeners.add(tradeListener);
+	}
+	
+	@Override
+	public void deRegisterTradeListener(TradeListener tradeListener) {
+		tradeListeners.remove(tradeListener);
 	}
 
 	@Override
@@ -137,12 +139,14 @@ public abstract class AbstractStockExchangeObservable implements StockExchangeOb
 	
 	@Override
 	public void registerOrderListener(OrderListener orderListener) {
-		if (orderListeners.contains(orderListener))
-			return;
-
 		orderListeners.add(orderListener);
-
 	}
+	
+	@Override
+	public void deRegisterOrderListener(OrderListener orderListener) {
+		orderListeners.remove(orderListener);
+	}
+
 
 	@Override
 	public void notifyOrderListenersOfLimitOrder(TickEvent<? extends LimitOrder> orderEvent){

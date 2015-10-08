@@ -38,6 +38,7 @@ public class ZIPTraderTargetPriceGnuPlotDATLogger implements OrderListener {
 
 
 	private void logAverageLimitOrderPrices(Long tick) {
+		
 		Long averageBid = 
 			(long) zipTraders
 				.stream()

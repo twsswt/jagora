@@ -42,4 +42,8 @@ public interface StockExchangeObservable {
 
 	public List<LimitOrderEvent> getLimitBuyOrderHistory(Stock stock);
 
+	public void deRegisterOrderListener(OrderListener orderListener);
+
+	public void deRegisterTradeListener(TradeListener tradeListener);
+
 }

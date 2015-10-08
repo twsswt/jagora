@@ -10,5 +10,7 @@ public interface StockExchangeLevel2View extends StockExchangeLevel1View {
 	public List<? extends LimitOrder> getBuyLimitOrders(Stock stock);
 	
 	public List<? extends LimitOrder> getSellLimitOrders(Stock stock);
+
+	public void deRegisterOrderListener(OrderListener orderListener);
 	
 }

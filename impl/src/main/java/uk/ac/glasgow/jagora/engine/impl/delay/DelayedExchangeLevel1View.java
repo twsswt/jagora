@@ -146,7 +146,11 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 	public void registerTradeListener(TradeListener tradeListener) {
 		wrappedView.registerTradeListener(tradeListener);
 	}
-
+	
+	@Override
+	public void deRegisterTradeListener(TradeListener tradeListener) {
+		wrappedView.deRegisterTradeListener(tradeListener);
+	}
 
 	@Override
 	public int hashCode() {
@@ -166,7 +170,6 @@ public class DelayedExchangeLevel1View implements StockExchangeLevel1View {
 				.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
