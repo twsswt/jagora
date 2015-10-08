@@ -12,4 +12,4 @@ Jagora is a agent oriented simulation framework for financial market experiments
 
 ## About the name
 
-Agora is (loosely) Greek for 'Market' and the project is implemented in Java. Fortuituously, Jagora is a type of snail.  Clever, hmm?
+Agora is (loosely) Greek for 'Market' and the project is implemented in Java. Fortuituously, Jagora is a type of snail.  Clever, hmm?  Well yes, if someone hadn't thought of it first...
