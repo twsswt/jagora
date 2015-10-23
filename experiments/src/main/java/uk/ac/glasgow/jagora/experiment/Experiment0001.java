@@ -32,6 +32,11 @@ import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
+/**
+ * A simple experiment to demonstrate price discovery and steady state behaviour of random agents.
+ * @author tws
+ *
+ */
 public class Experiment0001 {
 		
 	private TradingEngine engine;
@@ -67,13 +72,13 @@ public class Experiment0001 {
 				.addStock(lemons, 5)
 				.monitorStockExchange(stockExchange);
 		
-		range(0, 50).forEach(i -> traders.add(
+		/*range(0, 50).forEach(i -> traders.add(
 				simpleHistoricTraderBuilder
 					.setSeed(r.nextInt())
 					.setName("trader["+i+"]")
-					.build()));
+					.build()));*/
 		
-		/*traders.add(
+		traders.add(
 			new RandomTraderBuilder()
 				.setCash(1000l)
 				.addStock(lemons, 5000)
@@ -81,7 +86,7 @@ public class Experiment0001 {
 				.setBuyOrderRange (lemons, 1, 2, -9l, 2l)
 				.setName("RandomTrader")
 				.setSeed(r.nextInt())
-				.build());*/
+				.build());
 		
 		OutputStreamTradeListener tradeListener = 
 			new OutputStreamTradeListener(System.out);
