@@ -29,6 +29,7 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.trader.impl.AbstractTraderBuilder;
 import uk.ac.glasgow.jagora.trader.impl.SafeAbstractTrader;
 import uk.ac.glasgow.jagora.trader.impl.SimpleHistoricTraderBuilder;
+import uk.ac.glasgow.jagora.trader.impl.random.RandomTraderBuilder;
 import uk.ac.glasgow.jagora.world.World;
 import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
 
@@ -85,7 +86,7 @@ public class Experiment0001 {
 				.setSellOrderRange(lemons, 1, 2, -1l, 10l)
 				.setBuyOrderRange (lemons, 1, 2, -9l, 2l)
 				.setName("RandomTrader")
-				.setSeed(r.nextInt())
+				.setRandom(new Random(r.nextInt()))
 				.build());
 		
 		OutputStreamTradeListener tradeListener = 
