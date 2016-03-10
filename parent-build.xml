@@ -22,25 +22,31 @@
 	<property name="target.test.bin.dir" value="${target.dir}/test-classes"/>
 	<property name="target.junit-reports.dir" value="${target.dir}/junit-reports"/>
 	
-	<property name="${target.findbugs-reports.dir}" value="${target.dir}/findbugs-reports"/>
-
-	<path id="pitest.classpath">
-		<fileset dir ="${target.lib.dir}" includes="pitest*.jar,junit*.jar"/>
-	</path>
+	<property name="target.findbugs-reports.dir" value="${target.dir}/findbugs-reports"/>
 	
 
 	<path id="project.classpath">
 		<pathelement location="${target.bin.dir}"/>
 		<fileset dir="${target.lib.dir}"/>
 	</path>
-
-
+	
+	
 	<path id="test.classpath">
 		<pathelement location="${target.test.bin.dir}"/>
 		<fileset dir="${target.lib.dir}"/>
 	</path>
 
 
+	<path id="pitest.classpath">
+		<fileset dir ="${target.lib.dir}" includes="pitest*.jar,junit*.jar"/>
+	</path>
+
+
+	<path id="findbugs.classpath">
+		<fileset dir ="${target.lib.dir}" includes="*.jar"/>
+	</path>
+	
+	
 	<target name="clean">
 		<delete dir="${target.dir}"/>
 	</target>
