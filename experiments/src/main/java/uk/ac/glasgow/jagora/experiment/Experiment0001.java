@@ -1,7 +1,5 @@
 package uk.ac.glasgow.jagora.experiment;
 
-import static java.util.stream.IntStream.range;
-
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;

@@ -2,7 +2,7 @@ package uk.ac.glasgow.jagora.experiment;
 
 public class ExperimentalReportsPathsUtil {
 
-	public static final String experimentalReportsDirectory = "reports/jagora/experiments";
+	public static final String experimentalReportsDirectory = "target/jagora-reports/";
 
 	public static final String experimentalReportDirectory(Class<?> experiment){
 		String experimentId = experiment.getSimpleName();

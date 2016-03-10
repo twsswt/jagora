@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project
+	name="jagora-parent"
+	xmlns:ivy="antlib:org.apache.ivy.ant"
+	basedir="."
+	default="build"
+	>
+
+
+	<property environment="env"/>
+
+	<property name="src.dir" value="src/main" />
+	<property name="java.src.dir" value="${src.dir}/java"/>
+	<property name="target.dir" value="target" />
+	<property name="target.bin.dir" value="${target.dir}/classes"/>
+	<property name="target.jar.dir" value="${target.dir}/jars"/>
+	<property name="target.lib.dir" value="${target.dir}/lib" />
+	
+	<property name="src.test.dir" value="src/test" />
+	<property name="java.src.test.dir" value="${src.test.dir}/java" />
+	<property name="target.test.bin.dir" value="${target.dir}/test-classes"/>
+	<property name="target.junit-reports.dir" value="${target.dir}/junit-reports"/>
+	
+	<property name="${target.findbugs-reports.dir}" value="${target.dir}/findbugs-reports"/>
+
+	<path id="pitest.classpath">
+		<fileset dir ="${target.lib.dir}" includes="pitest*.jar,junit*.jar"/>
+	</path>
+	
+
+	<path id="project.classpath">
+		<pathelement location="${target.bin.dir}"/>
+		<fileset dir="${target.lib.dir}"/>
+	</path>
+
+
+	<path id="test.classpath">
+		<pathelement location="${target.test.bin.dir}"/>
+		<fileset dir="${target.lib.dir}"/>
+	</path>
+
+
+	<target name="clean">
+		<delete dir="${target.dir}"/>
+	</target>
+
+
+	<target name="cleanall" depends="clean">
+		<ivy:cleancache/>
+	</target>
+
+
+	<target name="init">
+		<mkdir dir="${target.bin.dir}"/>
+		<mkdir dir="${target.lib.dir}"/>
+		<copy includeemptydirs="false" todir="${target.bin.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="retrieve" description="Retrieve dependencies with apache ivy.">
+		<ivy:retrieve pattern="${target.lib.dir}/[artifact].[ext]"/>
+	</target>
+
+
+	<target name="compile" depends="init,retrieve">
+		<javac
+			destdir="${target.bin.dir}"
+			debug="true"
+			debuglevel="lines,vars,source" 
+		>
+			<src path="${src.dir}"/>
+			<classpath refid="project.classpath"/>
+		</javac>
+	</target>
+
+
+	<target name="check.java.test.suite">
+		<condition property="test.suite.present">
+			<resourceexists>
+				<file file="${java.src.test.dir}"/>
+			</resourceexists>
+		</condition>
+	</target>
+
+
+	<target name="compile.tests" depends="check.java.test.suite,compile" if="test.suite.present">
+		<mkdir dir="${target.test.bin.dir}" />
+		<javac
+			destdir="${target.test.bin.dir}"
+			debug="true"
+			debuglevel="lines,vars,source" 
+		>
+			<src path="${java.src.test.dir}"/>
+			<classpath refid="project.classpath"/>
+		</javac>
+	</target>
+
+
+	<target name="test" depends="check.java.test.suite,compile.tests" if="test.suite.present">
+		
+		<mkdir dir="${target.junit-reports.dir}" />
+		
+		<junit printsummary="true" fork="yes" showoutput="true"  haltonerror="true">
+			<formatter type="xml"/>
+			<formatter type="plain"/>
+			<classpath refid="project.classpath"/>
+			<classpath refid="test.classpath"/>
+			<batchtest todir="${target.junit-reports.dir}">
+				<fileset dir="${java.src.test.dir}"
+					includes="**/test/**/*Test.java"
+					excludes="**/AllTests.java"
+				/>
+			</batchtest>
+		</junit>
+
+	</target>
+	
+
+	<target	name="mutation-test" depends="compile">
+
+		<taskdef
+			name="pitest"
+			classname="org.pitest.ant.PitestTask"
+			classpathref="pitest.classpath"
+		/>
+
+		<unzip src="${target.lib.dir}/pitest-1.0.0.jar" dest=".">
+			<patternset><include name="templates/**" /></patternset>
+		</unzip>
+
+		<pitest
+			pitClasspath="pitest.classpath"
+			classPath="project.classpath"
+			targetClasses="uk.ac.glasgow.jagora.*"
+			outputFormats="XML"
+			targetTests="uk.ac.glasgow.jagora.test.*,uk.ac.glasgow.jagora.trader.test.*"
+			verbose="false"
+			timeStampedReports="false"
+			reportDir="reports/pitest/"
+			sourceDir="${src.java.dir},${java.src.test.dir}"
+		/>
+
+	</target>
+
+	
+	<target name="findbugs" depends="retrieve">
+
+		<taskdef
+			name="findbugs"
+			classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+			classpathref="findbugs.classpath"
+		/>
+
+		<mkdir dir="${target.findbugs-reports.dir}"/>
+
+		<findbugs
+			classpathref="findbugs.classpath"
+			output="xml"
+			outputfile="${target.findbugs-reports.dir}/report.xml"
+		>
+
+			<auxClasspath refid="project.classpath" />
+
+			<sourcePath path="${src.dir},${src.test.dir}" />
+
+			<class location="${target.bin.dir}" />
+			<class location="${target.test.bin.dir}" />
+
+		</findbugs>
+
+	</target>
+
+	
+	<target name="dist" depends="test" >
+		<jar destfile="${target.jar.dir}/${ivy.module}.jar" basedir="${target.bin.dir}" includes="**/*" />
+	</target>
+	
+
+	<target name="deploy" depends ="dist">
+		<ivy:publish resolver="local" update="true" overwrite="true">
+				<artifacts pattern="${target.jar.dir}/[module].[ext]" />
+		</ivy:publish>
+	</target>
+
+
+	<target name="build" depends="compile" />
+
+</project>
