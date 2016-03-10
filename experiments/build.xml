@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <project
-	name="jagora.experiments"
+	name="jagora-experiments"
 	xmlns:ivy="antlib:org.apache.ivy.ant"
 	basedir="."
 	default="build"
@@ -11,14 +11,12 @@
 	
 	<path id="project.classpath">
 		<pathelement location="bin/"/>
-		<pathelement location="../api/bin/"/>
-		<pathelement location="../impl/bin/"/>
 		<fileset dir="lib"/>
 	</path>
 	
 	<target name="init">
-		<mkdir dir="bin"/>
-		<copy includeemptydirs="false" todir="bin">
+		<mkdir dir="${target.bin.dir}"/>
+		<copy includeemptydirs="false" todir="${target.bin.dir}">
 			<fileset dir="src">
 				<exclude name="**/*.java"/>
 			</fileset>
@@ -54,5 +52,12 @@
 	
 	
 	<target name="build" depends="compile" />
-
+	
+	
+	<target name="Experiment0003" depends="compile">
+		<junit printsummary="true">
+			<classpath refid="project.classpath"/>
+			<test name="uk.ac.glasgow.jagora.experiment.Experiment0003"/>
+		</junit>
+	</target>
 </project>
