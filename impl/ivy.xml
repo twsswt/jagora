@@ -12,7 +12,7 @@
 
 		<dependency org="org.pitest" name="pitest" rev="1.0.0" conf="default"/>
 
-		dependency org="org.pitest" name="pitest-ant" rev="1.0.0" conf="default"/>
+		<dependency org="org.pitest" name="pitest-ant" rev="1.0.0" conf="default"/>
 		
 	</dependencies>
 </ivy-module>
