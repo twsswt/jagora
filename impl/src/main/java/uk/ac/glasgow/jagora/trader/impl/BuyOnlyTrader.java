@@ -7,13 +7,19 @@ import uk.ac.glasgow.jagora.trader.Level1Trader;
 
 import java.util.HashMap;
 
+/**
+ * Provides a trader with a simple 'strategy' for placing a
+ * fixed buy order on the market when asked to speak.
+ * 
+ * @author tws
+ */
 public class BuyOnlyTrader extends SafeAbstractTrader implements Level1Trader{
 
-	private Stock stock; //can only do one stock?
+	private Stock stock;
 	private Integer quantity;
-	private Long price; //what's the point of these?
+	private Long price;
 
-	public BuyOnlyTrader(String name, Long cash,	Stock stock, Long price, Integer quantity) {
+	public BuyOnlyTrader(String name, Long cash, Stock stock, Long price, Integer quantity) {
 		super(name, cash, new HashMap<Stock,Integer>());
 		this.stock = stock;
 		this.price = price;

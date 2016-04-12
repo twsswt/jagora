@@ -57,7 +57,7 @@ import uk.ac.glasgow.jagora.world.impl.SimpleSerialWorld;
  */
 public class ExperimentUtility {
 
-	// experimental parameters
+	// Experimental parameters.
 
 	protected Long numberOfTraderActions = 10000l;
 	protected Integer seed = 1;
@@ -88,7 +88,7 @@ public class ExperimentUtility {
 
 	protected final String pricesDatFilePath = "reports/jagora/default/prices.dat";
 
-	// experimental fixture
+	// Experimental fixture.
 
 	protected World world;
 	protected Stock lemons;

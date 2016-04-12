@@ -6,6 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Provides 'safe' mechanisms for a trading that prevent a
+ * trader from creating liabilities (through placed limit orders)
+ * that couldn't be filled if they were all executed. A safe
+ * trader cannot place more buy orders than it has cash to
+ * pay for, or more sell orders than it has stock on
+ * inventory.
+ * 
+ * @author tws
+ *
+ */
 public abstract class SafeAbstractTrader extends AbstractTrader {
 
 	protected final List<LimitBuyOrder> openBuyOrders;
@@ -18,10 +29,9 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 	}
 
 	protected Boolean placeSafeBuyOrder(StockExchangeLevel1View traderView, LimitBuyOrder limitBuyOrder) {
-		//if you have enough money, you can place the order(that's safe)
 
 		if (limitBuyOrder.getLimitPrice() * limitBuyOrder.getRemainingQuantity() <= getAvailableCash()){
-			traderView.placeLimitBuyOrder(limitBuyOrder); //put it in the exchange book as order
+			traderView.placeLimitBuyOrder(limitBuyOrder);
 			openBuyOrders.add(limitBuyOrder);
 			return true;
 		}
@@ -65,7 +75,8 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 
 	/**
 	 *
-	 * @return Available cash after cash committed for openBuyOrders is taken out
+	 * @return Available cash after cash committed for open
+	 * buy orders is taken into account.
 	 */
 	protected Long getAvailableCash() {
 		Long committedCash =
@@ -76,10 +87,16 @@ public abstract class SafeAbstractTrader extends AbstractTrader {
 		return getCash() - committedCash;
 	}
 
+	/**
+	 * 
+	 * @param stock
+	 * @return Available quantity of the specified stock,
+	 * accounting to stock committed to open sell orders.
+	 */
 	protected Integer getAvailableQuantity(Stock stock) {
-		//bug?? just works if you have one stock only?
 		Integer committedQuantity = 
 			openSellOrders.stream()
+			.filter(sellOrder -> stock.equals(sellOrder.getStock()))
 			.mapToInt(sellOrder -> sellOrder.getRemainingQuantity())
 			.sum();
 		

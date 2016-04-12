@@ -44,14 +44,6 @@ public class MarketMaker extends SafeAbstractTrader  implements Level2Trader {
 			this.marketPositionSpecification = marketPositionSpecification;
 		}
 
-		// Step 1. Calculate the current midpoint for the stock.
-		
-		// Step 2. Calculate amount of stock required for order to meet liquidity targets.
-		
-		// Step 3. Work out how much of order you actually want filled based on inventory targets.
-				
-		// Step 4. Calculate order price based on size of order.  An illiquid market should command a high price.
-				
 		public void updateMarketPosition (StockExchangeLevel2View level2View){
 			
 			updateBuyPosition(level2View);
@@ -174,9 +166,6 @@ public class MarketMaker extends SafeAbstractTrader  implements Level2Trader {
 
 	@Override
 	public void speak(StockExchangeLevel2View level2View) {
-		// TODO Auto-generated method stub
-		// If the market maker can see the opportunity for free profit by intervening in a buy/sell
-				// then they should take it.
 				
 		marketPositions
 			.entrySet()

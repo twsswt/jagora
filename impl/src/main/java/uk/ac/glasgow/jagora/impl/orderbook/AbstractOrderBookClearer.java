@@ -16,6 +16,18 @@ import uk.ac.glasgow.jagora.trader.Trader;
 import uk.ac.glasgow.jagora.world.TickEvent;
 import uk.ac.glasgow.jagora.world.World;
 
+/**
+ * Provides the abstract functionality for matching buy and
+ * sell orders. Extensions of this class provide
+ * functionality for deciding whether a trade can be
+ * executed between a buy and sell order book of a
+ * particular type.
+ * 
+ * @author tws
+ *
+ * @param <S> sell order type
+ * @param <B> buy order type
+ */
 public abstract class AbstractOrderBookClearer<S extends SellOrder, B extends BuyOrder> {
 
 	private OrderBook<S> sellOrderBook;

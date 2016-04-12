@@ -233,7 +233,7 @@ public class MarketOrderTest extends EasyMockSupport {
 		Trade trade2 = new DefaultTrade(lemons, 50, 60l, marketSellOrder1, limitBuyOrder2);
 		Trade trade3 = new DefaultTrade(lemons, 20, 60l, marketSellOrder2, limitBuyOrder2);
 		
-		// resetAll ();
+		resetAll ();
 		
 		stockExchangeObservable.notifyOrderListenersOfMarketOrder(
 			new TickEvent<MarketSellOrder>(marketSellOrder1, 0l));

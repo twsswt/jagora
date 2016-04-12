@@ -155,7 +155,7 @@ public abstract class ZIPOrderJob<T extends LimitOrder> {
 				
 				if (priceIsCompetitive)
 					return INCREASE;
-				else if (marketDatum.lastQuoteWasBid()) //how is it going to be a bid and the price not competitive??
+				else if (marketDatum.lastQuoteWasBid())
 					return REDUCE;
 					
 			} else if (marketDatum.lastQuoteWasOffer() && !priceIsCompetitive)

@@ -109,7 +109,7 @@ public class ZIPTrader extends SafeAbstractTrader implements Level2Trader, Trade
 			MarketDatum marketDatum = getMarketDatum(nextSpecification.stock);
 			
 			if (currentOrderJob != null){
-				// Bug - assumes only one stock type.  Should track target price in marketdatum.
+				// TODO Bug - assumes only one stock type.  Should track target price in marketdatum.
 				Long targetPrice = currentOrderJob.getTargetPrice();
 				currentOrderJob = 
 					nextSpecification.createOrderJob(this, marketDatum, targetPrice);

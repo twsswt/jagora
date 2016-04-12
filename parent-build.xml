@@ -69,7 +69,7 @@
 
 
 	<target name="retrieve" description="Retrieve dependencies with apache ivy.">
-		<ivy:retrieve pattern="${target.lib.dir}/[artifact].[ext]"/>
+		<ivy:retrieve pattern="${target.lib.dir}/[artifact]-[revision].[ext]"/>
 	</target>
 
 

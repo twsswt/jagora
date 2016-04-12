@@ -49,7 +49,6 @@ public class BrokerTest extends EasyMockSupport {
 	public void testSingleSellStopLoss (){
 
 		mockExchange.placeMarketSellOrder(new DefaultMarketSellOrder(alice, lemons, 10));
-		//TODO		
 		replayAll();
 		broker.placeStopLossOrder(new StopLossSellOrder(alice, 25l, lemons, 10));
 		broker.tradeExecuted(new TradeExecutionEvent(lemons, bob, charlie, 1l, 24l, 1));

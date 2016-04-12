@@ -68,7 +68,6 @@ public abstract class AbstractTrader implements Trader {
 
 	@Override
 	public String toString (){
-		//return format("trader[%s:$%.2f:%s]",name, cash, inventory);
 		return name;
 	}
 
@@ -80,7 +79,7 @@ public abstract class AbstractTrader implements Trader {
 		if (trade.getSeller() != this)
 			throw  new TradeExecutionException("Trader is not the  same", trade, this);
 
-		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0); //
+		Integer currentQuantity = inventory.getOrDefault(trade.getStock(), 0);
 		if (currentQuantity < trade.getQuantity()){ 
 			String message = format(
 					"Seller [%s] cannot satisfy trade [%s] because remaining quantity is [%d].",
